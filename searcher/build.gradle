@@ -1,0 +1,7 @@
+group 'com.snava.crawlandsearch'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    implementation 'org.apache.lucene:lucene-core:9.0.0'
+    implementation 'org.apache.lucene:lucene-queryparser:9.0.0'
+}

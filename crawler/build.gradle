@@ -1,0 +1,10 @@
+group 'com.snava.crawlandsearch'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    implementation 'com.sleepycat:je:18.3.12'
+    implementation 'edu.uci.ics:crawler4j:4.4.0'
+    implementation project(':core')
+    implementation 'org.apache.lucene:lucene-core:9.0.0'
+    implementation 'org.apache.lucene:lucene-queryparser:9.0.0'
+}
