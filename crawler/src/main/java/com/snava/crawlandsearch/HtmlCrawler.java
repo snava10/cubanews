@@ -15,20 +15,26 @@ public class HtmlCrawler extends WebCrawler {
   private final static Pattern EXCLUSIONS
       = Pattern.compile(".*(\\.(css|js|xml|gif|jpg|png|mp3|mp4|zip|gz|pdf))$");
   private final Indexer indexer;
+  private Set<String> seeds;
 
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
   private final int indexBatch = 100;
 
-  public HtmlCrawler(Indexer indexer) {
+  public HtmlCrawler(Indexer indexer, Set<String> seeds) {
     super();
     this.indexer = indexer;
+    this.seeds = seeds;
   }
 
   @Override
   public boolean shouldVisit(Page referringPage, WebURL url) {
     String urlString = url.getURL().toLowerCase();
     return !EXCLUSIONS.matcher(urlString).matches()
-        && urlString.startsWith("https://adncuba.com/");
+        && matchesAnySeed(url);
+  }
+
+  private boolean matchesAnySeed(WebURL url) {
+    return seeds.stream().anyMatch(url.getURL()::startsWith);
   }
 
   @Override
@@ -68,7 +74,6 @@ public class HtmlCrawler extends WebCrawler {
       throw new RuntimeException(e);
     }
     docsToIndex.clear();
-
   }
 
 }

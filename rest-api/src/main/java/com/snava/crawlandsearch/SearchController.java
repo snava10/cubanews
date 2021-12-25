@@ -21,14 +21,24 @@ public class SearchController {
 
   @GetMapping("/search/{indexId}")
   public List<IndexDocument> search(@PathVariable long indexId,
-      @RequestParam(value = "query") String query)
-      throws IOException, ParseException {
+      @RequestParam(value = "query") String query) throws IOException, ParseException {
     System.out.println(indexId);
     System.out.println(query);
     Directory index = FSDirectory.open(Paths.get("local-data/index"));
-    return searcher.search(query, index).stream()
+    return searcher.search(query, index, 100).stream()
         .map(doc -> new IndexDocument(doc.get("url"), doc.get("title"), doc.get("text")))
         .collect(Collectors.toList());
+  }
+
+  @GetMapping("search/html/{indexId}")
+  public String searchHtml(@PathVariable long indexId, @RequestParam(value = "query") String query)
+      throws IOException, ParseException {
+    List<IndexDocument> docs = search(indexId, query);
+    StringBuilder sb = new StringBuilder("<html><body><div><ul>");
+    docs.stream().map(doc -> String.format("<li><a href=\"%s\"><h5>%s</h5></a></li>", doc.getUrl(),
+        doc.getTitle())).forEach(sb::append);
+    sb.append("</ul></div></body></html>");
+    return sb.toString();
   }
 
 }

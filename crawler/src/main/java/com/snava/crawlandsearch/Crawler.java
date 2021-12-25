@@ -1,10 +1,11 @@
 package com.snava.crawlandsearch;
 
-import edu.uci.ics.crawler4j.crawler.Page;
-import java.util.List;
+import io.reactivex.Observable;
+import java.util.Set;
 
 public interface Crawler {
 
-  void crawl(List<String> baseUrls, String indexName);
+  Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
+      String indexPath) throws Exception;
 
 }

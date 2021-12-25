@@ -5,11 +5,9 @@ import java.util.List;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 
 public class LuceneIndexer extends AbstractIndexer {
@@ -44,6 +42,7 @@ public class LuceneIndexer extends AbstractIndexer {
   public void index(List<IndexDocument> documents) throws IOException {
     for (IndexDocument document : documents) {
       saveDocument(document);
+      System.out.printf("%s %s", document.getUrl(), document.getTitle());
     }
     writer.commit();
   }

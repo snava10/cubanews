@@ -1,32 +1,22 @@
 package com.snava.crawlandsearch;
 
-import edu.uci.ics.crawler4j.crawler.CrawlConfig;
-import edu.uci.ics.crawler4j.crawler.CrawlController;
-import edu.uci.ics.crawler4j.fetcher.PageFetcher;
-import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
-import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
-import java.io.File;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Program {
 
   public static void main(String[] args) throws Exception {
-    File crawlStorage = new File("local-data/crawler4j");
-    CrawlConfig config = new CrawlConfig();
-    config.setCrawlStorageFolder(crawlStorage.getAbsolutePath());
-    config.setMaxPagesToFetch(10);
 
-    int numCrawlers = 1;
-
-    PageFetcher pageFetcher = new PageFetcher(config);
-    RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
-    RobotstxtServer robotstxtServer= new RobotstxtServer(robotstxtConfig, pageFetcher);
-    CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
-
-    controller.addSeed("https://adncuba.com/noticias-de-cuba");
-
-    LuceneIndexer luceneIndexer = new LuceneIndexer("local-data/index");
-    CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(luceneIndexer);
-    controller.start(factory, numCrawlers);
+    CrawlerController controller = new CrawlerController("local-data/crawler4j");
+    controller.start(1000, 10, Stream.of(
+            "https://adncuba.com/noticias-de-cuba",
+            "https://www.14ymedio.com/",
+            "https://www.cibercuba.com/noticias"
+        ).collect(Collectors.toSet()), "local-data/index")
+        .doOnError(error -> {
+          System.out.println(error.getLocalizedMessage());
+          System.exit(1);
+        }).blockingSubscribe();
   }
 
 }
