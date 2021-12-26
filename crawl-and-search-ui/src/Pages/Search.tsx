@@ -1,8 +1,13 @@
-import SearchResults from "../Components/SearchResults";
-import React, { useState } from "react";
+import { useState } from "react";
+import Button from "@mui/material/Button";
+import { Container, Grid, Paper, Stack, TextField } from "@mui/material";
+import logo from "../cuban-flag.jpg";
 
 export function Search() {
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState([
+    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
+    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
+  ]);
   const [queryString, setQueryString] = useState("");
 
   function search() {
@@ -19,24 +24,51 @@ export function Search() {
     setQueryString(event.target.value);
   }
 
+  function handleKeyPress(event: any) {
+    if (event.code === "Enter") {
+      search();
+    }
+  }
+
   return (
     <div>
-      <input
-        placeholder="Type something you want to search!"
-        type="text"
-        value={queryString}
-        onChange={handleChange}
-      />
-      <button onClick={search}>Search</button>
-      <ul>
-        {searchResults.map((res: any) => (
-          <li>
-            <h5>
-              <a href={res.url}>{res.title}</a>
-            </h5>
-          </li>
-        ))}
-      </ul>
+      <Container maxWidth="lg" style={{ paddingTop: 10 }}>
+        <Grid container spacing={1}>
+          {/* <Grid item xs={3} md={2}>
+            <img src={logo} height={70} width={100}/>
+          </Grid> */}
+          <Grid item xs={9} md={10}>
+            <h2>Cuba Today</h2>
+          </Grid>
+          <Grid item xs={10}>
+            <TextField
+              onChange={handleChange}
+              onKeyPress={handleKeyPress}
+              value={queryString}
+              label="Type something you want to search!"
+              variant="outlined"
+              size="small"
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <Button variant="contained" onClick={search}>
+              Search
+            </Button>
+          </Grid>
+          <Grid item xs={10}>
+            <Stack spacing={2}>
+              {searchResults.map((res: any) => (
+                <Paper elevation={0}>
+                  <h4>
+                    <a href={res.url}>{res.title}</a>
+                  </h4>
+                </Paper>
+              ))}
+            </Stack>
+          </Grid>
+        </Grid>
+      </Container>
     </div>
   );
 }

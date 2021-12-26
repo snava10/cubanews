@@ -1,7 +1,4 @@
-import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import ReactDOM from "react-dom";
 import { Link, BrowserRouter, Routes, Route } from "react-router-dom";
 import { Search } from "./Pages/Search";
 
