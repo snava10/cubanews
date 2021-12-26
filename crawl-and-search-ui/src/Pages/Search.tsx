@@ -5,8 +5,9 @@ import logo from "../cuban-flag.jpg";
 
 export function Search() {
   const [searchResults, setSearchResults] = useState([
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
+    // Uncomment this to test. Do not commit unncommented
+    // { url: "http://adncuba.com/url1", title: "bad news about cuba" },
+    // { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
   ]);
   const [queryString, setQueryString] = useState("");
 
