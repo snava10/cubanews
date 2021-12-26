@@ -19,7 +19,7 @@ public class SearchController {
   @Autowired
   Searcher searcher;
 
-  @GetMapping("/search/{indexId}")
+  @GetMapping("/api/search/{indexId}")
   public List<IndexDocument> search(@PathVariable long indexId,
       @RequestParam(value = "query") String query) throws IOException, ParseException {
     System.out.println(indexId);
@@ -30,7 +30,7 @@ public class SearchController {
         .collect(Collectors.toList());
   }
 
-  @GetMapping("search/html/{indexId}")
+  @GetMapping("/api/search/html/{indexId}")
   public String searchHtml(@PathVariable long indexId, @RequestParam(value = "query") String query)
       throws IOException, ParseException {
     List<IndexDocument> docs = search(indexId, query);
