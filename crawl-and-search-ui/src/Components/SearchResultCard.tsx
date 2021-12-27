@@ -13,7 +13,7 @@ export function SearchResultCard(props: { content: ResultCard }) {
           <Typography sx={{ mb: 1 }} color="text.secondary">
             <a>{props.content.url}</a>
             <a> - </a>
-            <a>{props.content.lastUpdated}</a>
+            <a>{`${props.content.lastUpdated} hour(s) ago`}</a>
           </Typography>
           <Typography >
             {props.content.summary}
