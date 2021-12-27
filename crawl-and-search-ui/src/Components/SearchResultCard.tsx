@@ -19,7 +19,7 @@ export function SearchResultCard(props: { content: ResultCard }) {
             {props.content.summary}
           </Typography>
         </Box>
-        {props.content.tags != undefined &&
+        {props.content.tags != undefined && props.content.tags.length != 0 &&
           <Box sx={{ padding: 1, paddingTop: 0 }}>
             {props.content.tags.map((tag: string) => (
               <Chip key={tag} label={tag} size="small" sx={{ margin: 0.5 }} />
