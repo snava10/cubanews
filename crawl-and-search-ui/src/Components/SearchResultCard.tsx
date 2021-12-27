@@ -13,11 +13,11 @@ export function SearchResultCard(props: { content: ResultCardFields }) {
   return (
     <Box>
       <Card variant="outlined">
-        <CardContent>
-          <Typography gutterBottom variant="h6" component="div">
+        <Box sx={{padding: 2}}>
+          <Typography sx={{ mb: 0 }} gutterBottom variant="h6" component="div">
             <a href={props.content.url}>{props.content.title}</a>
           </Typography>
-          <Typography sx={{ mb: 1.5 }} color="text.secondary">
+          <Typography sx={{ mb: 1 }} color="text.secondary">
             <a>{props.content.url}</a>
             <a> - </a>
             <a>{props.content.lastUpdated}</a>
@@ -25,12 +25,12 @@ export function SearchResultCard(props: { content: ResultCardFields }) {
           <Typography >
             {props.content.summary}
           </Typography>
-        </CardContent>
-        <CardActions>
+        </Box>
+        <Box sx={{padding: 1, paddingTop: 0}}>
           {props.content.tags.map((tag: string) => (
-            <Chip key={tag} label={tag} size="small"/>
+            <Chip key={tag} label={tag} size="small" sx={{marginRight: 0.5, marginLeft: 0.5}}/>
           ))}
-        </CardActions>
+        </Box>
       </Card>
     </Box>
   )
