@@ -4,6 +4,7 @@ import { Container, Grid, Paper, Stack, TextField } from "@mui/material";
 import logo from "../cuban-flag.jpg";
 import { SearchResultCard } from "../Components/SearchResultCard";
 import { generateResults } from "../Helpers/resultsGenerator";
+import { Box } from "@mui/system";
 
 export function Search() {
   // const [searchResults, setSearchResults] = useState([
@@ -38,15 +39,18 @@ export function Search() {
 
   return (
     <div>
-      <Container maxWidth="lg" style={{ paddingTop: 10 }}>
+      <Container maxWidth="lg">
         <Grid container spacing={1}>
-          <Grid item xs={3} md={2}>
-            <img src={logo} height={70} width={100} />
+          {/* Name and logo */}
+          <Grid item xs={12} md={12}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 3 }}>
+              <img src={logo} height={70} width={100} />
+              <h2>Cuba Today</h2>
+            </Box>
           </Grid>
-          <Grid item xs={9} md={10}>
-            <h2>Cuba Today</h2>
-          </Grid>
-          <Grid item xs={10}>
+
+          {/* Search bar and button */}
+          <Grid item xs={12} md={10}>
             <TextField
               onChange={handleChange}
               onKeyPress={handleKeyPress}
@@ -57,13 +61,15 @@ export function Search() {
               fullWidth
             />
           </Grid>
-          <Grid item xs={2}>
-            <Button variant="contained" onClick={search}>
+          <Grid item xs={12} md={2} sx={{ display: 'flex' }}>
+            <Button sx={{ flexGrow: 1 }} variant="contained" onClick={search}>
               Search
             </Button>
           </Grid>
-          <Grid item xs={10}>
-            <Stack spacing={2}>
+
+          {/* Results grid */}
+          <Grid item xs={12}>
+            <Stack spacing={1} sx={{ paddingTop: 2,paddingBottom: 2 }}>
               {searchResults.map((res: any) => (
                 // <Paper elevation={0}>
                 //   <h4>

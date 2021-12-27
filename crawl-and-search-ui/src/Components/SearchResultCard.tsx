@@ -28,7 +28,7 @@ export function SearchResultCard(props: { content: ResultCardFields }) {
         </Box>
         <Box sx={{padding: 1, paddingTop: 0}}>
           {props.content.tags.map((tag: string) => (
-            <Chip key={tag} label={tag} size="small" sx={{marginRight: 0.5, marginLeft: 0.5}}/>
+            <Chip key={tag} label={tag} size="small" sx={{margin: 0.5}}/>
           ))}
         </Box>
       </Card>
