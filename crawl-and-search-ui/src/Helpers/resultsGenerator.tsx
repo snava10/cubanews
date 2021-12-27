@@ -1,9 +1,9 @@
-interface ResultCard {
+export interface ResultCard {
   url: string;
   title: string;
-  lastUpdated: string,  
-  summary: string;
-  tags: Array<string>;
+  lastUpdated: number;
+  summary?: string;
+  tags?: Array<string>;
 }
 
 export function generateResults(quantity: number) {
@@ -13,7 +13,7 @@ export function generateResults(quantity: number) {
     var newCard: ResultCard = {
       url: `http://${generateRandomString(20, false)}`,
       title: generateRandomString(65),  //average headline length
-      lastUpdated: `${randomIntFromInterval(1,24)} hour(s) ago`,
+      lastUpdated: randomIntFromInterval(1,24),
       summary: generateRandomString(200),
       tags: Array.from({ length: randomIntFromInterval(1, 6) }, () => generateRandomString(10, false))
     }

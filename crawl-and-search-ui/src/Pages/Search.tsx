@@ -1,23 +1,30 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
-import { Container, Grid, Paper, Stack, TextField } from "@mui/material";
+import { Container, Grid, TextField } from "@mui/material";
 import logo from "../cuban-flag.jpg";
-import { SearchResultCard } from "../Components/SearchResultCard";
-import { generateResults } from "../Helpers/resultsGenerator";
+import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
+import { ResultStack } from "../Components/ResultStack";
+import { ResultGrid } from "../Components/ResultGrid";
+
+function timeout(ms: any) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export function Search() {
-  // const [searchResults, setSearchResults] = useState([
-  //   // Uncomment this to test. Do not commit unncommented
-  //   { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-  //   { url: "http://adncuba.com/url2", title: "more bad news about cuba" }
-  // ]);
-
-  const [searchResults, setSearchResults] = useState(generateResults(10));
-
+  console.log("[Search] called")
+  const [searchResults, setSearchResults] = useState<Array<ResultCard>>([]);
   const [queryString, setQueryString] = useState("");
 
   function search() {
+    console.log("Search button pressed")
+
+    // timeout(2000).then(() => {
+    //   console.log("Timeout ended - [Search] state should be updated")
+    //   setSearchResults(generateResults(10));
+    // })
+
+    // TODO: uncomment and use pattern above to update the state.
     fetch(`http://localhost:8080/api/search/1234?query=${queryString}`)
       .then((res) => res.json())
       .then((data) => {
@@ -69,19 +76,9 @@ export function Search() {
 
           {/* Results grid */}
           <Grid item xs={12}>
-            <Stack spacing={1} sx={{ paddingTop: 2,paddingBottom: 2 }}>
-              {searchResults.map((res: any) => (
-                // <Paper elevation={0}>
-                //   <h4>
-                //     <a href={res.url}>{res.title}</a>
-                //   </h4>
-                // </Paper>
-                <SearchResultCard
-                  key={res.url}
-                  content={res}
-                />
-              ))}
-            </Stack>
+            <ResultStack
+              searchResults={searchResults}
+            />
           </Grid>
         </Grid>
       </Container>
