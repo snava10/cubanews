@@ -3,39 +3,17 @@ import Button from "@mui/material/Button";
 import { Container, Grid, Paper, Stack, TextField } from "@mui/material";
 import logo from "../cuban-flag.jpg";
 import { SearchResultCard } from "../Components/SearchResultCard";
+import { generateResults } from "../Helpers/resultsGenerator";
 
 export function Search() {
-  const [searchResults, setSearchResults] = useState([
-    // Uncomment this to test. Do not commit unncommented
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
+  // const [searchResults, setSearchResults] = useState([
+  //   // Uncomment this to test. Do not commit unncommented
+  //   { url: "http://adncuba.com/url1", title: "bad news about cuba" },
+  //   { url: "http://adncuba.com/url2", title: "more bad news about cuba" }
+  // ]);
 
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
+  const [searchResults, setSearchResults] = useState(generateResults(10));
 
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
-
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
-
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
-
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
-
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
-
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
-
-    { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
-  ]);
   const [queryString, setQueryString] = useState("");
 
   function search() {
@@ -92,10 +70,10 @@ export function Search() {
                 //     <a href={res.url}>{res.title}</a>
                 //   </h4>
                 // </Paper>
-                SearchResultCard({
-                  url: res.url,
-                  title: res.title
-                })
+                <SearchResultCard
+                  key={res.url}
+                  content={res}
+                />
               ))}
             </Stack>
           </Grid>

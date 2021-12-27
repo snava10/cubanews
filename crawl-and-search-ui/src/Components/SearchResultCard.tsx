@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardHeader, Chip, Typography } from "@mui/material";
+import { Card, CardActions, CardContent, CardHeader, Chip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 
 // For sure!
@@ -12,26 +12,25 @@ import { Box } from "@mui/system";
 interface ResultCardFields {
   url: string;
   title: string;
+  summary: string;
+  tags: Array<string>;
 }
-export function SearchResultCard(props: ResultCardFields) {
-  const randomBodyFiller = generateRandomString(200)
-  const randomTags = Array.from({ length: randomIntFromInterval(1, 6) }, () => generateRandomString(10));
-
+export function SearchResultCard(props: { content: ResultCardFields }) {
   return (
     <Box>
       <Card variant="outlined">
         <CardContent>
           <Typography gutterBottom variant="h6" component="div">
-            <a href={props.url}>{props.title}</a>
-            <a> ({props.url})</a>
+            <a href={props.content.url}>{props.content.title}</a>
+            <a> ({props.content.url})</a>
           </Typography>
           <Typography >
-            {randomBodyFiller}
+            {props.content.summary}
           </Typography>
         </CardContent>
         <CardActions>
-          {randomTags.map((tag: string) => (
-            <Chip label={tag} />
+          {props.content.tags.map((tag: string) => (
+            <Chip key={tag} label={tag} />
           ))}
         </CardActions>
       </Card>
