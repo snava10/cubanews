@@ -1,17 +1,30 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
-import { Container, Grid, Paper, Stack, TextField } from "@mui/material";
+import { Container, Grid, TextField } from "@mui/material";
 import logo from "../cuban-flag.jpg";
+import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
+import { Box } from "@mui/system";
+import { ResultStack } from "../Components/ResultStack";
+import { ResultGrid } from "../Components/ResultGrid";
+
+function timeout(ms: any) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export function Search() {
-  const [searchResults, setSearchResults] = useState([
-    // Uncomment this to test. Do not commit unncommented
-    // { url: "http://adncuba.com/url1", title: "bad news about cuba" },
-    // { url: "http://adncuba.com/url2", title: "more bad news about cuba" },
-  ]);
+  console.log("[Search] called")
+  const [searchResults, setSearchResults] = useState<Array<ResultCard>>([]);
   const [queryString, setQueryString] = useState("");
 
   function search() {
+    console.log("Search button pressed")
+
+    // timeout(2000).then(() => {
+    //   console.log("Timeout ended - [Search] state should be updated")
+    //   setSearchResults(generateResults(10));
+    // })
+
+    // TODO: uncomment and use pattern above to update the state.
     fetch(`http://localhost:8080/api/search/1234?query=${queryString}`)
       .then((res) => res.json())
       .then((data) => {
@@ -33,15 +46,18 @@ export function Search() {
 
   return (
     <div>
-      <Container maxWidth="lg" style={{ paddingTop: 10 }}>
+      <Container maxWidth="lg">
         <Grid container spacing={1}>
-          {/* <Grid item xs={3} md={2}>
-            <img src={logo} height={70} width={100}/>
-          </Grid> */}
-          <Grid item xs={9} md={10}>
-            <h2>Cuba Today</h2>
+          {/* Name and logo */}
+          <Grid item xs={12} md={12}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 3 }}>
+              <img src={logo} height={70} width={100} />
+              <h2>Cuba Today</h2>
+            </Box>
           </Grid>
-          <Grid item xs={10}>
+
+          {/* Search bar and button */}
+          <Grid item xs={12} md={10}>
             <TextField
               onChange={handleChange}
               onKeyPress={handleKeyPress}
@@ -52,21 +68,17 @@ export function Search() {
               fullWidth
             />
           </Grid>
-          <Grid item xs={2}>
-            <Button variant="contained" onClick={search}>
+          <Grid item xs={12} md={2} sx={{ display: 'flex' }}>
+            <Button sx={{ flexGrow: 1 }} variant="contained" onClick={search}>
               Search
             </Button>
           </Grid>
-          <Grid item xs={10}>
-            <Stack spacing={2}>
-              {searchResults.map((res: any) => (
-                <Paper elevation={0}>
-                  <h4>
-                    <a href={res.url}>{res.title}</a>
-                  </h4>
-                </Paper>
-              ))}
-            </Stack>
+
+          {/* Results grid */}
+          <Grid item xs={12}>
+            <ResultStack
+              searchResults={searchResults}
+            />
           </Grid>
         </Grid>
       </Container>
