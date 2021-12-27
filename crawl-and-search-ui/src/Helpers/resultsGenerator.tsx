@@ -1,6 +1,7 @@
 interface ResultCard {
   url: string;
   title: string;
+  lastUpdated: string,  
   summary: string;
   tags: Array<string>;
 }
@@ -11,7 +12,8 @@ export function generateResults(quantity: number) {
   for (let i = 0; i < quantity; i++) {
     var newCard: ResultCard = {
       url: `http://${generateRandomString(20, false)}`,
-      title: generateRandomString(40),
+      title: generateRandomString(65),  //average headline length
+      lastUpdated: `${randomIntFromInterval(1,24)} hour(s) ago`,
       summary: generateRandomString(200),
       tags: Array.from({ length: randomIntFromInterval(1, 6) }, () => generateRandomString(10, false))
     }
