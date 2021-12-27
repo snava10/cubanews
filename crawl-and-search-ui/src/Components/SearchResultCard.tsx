@@ -1,4 +1,4 @@
-import { Card, CardActions, CardContent, CardHeader, Chip, Typography } from "@mui/material";
+import { Card, CardActions, CardContent, CardHeader, Chip, styled, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 
 interface ResultCardFields {
@@ -28,7 +28,7 @@ export function SearchResultCard(props: { content: ResultCardFields }) {
         </CardContent>
         <CardActions>
           {props.content.tags.map((tag: string) => (
-            <Chip key={tag} label={tag} />
+            <Chip key={tag} label={tag} size="small"/>
           ))}
         </CardActions>
       </Card>
