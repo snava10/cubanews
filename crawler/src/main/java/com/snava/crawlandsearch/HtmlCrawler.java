@@ -18,6 +18,8 @@ public class HtmlCrawler extends WebCrawler {
   private final Set<String> seeds;
 
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
+  // TODO: Add config for hard coded value.
+  // TODO: Evaluate what is the best value for this parameter.
   private final int indexBatch = 10;
 
   public HtmlCrawler(Indexer indexer, Set<String> seeds) {

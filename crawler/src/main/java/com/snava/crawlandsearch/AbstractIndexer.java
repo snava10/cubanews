@@ -21,7 +21,11 @@ public abstract class AbstractIndexer implements Indexer {
   }
 
   public AbstractIndexer(String index, Analyzer analyzer) throws IOException {
-    this.index = FSDirectory.open(Paths.get(index));
+    this(FSDirectory.open(Paths.get(index)), analyzer);
+  }
+
+  public AbstractIndexer(Directory directory, Analyzer analyzer) throws IOException {
+    this.index = directory;
     this.analyzer = analyzer;
     this.indexWriterConfig = new IndexWriterConfig(analyzer);
     this.writer = new IndexWriter(this.index, indexWriterConfig);

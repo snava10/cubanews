@@ -14,18 +14,19 @@ public class CrawlController {
   @Autowired
   Crawler crawler;
 
-  @GetMapping("/api/crawl/{crawlId}")
-  public CrawlResponse crawl(@PathVariable String crawlId) throws Exception {
-    System.out.printf("Starting to crawl %s", crawlId);
-    crawler.start(100, 10,
+  @GetMapping("/api/crawl/{indexId}")
+  public CrawlResponse crawl(@PathVariable String indexId) throws Exception {
+    System.out.printf("Starting to crawl %s", indexId);
+    // TODO: Create configs for the hard coded parameters
+    crawler.start(1000, 10,
             Stream.of(
                 "https://adncuba.com/noticias-de-cuba",
                 "https://www.14ymedio.com/",
                 "https://www.cibercuba.com/noticias"
-            ).collect(Collectors.toSet()), "/tmp/index"
+            ).collect(Collectors.toSet()), "/tmp/" + indexId
         ).doOnError(error -> System.out.println(error.getLocalizedMessage()))
         .subscribeOn(Schedulers.io()).subscribe();
-    return new CrawlResponse(crawlId);
+    return new CrawlResponse(indexId);
   }
 
 }

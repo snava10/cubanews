@@ -14,6 +14,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
 
 public class LuceneIndexer extends AbstractIndexer {
 
@@ -28,6 +29,10 @@ public class LuceneIndexer extends AbstractIndexer {
     super(index, analyzer);
   }
 
+  public LuceneIndexer(Directory directory, Analyzer analyzer) throws IOException {
+    super(directory, analyzer);
+  }
+
   private IndexSearcher getIndexSearcher() throws IOException {
     if (searcher != null) {
       return this.searcher;
@@ -36,6 +41,7 @@ public class LuceneIndexer extends AbstractIndexer {
     searcher = new IndexSearcher(indexReader);
     return searcher;
   }
+
   private void saveDocument(IndexDocument doc) throws IOException {
     Document document = new Document();
     document.add(new StringField("_id", doc.getUrl(), Store.NO));
@@ -46,9 +52,15 @@ public class LuceneIndexer extends AbstractIndexer {
     Term term = new Term("_id", doc.getUrl());
     TermQuery termQuery = new TermQuery(term);
 
-    TopDocs results = getIndexSearcher().search(termQuery, 1);
-    if (results.totalHits.value == 0) {
-      writer.updateDocument(term, document);
+    if (DirectoryReader.indexExists(index)) {
+      TopDocs results = getIndexSearcher().search(termQuery, 1);
+      if (results.totalHits.value == 0) {
+        writer.updateDocument(term, document);
+      }
+    } else {
+      // TODO: Log the exception
+      // This exception means that this is the first document to be added to the index.
+      writer.addDocument(document);
     }
   }
 

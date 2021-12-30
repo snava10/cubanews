@@ -19,13 +19,14 @@ export function Search() {
   function search() {
     console.log("Search button pressed")
 
+    //uncomment and use pattern above to update the state.
     // timeout(2000).then(() => {
     //   console.log("Timeout ended - [Search] state should be updated")
     //   setSearchResults(generateResults(10));
     // })
 
-    // TODO: uncomment and use pattern above to update the state.
-    fetch(`http://crawlandsearch.info/api/search/1234?query=${queryString}`)
+    // TODO: Parameterize the index name.
+    fetch(`http://crawlandsearch.info/api/search/cubatoday?query=${queryString}`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResults(data);

@@ -3,6 +3,9 @@ package com.snava.crawlandsearch;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * This is for testing purposes. Not to be used in production.
+ */
 public class Program {
 
   public static void main(String[] args) throws Exception {

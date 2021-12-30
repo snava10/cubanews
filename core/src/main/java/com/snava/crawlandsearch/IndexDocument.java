@@ -1,6 +1,7 @@
 package com.snava.crawlandsearch;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class IndexDocument {
 
@@ -10,7 +11,7 @@ public class IndexDocument {
   private final String text;
 
   public IndexDocument(String url, String title, String text) {
-    this.lastUpdated = LocalDate.now().toEpochDay();
+    this.lastUpdated = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     this.url = url;
     this.title = title;
     this.text = text;
