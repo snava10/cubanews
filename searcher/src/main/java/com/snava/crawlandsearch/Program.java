@@ -11,7 +11,7 @@ public class Program {
 
   public static void main(String[] args) throws IOException, ParseException {
 
-    Directory index = FSDirectory.open(Paths.get("local-data/index"));
+    Directory index = FSDirectory.open(Paths.get("/tmp/index"));
     Searcher searcher = new Searcher();
     for (Document doc :searcher.search("text", "cine", index, 10)) {
       System.out.printf("%s %s%n", doc.get("url"), doc.get("title"));

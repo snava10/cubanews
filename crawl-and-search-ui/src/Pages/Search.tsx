@@ -25,7 +25,7 @@ export function Search() {
     // })
 
     // TODO: uncomment and use pattern above to update the state.
-    fetch(`http://localhost:8080/api/search/1234?query=${queryString}`)
+    fetch(`http://crawlandsearch.info/api/search/1234?query=${queryString}`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResults(data);

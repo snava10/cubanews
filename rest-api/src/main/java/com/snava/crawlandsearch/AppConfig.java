@@ -18,7 +18,7 @@ public class AppConfig {
 
   @Bean
   public Crawler crawler() {
-    return new CrawlerController("local-data/crawler4j");
+    return new CrawlerController("/tmp/crawler4j");
   }
 
   @Bean

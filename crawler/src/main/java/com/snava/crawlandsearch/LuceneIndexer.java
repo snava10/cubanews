@@ -8,9 +8,16 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 
 public class LuceneIndexer extends AbstractIndexer {
+
+  IndexSearcher searcher;
 
   public LuceneIndexer(String index) throws IOException {
     super(index);
@@ -21,6 +28,14 @@ public class LuceneIndexer extends AbstractIndexer {
     super(index, analyzer);
   }
 
+  private IndexSearcher getIndexSearcher() throws IOException {
+    if (searcher != null) {
+      return this.searcher;
+    }
+    IndexReader indexReader = DirectoryReader.open(index);
+    searcher = new IndexSearcher(indexReader);
+    return searcher;
+  }
   private void saveDocument(IndexDocument doc) throws IOException {
     Document document = new Document();
     document.add(new StringField("_id", doc.getUrl(), Store.NO));
@@ -29,7 +44,12 @@ public class LuceneIndexer extends AbstractIndexer {
     document.add(new TextField("text", doc.getText(), Store.YES));
     document.add(new LongPoint("lastUpdated", doc.getLastUpdated()));
     Term term = new Term("_id", doc.getUrl());
-    writer.updateDocument(term, document);
+    TermQuery termQuery = new TermQuery(term);
+
+    TopDocs results = getIndexSearcher().search(termQuery, 1);
+    if (results.totalHits.value == 0) {
+      writer.updateDocument(term, document);
+    }
   }
 
   @Override

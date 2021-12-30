@@ -21,7 +21,7 @@ public class CrawlerController implements Crawler {
   public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
       String indexPath) throws Exception {
     CrawlConfig config = new CrawlConfig();
-    config.setCrawlStorageFolder(crawlStorage.getAbsolutePath());
+    config.setCrawlStorageFolder("/tmp");
     config.setMaxPagesToFetch(maxPagesToFetch);
 
     PageFetcher pageFetcher = new PageFetcher(config);

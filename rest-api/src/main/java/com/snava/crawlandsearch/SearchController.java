@@ -24,7 +24,7 @@ public class SearchController {
       @RequestParam(value = "query") String query) throws IOException, ParseException {
     System.out.println(indexId);
     System.out.println(query);
-    Directory index = FSDirectory.open(Paths.get("local-data/index"));
+    Directory index = FSDirectory.open(Paths.get("/tmp/index"));
     return searcher.search(query, index, 100).stream()
         .map(doc -> new IndexDocument(doc.get("url"), doc.get("title"), doc.get("text")))
         .collect(Collectors.toList());

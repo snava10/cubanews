@@ -15,10 +15,10 @@ public class HtmlCrawler extends WebCrawler {
   private final static Pattern EXCLUSIONS
       = Pattern.compile(".*(\\.(css|js|xml|gif|jpg|png|mp3|mp4|zip|gz|pdf))$");
   private final Indexer indexer;
-  private Set<String> seeds;
+  private final Set<String> seeds;
 
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
-  private final int indexBatch = 100;
+  private final int indexBatch = 10;
 
   public HtmlCrawler(Indexer indexer, Set<String> seeds) {
     super();

@@ -17,14 +17,14 @@ public class CrawlController {
   @GetMapping("/api/crawl/{crawlId}")
   public CrawlResponse crawl(@PathVariable String crawlId) throws Exception {
     System.out.printf("Starting to crawl %s", crawlId);
-    crawler.start(1000, 10,
+    crawler.start(100, 10,
             Stream.of(
                 "https://adncuba.com/noticias-de-cuba",
                 "https://www.14ymedio.com/",
                 "https://www.cibercuba.com/noticias"
-            ).collect(Collectors.toSet()), "local-data/index"
+            ).collect(Collectors.toSet()), "/tmp/index"
         ).doOnError(error -> System.out.println(error.getLocalizedMessage()))
-        .subscribeOn(Schedulers.io());
+        .subscribeOn(Schedulers.io()).subscribe();
     return new CrawlResponse(crawlId);
   }
 
