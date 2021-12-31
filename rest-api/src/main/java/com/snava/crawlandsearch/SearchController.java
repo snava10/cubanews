@@ -18,13 +18,26 @@ public class SearchController {
   @Autowired
   Searcher searcher;
 
-  @GetMapping("/api/search/{indexId}")
+  @GetMapping("/api/search/id/{indexId}")
   public Mono<List<IndexDocument>> search(@PathVariable long indexId,
       @RequestParam(value = "query") String query) throws Exception {
     // TODO: Replace println with proper logging
     System.out.println(indexId);
     System.out.println(query);
     Directory index = FSDirectory.open(Paths.get(String.format("/tmp/%s", indexId)));
+    // TODO: Add config for hard coded values.
+    return Mono.just(searcher.search(query, index, 1000).stream()
+        .map(doc -> new IndexDocument(doc.get("url"), doc.get("title"), doc.get("text")))
+        .collect(Collectors.toList()));
+  }
+
+  @GetMapping("/api/search/name/{indexName}")
+  public Mono<List<IndexDocument>> searchByName(@PathVariable String indexName,
+      @RequestParam(value = "query") String query) throws Exception {
+    // TODO: Replace println with proper logging
+    System.out.println(indexName);
+    System.out.println(query);
+    Directory index = FSDirectory.open(Paths.get(String.format("/tmp/%s", indexName)));
     // TODO: Add config for hard coded values.
     return Mono.just(searcher.search(query, index, 1000).stream()
         .map(doc -> new IndexDocument(doc.get("url"), doc.get("title"), doc.get("text")))

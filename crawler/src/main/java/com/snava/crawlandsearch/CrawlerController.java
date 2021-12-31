@@ -13,13 +13,13 @@ public class CrawlerController implements Crawler {
 
   CrawlController crawlController;
   File crawlStorage;
+  Indexer indexer;
 
   public CrawlerController(String crawlerLocalDataPath) {
     crawlStorage = new File(crawlerLocalDataPath);
   }
 
-  public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
-      String indexPath) throws Exception {
+  public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls, Indexer indexer) throws Exception {
     CrawlConfig config = new CrawlConfig();
     // TODO: Add config for hard coded parameter
     config.setCrawlStorageFolder("/tmp");
@@ -31,8 +31,7 @@ public class CrawlerController implements Crawler {
     crawlController = new CrawlController(config, pageFetcher, robotstxtServer);
     baseUrls.forEach(url -> crawlController.addSeed(url));
 
-    LuceneIndexer luceneIndexer = new LuceneIndexer(indexPath);
-    CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(luceneIndexer,
+    CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(indexer,
         baseUrls);
     return Observable.fromCallable(() -> {
       try {
@@ -41,6 +40,10 @@ public class CrawlerController implements Crawler {
         return Observable.error(ex);
       }
       return true;
+    }).doOnNext(o -> {
+      System.out.println("Closing index writer");
+      indexer.close();
+
     });
   }
 }

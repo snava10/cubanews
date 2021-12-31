@@ -32,8 +32,10 @@ public abstract class AbstractIndexer implements Indexer {
   }
 
   @Override
-  public void close() throws IOException {
-    writer.close();
+  public synchronized void close() throws IOException {
+    if (writer.isOpen()) {
+      writer.close();
+    }
   }
 
 }

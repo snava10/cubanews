@@ -1,6 +1,6 @@
 const SearchResults = (searchResults: any) => {
-    console.log(searchResults);
-    console.log(searchResults.searchResults.length);
+    // console.log(searchResults);
+    // console.log(searchResults.searchResults.length);
   if (searchResults.length > 0) {
     return (
       <ul>          

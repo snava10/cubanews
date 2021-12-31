@@ -15,7 +15,7 @@ public class Program {
             "https://adncuba.com/noticias-de-cuba",
             "https://www.14ymedio.com/",
             "https://www.cibercuba.com/noticias"
-        ).collect(Collectors.toSet()), "/tmp/index")
+        ).collect(Collectors.toSet()), new LuceneIndexer("tmp/cubanews"))
         .doOnError(error -> {
           System.out.println(error.getLocalizedMessage());
           System.exit(1);

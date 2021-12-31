@@ -2,22 +2,21 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import { Container, Grid, TextField } from "@mui/material";
 import logo from "../cuban-flag.jpg";
-import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
+import { ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
-import { ResultGrid } from "../Components/ResultGrid";
 
-function timeout(ms: any) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// function timeout(ms: any) {
+//   return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
 export function Search() {
-  console.log("[Search] called")
+  // console.log("[Search] called")
   const [searchResults, setSearchResults] = useState<Array<ResultCard>>([]);
   const [queryString, setQueryString] = useState("");
 
   function search() {
-    console.log("Search button pressed")
+    // console.log("Search button pressed")
 
     //uncomment and use pattern above to update the state.
     // timeout(2000).then(() => {
@@ -26,13 +25,13 @@ export function Search() {
     // })
 
     // TODO: Parameterize the index name.
-    fetch(`http://crawlandsearch.info/api/search/cubatoday?query=${queryString}`)
+    fetch(`http://crawlandsearch.info/api/search/name/cubatoday?query=${queryString}`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResults(data);
-        console.log(data);
+        // console.log(data);
       })
-      .catch(console.log);
+      .catch((reason: any) => console.log(reason));
   }
 
   function handleChange(event: any) {
