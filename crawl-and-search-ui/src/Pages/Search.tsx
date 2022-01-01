@@ -22,7 +22,12 @@ export function Search() {
     // timeout(2000).then(() => {
     //   console.log("Timeout ended - [Search] state should be updated")
     //   setSearchResults(generateResults(10));
+    //   // setSearchResults([{title: 'No results'} as ResultCard]);
     // })
+
+    // Clear the search results
+    // TODO: Put a searching annimation
+    setSearchResults([]);
 
     // TODO: Parameterize the index name.
     fetch(`http://cubanews.icu/api/search/name/cubanews?query=${queryString}`)
