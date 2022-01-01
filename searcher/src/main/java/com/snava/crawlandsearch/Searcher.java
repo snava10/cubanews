@@ -58,11 +58,12 @@ public class Searcher {
     for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
       documents.add(searcher.doc(scoreDoc.doc));
     }
+    indexReader.close();
     return documents;
   }
 
   public List<Document> search(String queryString, Directory index, int top)
-      throws IOException, ParseException {
+      throws IOException {
     return booleanSearch(Arrays.asList("title","url","text"), queryString, index, top);
   }
 

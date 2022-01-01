@@ -25,7 +25,7 @@ export function Search() {
     // })
 
     // TODO: Parameterize the index name.
-    fetch(`http://crawlandsearch.info/api/search/name/cubatoday?query=${queryString}`)
+    fetch(`http://cubanews.icu/api/search/name/cubanews?query=${queryString}`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResults(data);
@@ -52,7 +52,7 @@ export function Search() {
           <Grid item xs={12} md={12}>
             <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 3 }}>
               <img src={logo} height={70} width={100} />
-              <h2>Cuba Today</h2>
+              <h2>Cuba News</h2>
             </Box>
           </Grid>
 

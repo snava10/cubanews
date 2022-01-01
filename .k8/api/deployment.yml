@@ -4,6 +4,7 @@ metadata:
   name: api-deployment
   labels:
     app: api
+    project: crawlandsearch
 spec:
   replicas: 1
   selector:

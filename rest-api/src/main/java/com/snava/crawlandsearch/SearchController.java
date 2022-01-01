@@ -1,10 +1,12 @@
 package com.snava.crawlandsearch;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +28,7 @@ public class SearchController {
     System.out.println(query);
     Directory index = FSDirectory.open(Paths.get(String.format("/tmp/%s", indexId)));
     // TODO: Add config for hard coded values.
-    return Mono.just(searcher.search(query, index, 1000).stream()
+    return Mono.just(searcher.search(query, index, 50).stream()
         .map(doc -> new IndexDocument(doc.get("url"), doc.get("title"), doc.get("text")))
         .collect(Collectors.toList()));
   }
@@ -37,11 +39,18 @@ public class SearchController {
     // TODO: Replace println with proper logging
     System.out.println(indexName);
     System.out.println(query);
+
     Directory index = FSDirectory.open(Paths.get(String.format("/tmp/%s", indexName)));
     // TODO: Add config for hard coded values.
-    return Mono.just(searcher.search(query, index, 1000).stream()
+    return Mono.just(searcher.search(query, index, 50).stream()
         .map(doc -> new IndexDocument(doc.get("url"), doc.get("title"), doc.get("text")))
-        .collect(Collectors.toList()));
+        .collect(Collectors.toList())).doOnNext(indexDocuments -> {
+      try {
+        index.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
   }
 
   @GetMapping("/api/search/html/{indexId}")
