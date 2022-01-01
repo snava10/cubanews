@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "cuban-flag.jpg",
+      "src": "cuban-flag.svg",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "cuban-flag.jpg",
+      "src": "cuban-flag.svg",
       "type": "image/png",
       "sizes": "512x512"
     }

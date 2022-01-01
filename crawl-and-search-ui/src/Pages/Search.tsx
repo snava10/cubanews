@@ -2,13 +2,13 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import { Container, Grid, TextField } from "@mui/material";
 import logo from "../cuban-flag.jpg";
-import { ResultCard } from "../Helpers/resultsGenerator";
+import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
 
-// function timeout(ms: any) {
-//   return new Promise(resolve => setTimeout(resolve, ms));
-// }
+function timeout(ms: any) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export function Search() {
   // console.log("[Search] called")
@@ -18,7 +18,7 @@ export function Search() {
   function search() {
     // console.log("Search button pressed")
 
-    //uncomment and use pattern above to update the state.
+    // uncomment and use pattern above to update the state.
     // timeout(2000).then(() => {
     //   console.log("Timeout ended - [Search] state should be updated")
     //   setSearchResults(generateResults(10));
@@ -51,7 +51,7 @@ export function Search() {
           {/* Name and logo */}
           <Grid item xs={12} md={12}>
             <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 3 }}>
-              <img src={logo} height={70} width={100} />
+              <img src={logo} height={70} width={100} alt="Cuban FLag"/>
               <h2>Cuba News</h2>
             </Box>
           </Grid>

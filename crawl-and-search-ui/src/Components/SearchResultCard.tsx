@@ -1,8 +1,11 @@
 import { Card, Chip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { ResultCard } from "../Helpers/resultsGenerator";
+import moment from 'moment';
 
 export function SearchResultCard(props: { content: ResultCard }) {
+  const date = new Date(0);
+  date.setUTCSeconds(props.content.lastUpdated);
   return (
     <Box>
       <Card variant="outlined">
@@ -13,7 +16,7 @@ export function SearchResultCard(props: { content: ResultCard }) {
           <Typography sx={{ mb: 1 }} color="text.secondary">
             <a>{props.content.url}</a>
             <a> - </a>
-            <a>{`${props.content.lastUpdated} hour(s) ago`}</a>
+            <a>{moment(date).fromNow()}</a>
           </Typography>
           <Typography >
             {props.content.summary}
