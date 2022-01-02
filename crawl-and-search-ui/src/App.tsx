@@ -1,6 +1,7 @@
 import "./App.css";
 import { Link, BrowserRouter, Routes, Route } from "react-router-dom";
 import { Search } from "./Pages/Search";
+import ReactGA from "react-ga4";
 
 const Home = () => {
   return (
@@ -13,6 +14,8 @@ const Home = () => {
 };
 
 function App() {
+  ReactGA.initialize('G-NLVF1S815F');
+  
   return (
     <BrowserRouter>
       <Routes>

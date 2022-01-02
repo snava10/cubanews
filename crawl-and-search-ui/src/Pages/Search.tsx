@@ -5,6 +5,8 @@ import logo from "../cuban-flag.jpg";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
+import ReactGA from "react-ga4";
+import { UaEventOptions } from "react-ga4/types/ga4";
 
 function timeout(ms: any) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -28,6 +30,11 @@ export function Search() {
     // Clear the search results
     // TODO: Put a searching annimation
     setSearchResults([]);
+    ReactGA.event({
+      category: 'Search',
+      action: 'Search',
+      label: queryString
+    } as UaEventOptions);
 
     // TODO: Parameterize the index name.
     fetch(`http://cubanews.icu/api/search/name/cubanews?query=${queryString}`)
@@ -36,7 +43,13 @@ export function Search() {
         setSearchResults(data);
         // console.log(data);
       })
-      .catch((reason: any) => console.log(reason));
+      .catch((reason: any) => { 
+        ReactGA.event({
+          category: 'Error',
+          action: reason  
+        });
+        console.log(reason);
+      });
   }
 
   function handleChange(event: any) {
@@ -48,8 +61,8 @@ export function Search() {
       search();
     }
   }
-
-  return (
+  ReactGA.send("pageview");
+  return (    
     <div>
       <Container maxWidth="lg">
         <Grid container spacing={1}>
