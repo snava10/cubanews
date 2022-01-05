@@ -1,6 +1,8 @@
 package com.snava.crawlandsearch;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import org.apache.lucene.analysis.Analyzer;
@@ -12,6 +14,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.junit.jupiter.api.AfterEach;
@@ -62,6 +65,18 @@ class LuceneIndexerTest {
     searcher = new IndexSearcher(indexReader);
     int count = searcher.count(new TermQuery(new Term("_id", "http://url1.com")));
     assertEquals(1, count);
+  }
+
+  @Test
+  void index_ShouldStoreLastUpdated() throws Exception {
+    IndexDocument iDocument1 = new IndexDocument("http://url1.com", "doc1", "doc1 content");
+    indexer.index(iDocument1);
+    indexReader = DirectoryReader.open(memoryIndex);
+    searcher = new IndexSearcher(indexReader);
+    TopDocs topDocs = searcher.search(new TermQuery(new Term("_id", "http://url1.com")), 1);
+    String lastUpdated = searcher.doc(topDocs.scoreDocs[0].doc).get("lastUpdated");
+    assertNotNull(lastUpdated);
+    assertTrue(Long.parseLong(lastUpdated) > 0);
   }
 
   @Test

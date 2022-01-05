@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  labels:
+    app: web
+    project: crawlandsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: us-east1-docker.pkg.dev/crawl-and-search/crawl-and-search/web:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80

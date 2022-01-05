@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.LongPoint;
+import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
@@ -48,7 +49,7 @@ public class LuceneIndexer extends AbstractIndexer {
     document.add(new TextField("title", doc.getTitle(), Store.YES));
     document.add(new TextField("url", doc.getUrl(), Store.YES));
     document.add(new TextField("text", doc.getText(), Store.YES));
-    document.add(new LongPoint("lastUpdated", doc.getLastUpdated()));
+    document.add(new StringField("lastUpdated", String.valueOf(doc.getLastUpdated()), Store.YES));
     Term term = new Term("_id", doc.getUrl());
     TermQuery termQuery = new TermQuery(term);
 

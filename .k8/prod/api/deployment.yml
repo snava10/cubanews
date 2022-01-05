@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  labels:
+    app: api
+    project: crawlandsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: us-east1-docker.pkg.dev/crawl-and-search/crawl-and-search/rest-api:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8080
+        volumeMounts:
+        - name: storage
+          mountPath: /tmp
+      volumes:
+      - name: storage
+        emptyDir: {}
+# TODO: Migrate to an external volume that will not be linked to the node.
