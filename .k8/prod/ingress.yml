@@ -5,7 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.global-static-ip-name: cubanews-ip
   labels:
-    project: crawlandsearch
+    project: cubanews
 spec:
   rules:
     - http:

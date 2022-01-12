@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: api-service
   labels:
-    project: crawlandsearch
+    project: cubanews
 spec:
   type: NodePort
   selector:

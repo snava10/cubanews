@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: crawl-and-search-ingress
   labels:
-    project: crawlandsearch
+    project: cubanews
 spec:
   rules:
     - host: cubanews.icu

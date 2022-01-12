@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: crawl-cubanews
   labels:
-    project: crawlandsearch
+    project: cubanews
 spec:
   schedule: "0 8 * * *"
   jobTemplate:
