@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.snava.cubanews'
-version '1.0-SNAPSHOT'
+version '1.0.0-SNAPSHOT'
 
 allprojects {
     apply plugin: 'java'
