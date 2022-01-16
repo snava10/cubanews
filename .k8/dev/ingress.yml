@@ -6,7 +6,7 @@ metadata:
     project: cubanews
 spec:
   rules:
-    - host: cubanews.dev
+    - host: cubanews.icu
       http:
         paths:
         - path: /
