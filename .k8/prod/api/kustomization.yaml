@@ -1,0 +1,5 @@
+commonLabels:
+  project: cubanews
+resources:
+  - deployment.yml
+  - service.yml
