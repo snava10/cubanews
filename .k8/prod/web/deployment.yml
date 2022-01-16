@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-deployment
+  name: cubanews-web-deployment
   labels:
-    app: web
-    project: crawlandsearch
+    app: cubanews-web
+    project: cubanews
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: web
+      app: cubanews-web
   template:
     metadata:
       labels:
-        app: web
+        app: cubanews-web
     spec:
       containers:
-        - name: web
-          image: us-east1-docker.pkg.dev/crawl-and-search/crawl-and-search/web:v1
+        - name: cubanews-web
+          image: us-east1-docker.pkg.dev/crawl-and-search/cubanews/cubanews-web:1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

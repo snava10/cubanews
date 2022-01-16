@@ -1,4 +1,4 @@
-rootProject.name = 'crawl-and-search'
+rootProject.name = 'cubanews'
 include 'crawler'
 include 'searcher'
 include 'core'

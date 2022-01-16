@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-deployment
+  name: cubanews-rest-api-deployment
   labels:
-    app: api
-    project: crawlandsearch
+    app: cubanews-rest-api
+    project: cubanews
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: cubanews-rest-api
   template:
     metadata:
       labels:
-        app: api
+        app: cubanews-rest-api
     spec:
       containers:
-      - name: api
-        image: us-east1-docker.pkg.dev/crawl-and-search/crawl-and-search/rest-api:v1
+      - name: cubanews-rest-api
+        image: us-east1-docker.pkg.dev/crawl-and-search/cubanews/cubanews-rest-api:1.0.0
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 8080

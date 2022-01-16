@@ -4,8 +4,8 @@ plugins {
     id 'java'
 }
 
-group 'com.snava.crawlandsearch'
-version '1.0-SNAPSHOT'
+group rootProject.getGroup()
+version rootProject.getVersion()
 
 repositories {
     mavenCentral()

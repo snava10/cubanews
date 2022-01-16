@@ -1,9 +1,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: crawl-and-search-ingress
+  name: cubanews-ingress
   labels:
-    project: crawlandsearch
+    project: cubanews
 spec:
   rules:
     - host: cubanews.icu
@@ -13,13 +13,13 @@ spec:
           pathType: Prefix
           backend:
             service:
-              name: web-service
+              name: cubanews-web-service
               port:
                 number: 80
         - path: /api
           pathType: Prefix
           backend:
             service:
-              name: api-service
+              name: cubanews-rest-api-service
               port:
                 number: 8080
