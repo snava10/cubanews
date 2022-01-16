@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
 import { Container, Grid, TextField } from "@mui/material";
-import logo from "../cuban-flag.jpg";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
