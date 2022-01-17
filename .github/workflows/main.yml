@@ -76,7 +76,7 @@ jobs:
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
-        docker push "$REGION-docker.pkg.dev/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
+        docker push "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE:$GITHUB_SHA"
 #        docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
 
     # Set up kustomize
