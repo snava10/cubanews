@@ -88,5 +88,5 @@ jobs:
     - name: Deploy
       run: |-
         kubectl apply -f .k8/prod/api
-        kubectl rollout status deployment/$DEPLOYMENT_NAME
-        kubectl get services -o wide
+#        kubectl rollout status deployment/$DEPLOYMENT_NAME
+#        kubectl get services -o wide
