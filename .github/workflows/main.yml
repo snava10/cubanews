@@ -87,7 +87,9 @@ jobs:
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |-
-        sed -i 's/IMAGE_VERSION/$GITHUB_SHA/' .k8/prod/api/deployment.yml
+        
+        sed -i "s/IMAGE_VERSION/$GITHUB_SHA/" .k8/prod/api/deployment.yml
+        cat .k8/prod/api/deployment.yml
         kubectl apply -f .k8/prod/api
 #        kubectl rollout status deployment/$DEPLOYMENT_NAME
 #        kubectl get services -o wide
