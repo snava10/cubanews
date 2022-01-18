@@ -1,6 +1,7 @@
 FROM nginx:stable-alpine
-
-COPY build/ /usr/share/nginx/html
+ARG BUILD
+RUN echo ${BUILD}
+COPY ${BUILD} /usr/share/nginx/html
 
 # expose port 80
 EXPOSE 80
