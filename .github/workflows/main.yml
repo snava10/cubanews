@@ -71,6 +71,7 @@ jobs:
           --tag "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE:$GITHUB_SHA" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
+          --build-arg JAR_FILE=build/libs/rest-api-1.0.0-SNAPSHOT.jar \
           rest-api/
 
     # Push the Docker image to Google Container Registry
