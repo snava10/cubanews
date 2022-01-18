@@ -16,13 +16,14 @@ env:
   GKE_ZONE: us-east1-b   # Add your cluster zone here.
   DEPLOYMENT_NAME: cubanews # Add your deployment name here.
   IMAGE: cubanews-rest-api
+  IMAGE_WEB: cubanews-web
   REGION: us-east1
 
-jobs:  
-  
-  build:
-    runs-on: ubuntu-latest
+jobs:
 
+  build:
+    name: Gradle Build
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -36,13 +37,40 @@ jobs:
         uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
         with:
           arguments: build
+      - name: Upload rest-api jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: app.jar
+          path: rest-api/build/libs/*.jar
+
+  build-web:
+    name: React Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - name: npm ci, build and test
+        run: |
+          cd web-ui;
+          npm ci
+          CI=false npm run build --if-present
+      - name: Upload react app
+        uses: actions/upload-artifact@v2
+        with:
+          name: webapp
+          path: build/*
   
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
+    needs: [build, build-web]
     runs-on: ubuntu-latest
     environment: production
 
     steps:
+     
     - name: Checkout
       uses: actions/checkout@v2
 
@@ -55,7 +83,7 @@ jobs:
     # Configure Docker to use the gcloud command-line tool as a credential
     # helper for authentication
     - run: |-
-        gcloud --quiet auth configure-docker
+        gcloud --quiet auth configure-docker ${{env.REGION}}-docker.pkg.dev
 
     # Get the GKE credentials so we can deploy to the cluster
     - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
@@ -63,22 +91,27 @@ jobs:
         cluster_name: ${{ env.GKE_CLUSTER }}
         location: ${{ env.GKE_ZONE }}
         credentials: ${{ secrets.GKE_SA_KEY }}
+    
+    - name: Download jar
+      uses: actions/download-artifact@v2
+      with:
+        name: app.jar
 
     # Build the Docker image
     - name: Build
       run: |-
+        ls; cp rest-api-1.0.0-SNAPSHOT.jar rest-api/ ; ls rest-api;
         docker build \
-#          --tag "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA" \
-          --tag "$REGION-docker.pkg.dev/$PROJECT_ID/$IMAGE:$GITHUB_SHA" \
+          --tag "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE:$GITHUB_SHA" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
-          rest-api/
+          --build-arg JAR_FILE=rest-api-1.0.0-SNAPSHOT.jar \
+          rest-api/ ;        
 
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
-        docker push "$REGION-docker.pkg.dev/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
-#        docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
+        docker push "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE:$GITHUB_SHA"
 
     # Set up kustomize
     - name: Set up Kustomize
@@ -89,9 +122,9 @@ jobs:
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |-
+        
+        sed -i "s/IMAGE_VERSION/$GITHUB_SHA/" .k8/prod/api/deployment.yml
+        cat .k8/prod/api/deployment.yml
         kubectl apply -f .k8/prod/api
-#        ./kustomize edit set image=gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA .k8/prod/api/
-#        ./kustomize build .k8/prod/api | kubectl apply -f -
-        kubectl rollout status deployment/$DEPLOYMENT_NAME
-        kubectl get services -o wide
-
+#        kubectl rollout status deployment/$DEPLOYMENT_NAME
+#        kubectl get services -o wide

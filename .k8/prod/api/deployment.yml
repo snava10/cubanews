@@ -18,7 +18,7 @@ spec:
       containers:
       - name: cubanews-rest-api
         imagePullPolicy: IfNotPresent
-        image: $REGION-docker.pkg.dev/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+        image: us-east1-docker.pkg.dev/crawl-and-search/cubanews/cubanews-rest-api:IMAGE_VERSION
         ports:
           - containerPort: 8080
         volumeMounts:
