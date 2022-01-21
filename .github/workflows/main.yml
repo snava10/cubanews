@@ -14,9 +14,10 @@ env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: cubanews    # Add your cluster name here.
   GKE_ZONE: us-east1-b   # Add your cluster zone here.
-  DEPLOYMENT_NAME: cubanews # Add your deployment name here.
+  API_DEPLOYMENT_NAME: cubanews-rest-api-deployment # Add your deployment name here.
   IMAGE: cubanews-rest-api
   IMAGE_WEB: cubanews-web
+  WEB_DEPLOYMENT_NAME: cubanews-web-deployment
   REGION: us-east1
 
 jobs:
@@ -57,12 +58,14 @@ jobs:
           cd web-ui;
           npm ci
           CI=false npm run build --if-present
+          pwd;
+          ls;
       - name: Upload react app
         uses: actions/upload-artifact@v2
         with:
           name: webapp
-          path: build/*
-  
+          path: web-ui/build
+
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
     needs: [build, build-web]
@@ -70,61 +73,82 @@ jobs:
     environment: production
 
     steps:
-     
-    - name: Checkout
-      uses: actions/checkout@v2
 
-    # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
-      with:
-        service_account_key: ${{ secrets.GKE_SA_KEY }}
-        project_id: ${{ secrets.GKE_PROJECT }}
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    # Configure Docker to use the gcloud command-line tool as a credential
-    # helper for authentication
-    - run: |-
-        gcloud --quiet auth configure-docker ${{env.REGION}}-docker.pkg.dev
+      # Setup gcloud CLI
+      - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
+        with:
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
 
-    # Get the GKE credentials so we can deploy to the cluster
-    - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
-      with:
-        cluster_name: ${{ env.GKE_CLUSTER }}
-        location: ${{ env.GKE_ZONE }}
-        credentials: ${{ secrets.GKE_SA_KEY }}
-    
-    - name: Download jar
-      uses: actions/download-artifact@v2
-      with:
-        name: app.jar
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      - run: |-
+          gcloud --quiet auth configure-docker ${{env.REGION}}-docker.pkg.dev
+      # Get the GKE credentials so we can deploy to the cluster
+      - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+          credentials: ${{ secrets.GKE_SA_KEY }}
 
-    # Build the Docker image
-    - name: Build
-      run: |-
-        ls; cp rest-api-1.0.0-SNAPSHOT.jar rest-api/ ; ls rest-api;
-        docker build \
-          --tag "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE:$GITHUB_SHA" \
-          --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg GITHUB_REF="$GITHUB_REF" \
-          --build-arg JAR_FILE=rest-api-1.0.0-SNAPSHOT.jar \
-          rest-api/ ;        
+      - name: Download jar
+        uses: actions/download-artifact@v2
+        with:
+          name: app.jar
 
-    # Push the Docker image to Google Container Registry
-    - name: Publish
-      run: |-
-        docker push "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE:$GITHUB_SHA"
+      - name: Download Webapp
+        uses: actions/download-artifact@v2
+        with:
+          name: webapp
+          path: web-ui/build/
 
-    # Set up kustomize
-    - name: Set up Kustomize
-      run: |-
-        curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
-        chmod u+x ./kustomize
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: web-ui/build/
 
-    # Deploy the Docker image to the GKE cluster
-    - name: Deploy
-      run: |-
-        
-        sed -i "s/IMAGE_VERSION/$GITHUB_SHA/" .k8/prod/api/deployment.yml
-        cat .k8/prod/api/deployment.yml
-        kubectl apply -f .k8/prod/api
-#        kubectl rollout status deployment/$DEPLOYMENT_NAME
-#        kubectl get services -o wide
+      # Build the Docker image
+      - name: Build
+        run: |-
+          ls; cp rest-api-1.0.0-SNAPSHOT.jar rest-api/ ; ls rest-api;
+          docker build \
+            --tag "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE:$GITHUB_SHA" \
+            --build-arg GITHUB_SHA="$GITHUB_SHA" \
+            --build-arg GITHUB_REF="$GITHUB_REF" \
+            --build-arg JAR_FILE=rest-api-1.0.0-SNAPSHOT.jar \
+            rest-api/ ;
+          docker build \
+            --tag "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE_WEB:$GITHUB_SHA" \
+            web-ui/
+      # Push the Docker image to Google Container Registry
+      - name: Publish
+        run: |-
+          docker push "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE:$GITHUB_SHA";
+          docker push "$REGION-docker.pkg.dev/$PROJECT_ID/cubanews/$IMAGE_WEB:$GITHUB_SHA"
+      # Set up kustomize
+      - name: Set up Kustomize
+        run: |-
+          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+          chmod u+x ./kustomize
+      # Deploy the Docker image to the GKE cluster
+      - name: Deploy Rest Api
+        run: |-
+          sed -i "s/IMAGE_VERSION/$GITHUB_SHA/" .k8/prod/api/deployment.yml
+          cat .k8/prod/api/deployment.yml
+          kubectl apply -f .k8/prod/api
+          kubectl rollout restart deployment/$API_DEPLOYMENT_NAME
+          kubectl rollout status deployment/$API_DEPLOYMENT_NAME
+          kubectl get services -o wide
+      - name: Deploy Web
+        run: |-
+          sed -i "s/IMAGE_VERSION/$GITHUB_SHA/" .k8/prod/web/deployment.yml
+          cat .k8/prod/web/deployment.yml
+          kubectl apply -f .k8/prod/web
+          kubectl rollout restart deployment/$WEB_DEPLOYMENT_NAME
+          kubectl rollout status deployment/$WEB_DEPLOYMENT_NAME
+          kubectl get services -o wide
+      - name: Deploy Ingress and CronJob
+        run: |-
+          kubectl apply -f .k8/prod/ingress.yml
