@@ -20,5 +20,10 @@ public class RestAPIApplication {
     System.out.println("Hitting hello endpoint");
     return Mono.just(String.format("Hello %s!", name));
   }
+
+  @GetMapping("/")
+  public Mono<String> root() {
+    return Mono.just("OK");
+  }
 }
 
