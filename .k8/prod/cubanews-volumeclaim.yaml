@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: cubanews-volumeclaim
+  labels:
+    project: cubanews
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: retain-standard
+  resources:
+    requests:
+      storage: 20Gi
