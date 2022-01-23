@@ -17,14 +17,14 @@ spec:
     spec:
       containers:
       - name: cubanews-rest-api
-        image: us-east1-docker.pkg.dev/crawl-and-search/cubanews/cubanews-rest-api:1.0.0
         imagePullPolicy: IfNotPresent
+        image: us-east1-docker.pkg.dev/crawl-and-search/cubanews/cubanews-rest-api:IMAGE_VERSION
         ports:
           - containerPort: 8080
         volumeMounts:
-        - name: storage
+        - name: cubanews-persistent-storage
           mountPath: /tmp
       volumes:
-      - name: storage
-        emptyDir: {}
-# TODO: Migrate to an external volume that will not be linked to the node.
+      - name: cubanews-persistent-storage
+        persistentVolumeClaim:
+          claimName: cubanews-volumeclaim

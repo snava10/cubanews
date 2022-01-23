@@ -36,7 +36,7 @@ export function Search() {
     } as UaEventOptions);
 
     // TODO: Parameterize the index name.
-    fetch(`http://cubanews.icu/api/search/name/cubanews?query=${queryString}`)
+    fetch(`https://cubanews.icu/api/search/name/cubanews?query=${queryString}`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResults(data);

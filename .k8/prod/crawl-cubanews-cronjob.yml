@@ -17,5 +17,5 @@ spec:
               command:
                 - /bin/sh
                 - -ec
-                - "curl --location --request POST 'http://cubanews.icu/api/crawl' --header 'Content-Type: application/json' --data-raw '{ \"indexName\": \"cubanews\", \"baseUrls\": [ \"https://adncuba.com/noticias-de-cuba\", \"https://www.14ymedio.com/\", \"https://www.cibercuba.com/noticias\" ], \"limit\": 1000 }'"
+                - "curl --location --request POST 'https://cubanews.icu/api/crawl' --header 'Content-Type: application/json' --data-raw '{ \"indexName\": \"cubanews\", \"baseUrls\": [ \"https://adncuba.com/noticias-de-cuba\", \"https://www.14ymedio.com/\", \"https://www.cibercuba.com/noticias\" ] }'"
           restartPolicy: OnFailure
