@@ -37,16 +37,16 @@ export function Search() {
     } as UaEventOptions);
 
     // TODO: Parameterize the index name.
-    fetch(`http://cubanews.icu/api/search/name/cubanews?query=${queryString}`)
+    fetch(`https://cubanews.icu/api/search/name/cubanews?query=${queryString}`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResults(data);
         // console.log(data);
       })
-      .catch((reason: any) => { 
+      .catch((reason: any) => {
         ReactGA.event({
           category: 'Error',
-          action: reason  
+          action: reason
         });
         console.log(reason);
       });
