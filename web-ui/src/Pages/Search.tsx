@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
 import { Container, Grid, TextField } from "@mui/material";
-import logo from "../cuban-flag.jpg";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
@@ -62,14 +61,16 @@ export function Search() {
     }
   }
   ReactGA.send("pageview");
-  return (    
+  return (
     <div>
       <Container maxWidth="lg">
         <Grid container spacing={1}>
           {/* Name and logo */}
           <Grid item xs={12} md={12}>
-            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 3 }}>
-              <img src={logo} height={70} width={100} alt="Cuban FLag"/>
+            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 3 }}>
+              <Box sx={{ margin: 0, paddingLeft: 1, paddingRight: 1 }}>
+                <img src={`${process.env.PUBLIC_URL}/cuban-flag.svg`} height={70} width={100} alt="Cuban FLag" />
+              </Box>
               <h2>Cuba News</h2>
             </Box>
           </Grid>
