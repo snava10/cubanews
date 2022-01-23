@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: cubanews-ingress
   annotations:
+    networking.gke.io/managed-certificates: managed-cert
+    kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: cubanews-ip
   labels:
     project: cubanews
