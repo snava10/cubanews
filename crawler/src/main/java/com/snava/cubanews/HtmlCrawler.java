@@ -61,7 +61,7 @@ public class HtmlCrawler extends WebCrawler {
       Set<WebURL> links = htmlParseData.getOutgoingUrls();
       System.out.printf("%s %s%n", title, url);
       // do something with the collected data
-      IndexDocument doc = new IndexDocument(url, title, text);
+      IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text).build();
       docsToIndex.add(doc);
       if (docsToIndex.size() >= indexBatch) {
         flushBuffer();

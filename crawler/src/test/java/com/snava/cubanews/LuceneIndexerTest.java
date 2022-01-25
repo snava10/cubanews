@@ -48,7 +48,11 @@ class LuceneIndexerTest {
 
   @Test
   void index() throws Exception {
-    IndexDocument iDocument1 = new IndexDocument("http://url1.com", "doc1", "doc1 content");
+    IndexDocument iDocument1 = ImmutableIndexDocument.builder()
+        .url("http://url1.com")
+        .title("doc1")
+        .text("doc1 content")
+        .build();
     indexer.index(iDocument1);
     indexReader = DirectoryReader.open(memoryIndex);
     searcher = new IndexSearcher(indexReader);
@@ -58,7 +62,11 @@ class LuceneIndexerTest {
 
   @Test
   void index_shouldNotDuplicateDocuments() throws IOException {
-    IndexDocument iDocument1 = new IndexDocument("http://url1.com", "doc1", "doc1 content");
+    IndexDocument iDocument1 = ImmutableIndexDocument.builder()
+        .url("http://url1.com")
+        .title("doc1")
+        .text("doc1 content")
+        .build();
     indexer.index(iDocument1);
     indexer.index(iDocument1);
     indexReader = DirectoryReader.open(memoryIndex);
@@ -69,7 +77,11 @@ class LuceneIndexerTest {
 
   @Test
   void index_ShouldStoreLastUpdated() throws Exception {
-    IndexDocument iDocument1 = new IndexDocument("http://url1.com", "doc1", "doc1 content");
+    IndexDocument iDocument1 = ImmutableIndexDocument.builder()
+        .url("http://url1.com")
+        .title("doc1")
+        .text("doc1 content")
+        .build();
     indexer.index(iDocument1);
     indexReader = DirectoryReader.open(memoryIndex);
     searcher = new IndexSearcher(indexReader);

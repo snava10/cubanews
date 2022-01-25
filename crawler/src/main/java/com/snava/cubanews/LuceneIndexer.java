@@ -5,8 +5,6 @@ import java.util.List;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.LongPoint;
-import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
@@ -18,6 +16,9 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 
 public class LuceneIndexer extends AbstractIndexer {
+
+  private final String OK = "Ok";
+  private final String NULL = "Null";
 
   IndexSearcher searcher;
 
@@ -44,25 +45,30 @@ public class LuceneIndexer extends AbstractIndexer {
   }
 
   private void saveDocument(IndexDocument doc) throws IOException {
+    if (!isAValidDocument(doc)) {
+      System.out.println(getValidityDocumentExplanation(doc));
+      return;
+    }
     Document document = new Document();
-    document.add(new StringField("_id", doc.getUrl(), Store.NO));
-    document.add(new TextField("title", doc.getTitle(), Store.YES));
-    document.add(new TextField("url", doc.getUrl(), Store.YES));
-    document.add(new TextField("text", doc.getText(), Store.YES));
-    document.add(new StringField("lastUpdated", String.valueOf(doc.getLastUpdated()), Store.YES));
-    Term term = new Term("_id", doc.getUrl());
+    document.add(new StringField("_id", doc.url(), Store.NO));
+    document.add(new TextField("title", doc.title(), Store.YES));
+    document.add(new TextField("url", doc.url(), Store.YES));
+    document.add(new TextField("text", doc.text(), Store.YES));
+    document.add(new StringField("lastUpdated", String.valueOf(doc.lastUpdated()), Store.YES));
+    Term term = new Term("_id", doc.url());
     TermQuery termQuery = new TermQuery(term);
 
-    if (DirectoryReader.indexExists(index)) {
-      TopDocs results = getIndexSearcher().search(termQuery, 1);
-      if (results.totalHits.value == 0) {
-        writer.updateDocument(term, document);
-      }
+    TopDocs results =
+        DirectoryReader.indexExists(index) ? getIndexSearcher().search(termQuery, 1) : null;
+
+    if (results != null && results.totalHits.value > 0) {
+      writer.updateDocument(term, document);
     } else {
       // TODO: Log the exception
       // This exception means that this is the first document to be added to the index.
       writer.addDocument(document);
     }
+
   }
 
   @Override
@@ -75,9 +81,22 @@ public class LuceneIndexer extends AbstractIndexer {
   public void index(List<IndexDocument> documents) throws IOException {
     for (IndexDocument document : documents) {
       saveDocument(document);
-      System.out.printf("%s %s", document.getUrl(), document.getTitle());
+      System.out.printf("%s %s", document.url(), document.title());
     }
     writer.commit();
+  }
+
+  private boolean isAValidDocument(IndexDocument indexDocument) {
+    return indexDocument.url() != null && indexDocument.title() != null
+        && indexDocument.text() != null;
+  }
+
+  private String getValidityDocumentExplanation(IndexDocument indexDocument) {
+    return String.format("url: %s, title: %s, text: %s",
+        indexDocument.url() == null ? NULL : OK,
+        indexDocument.title() == null ? NULL : OK,
+        indexDocument.text() == null ? NULL : OK
+    );
   }
 
 }
