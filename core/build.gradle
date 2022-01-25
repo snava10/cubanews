@@ -3,5 +3,6 @@ dependencies {
     compileOnly 'org.immutables:value:2.9.0'
     compileOnly 'org.immutables:builder:2.9.0'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
 }
