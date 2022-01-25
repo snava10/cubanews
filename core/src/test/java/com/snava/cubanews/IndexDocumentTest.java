@@ -10,8 +10,9 @@ class IndexDocumentTest {
 
   @Test
   public void createIndexDocument_shouldSetLastUpdated() {
-    IndexDocument doc = new IndexDocument("url", "title", "text");
-    assertEquals(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC), doc.getLastUpdated());
+    IndexDocument doc = ImmutableIndexDocument.builder()
+        .url("url").title("title").text("text").build();
+    assertEquals(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC), doc.lastUpdated());
   }
 
 }

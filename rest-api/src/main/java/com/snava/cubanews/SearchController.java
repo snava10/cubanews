@@ -54,8 +54,8 @@ public class SearchController {
     return search(indexId, query).map(docs -> {
       StringBuilder sb = new StringBuilder("<html><body><div><ul>");
       docs.stream().map(
-          doc -> String.format("<li><a href=\"%s\"><h5>%s</h5></a></li>", doc.getUrl(),
-              doc.getTitle())).forEach(sb::append);
+          doc -> String.format("<li><a href=\"%s\"><h5>%s</h5></a></li>", doc.url(),
+              doc.title())).forEach(sb::append);
       sb.append("</ul></div></body></html>");
       return sb.toString();
     });
@@ -63,8 +63,11 @@ public class SearchController {
 
   private List<IndexDocument> search(String query, Directory index, int limit) throws IOException {
     return searcher.search(query, index, limit).stream().map(
-        doc -> new IndexDocument(doc.get("url"), doc.get("title"), doc.get("text"),
-            Long.parseLong(doc.get("lastUpdated")))).collect(Collectors.toList());
+        doc -> ImmutableIndexDocument.builder().url(doc.get("url"))
+            .title(doc.get("title")).text(doc.get("text"))
+            .lastUpdated(Long.parseLong(doc.get("lastUpdated")))
+            .build()
+    ).collect(Collectors.toList());
   }
 
 }

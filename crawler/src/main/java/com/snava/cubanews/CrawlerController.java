@@ -13,13 +13,13 @@ public class CrawlerController implements Crawler {
 
   CrawlController crawlController;
   File crawlStorage;
-  Indexer indexer;
 
   public CrawlerController(String crawlerLocalDataPath) {
     crawlStorage = new File(crawlerLocalDataPath);
   }
 
-  public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls, Indexer indexer) throws Exception {
+  public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls, Indexer indexer)
+      throws Exception {
     CrawlConfig config = new CrawlConfig();
     // TODO: Add config for hard coded parameter
     config.setCrawlStorageFolder("/tmp");
