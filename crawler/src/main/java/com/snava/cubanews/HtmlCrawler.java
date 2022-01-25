@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 public class HtmlCrawler extends WebCrawler {
 
@@ -62,11 +63,20 @@ public class HtmlCrawler extends WebCrawler {
       System.out.printf("%s %s%n", title, url);
       // do something with the collected data
       IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text).build();
-      docsToIndex.add(doc);
+      if (isAValidDocument(doc)) {
+        docsToIndex.add(doc);
+      } else {
+        // Todo: Use a logger
+        System.out.println(getValidityDocumentExplanation(doc));
+      }
       if (docsToIndex.size() >= indexBatch) {
         flushBuffer();
       }
     }
+  }
+
+  List<IndexDocument> getDocsToIndex() {
+    return docsToIndex;
   }
 
   private void flushBuffer() {
@@ -76,6 +86,22 @@ public class HtmlCrawler extends WebCrawler {
       throw new RuntimeException(e);
     }
     docsToIndex.clear();
+  }
+
+  private String getValidityDocumentExplanation(IndexDocument indexDocument) {
+    String OK = "Ok";
+    String NULL = "Null";
+    return String.format("url: %s, title: %s, text: %s",
+        StringUtils.isBlank(indexDocument.url()) ? NULL : OK,
+        StringUtils.isBlank(indexDocument.title()) ? NULL : OK,
+        StringUtils.isBlank(indexDocument.text()) ? NULL : OK
+    );
+  }
+
+  private boolean isAValidDocument(IndexDocument indexDocument) {
+    return StringUtils.isNotBlank(indexDocument.url()) && StringUtils.isNotBlank(
+        indexDocument.title())
+        && StringUtils.isNotBlank(indexDocument.text());
   }
 
 }

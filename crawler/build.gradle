@@ -4,7 +4,7 @@ dependencies {
     implementation project(':core')
     implementation 'org.apache.lucene:lucene-core:9.0.0'
     implementation 'org.apache.lucene:lucene-queryparser:9.0.0'
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.21'
-
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    testImplementation 'org.mockito:mockito-all:2.0.2-beta'
 }
-// https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava

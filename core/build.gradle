@@ -2,4 +2,6 @@ dependencies {
     annotationProcessor "org.immutables:value:2.9.0"
     compileOnly 'org.immutables:value:2.9.0'
     compileOnly 'org.immutables:builder:2.9.0'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
 }
