@@ -1,12 +1,19 @@
 package com.snava.cubanews;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.Query;
+import com.google.cloud.firestore.WriteResult;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -17,16 +24,18 @@ public class HtmlCrawler extends WebCrawler {
       = Pattern.compile(".*(\\.(css|js|xml|gif|jpg|png|mp3|mp4|zip|gz|pdf))$");
   private final Indexer indexer;
   private final Set<String> seeds;
+  private Firestore db;
 
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
   // TODO: Add config for hard coded value.
   // TODO: Evaluate what is the best value for this parameter.
   private final int indexBatch = 10;
 
-  public HtmlCrawler(Indexer indexer, Set<String> seeds) {
+  public HtmlCrawler(Indexer indexer, Set<String> seeds, Firestore db) {
     super();
     this.indexer = indexer;
     this.seeds = seeds;
+    this.db = db;
   }
 
   @Override
@@ -81,8 +90,9 @@ public class HtmlCrawler extends WebCrawler {
 
   private void flushBuffer() {
     try {
-      indexer.index(docsToIndex);
-    } catch (IOException e) {
+      indexer.index(saveDocsMetadata(docsToIndex));
+
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
     docsToIndex.clear();
@@ -102,6 +112,34 @@ public class HtmlCrawler extends WebCrawler {
     return StringUtils.isNotBlank(indexDocument.url()) && StringUtils.isNotBlank(
         indexDocument.title())
         && StringUtils.isNotBlank(indexDocument.text());
+  }
+
+  private List<IndexDocument> saveDocsMetadata(List<IndexDocument> documents) throws Exception {
+    List<IndexDocument> newDocs = new ArrayList<>();
+    for (IndexDocument doc : documents) {
+      if (saveDocMetadataIfDoesNotExists(doc, db) != null) {
+        newDocs.add(doc);
+      }
+    }
+    return newDocs;
+  }
+
+  private ApiFuture<WriteResult> saveDocMetadataIfDoesNotExists(IndexDocument document,
+      Firestore db) throws Exception {
+    CollectionReference collectionReference = db.collection("pages");
+    Query query = collectionReference.whereEqualTo("url", document.url());
+    if (query.get().get().getDocumentChanges().isEmpty()) {
+      DocumentReference docRef = collectionReference.document();
+      Map<String, Object> data = new HashMap<>();
+      data.put("url", document.url());
+      data.put("title", document.title());
+      data.put("indexedAt", document.lastUpdated());
+      data.put("state", DocumentState.ACTIVE);
+      return docRef.set(data);
+    } else {
+      System.out.println(String.format("Article with url %s already exists", document.url()));
+    }
+    return null;
   }
 
 }
