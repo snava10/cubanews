@@ -24,7 +24,12 @@ spec:
         volumeMounts:
         - name: cubanews-persistent-storage
           mountPath: /tmp
+        - name: datastore-key
+          mountPath: "/etc/datastore"
       volumes:
       - name: cubanews-persistent-storage
         persistentVolumeClaim:
           claimName: cubanews-volumeclaim
+      - name: datastore-key
+        secret:
+          secretName: datastore-key

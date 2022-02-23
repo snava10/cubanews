@@ -17,7 +17,7 @@ public class Program {
 
     String projectId = "crawl-and-search";
     GoogleCredentials credentials = GoogleCredentials.fromStream(
-            new FileInputStream("/home/sergio/datastore-key.json"))
+            new FileInputStream("/etc/datastore/datastore-key"))
         .createScoped(Collections.singleton("https://www.googleapis.com/auth/cloud-platform"));
     FirestoreOptions firestoreOptions =
         FirestoreOptions.getDefaultInstance().toBuilder()

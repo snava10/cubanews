@@ -24,7 +24,13 @@ spec:
         volumeMounts:
         - name: storage
           mountPath: /tmp
+        - name: datastore-key
+          mountPath: "/etc/datastore"
       volumes:
       - name: storage
         emptyDir: {}
+      - name: datastore-key
+        secret:
+          secretName: datastore-key
+
 # TODO: Migrate to an external volume that will not be linked to the node.

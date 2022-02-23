@@ -1,0 +1,1 @@
+kubectl create secret generic datastore-key --from-file=datastore-key=./datastore-key.json

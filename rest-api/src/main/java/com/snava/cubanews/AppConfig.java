@@ -6,7 +6,6 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -40,7 +39,7 @@ public class AppConfig {
   public Firestore firestore() throws IOException {
     String projectId = "crawl-and-search";
     GoogleCredentials credentials = GoogleCredentials.fromStream(
-            new FileInputStream("/home/sergio/datastore-key.json"))
+            new FileInputStream("/etc/datastore/datastore-key"))
         .createScoped(Collections.singleton("https://www.googleapis.com/auth/cloud-platform"));
     FirestoreOptions firestoreOptions =
         FirestoreOptions.getDefaultInstance().toBuilder()
