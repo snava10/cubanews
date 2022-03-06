@@ -101,29 +101,4 @@ class LuceneIndexerTest {
     assertTrue(Long.parseLong(lastUpdated) > 0);
   }
 
-  @Test
-  void test() throws Exception {
-    String projectId = "crawl-and-search";
-    GoogleCredentials credentials = GoogleCredentials.fromStream(
-            new FileInputStream("/home/sergio/datastore-key.json"))
-        .createScoped(Collections.singleton("https://www.googleapis.com/auth/cloud-platform"));
-    FirestoreOptions firestoreOptions =
-        FirestoreOptions.getDefaultInstance().toBuilder()
-            .setProjectId(projectId)
-            .setCredentials(credentials)
-            .build();
-    Firestore db = firestoreOptions.getService();
-    DocumentReference docRef = db.collection("pages").document("testPage");
-
-    Map<String, Object> data = new HashMap<>();
-    data.put("url", "http://url1.com");
-    data.put("title", "Url 1");
-    data.put("text", "Url text");
-
-    ApiFuture<WriteResult> result = docRef.set(data);
-// ...
-// result.get() blocks on response
-    System.out.println("Update time : " + result.get().getUpdateTime());
-  }
-
 }
