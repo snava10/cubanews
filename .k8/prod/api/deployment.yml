@@ -26,6 +26,9 @@ spec:
           mountPath: /tmp
         - name: datastore-key
           mountPath: "/etc/datastore"
+        env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/datastore/datastore-key
       volumes:
       - name: cubanews-persistent-storage
         persistentVolumeClaim:
