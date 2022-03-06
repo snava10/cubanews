@@ -10,6 +10,9 @@ import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,14 +120,14 @@ public class HtmlCrawler extends WebCrawler {
   private List<IndexDocument> saveDocsMetadata(List<IndexDocument> documents) throws Exception {
     List<IndexDocument> newDocs = new ArrayList<>();
     for (IndexDocument doc : documents) {
-      if (saveDocMetadataIfDoesNotExists(doc, db) != null) {
+      if (addDocMetadataIfDoesNotExists(doc, db) != null) {
         newDocs.add(doc);
       }
     }
     return newDocs;
   }
 
-  private ApiFuture<WriteResult> saveDocMetadataIfDoesNotExists(IndexDocument document,
+  private ApiFuture<WriteResult> addDocMetadataIfDoesNotExists(IndexDocument document,
       Firestore db) throws Exception {
     CollectionReference collectionReference = db.collection("pages");
     Query query = collectionReference.whereEqualTo("url", document.url());
@@ -133,11 +136,18 @@ public class HtmlCrawler extends WebCrawler {
       Map<String, Object> data = new HashMap<>();
       data.put("url", document.url());
       data.put("title", document.title());
-      data.put("indexedAt", document.lastUpdated());
-      data.put("state", DocumentState.ACTIVE);
+      data.put("lastUpdated", document.lastUpdated());
+      data.put("lastUpdatedReadable",
+          LocalDateTime.ofEpochSecond(document.lastUpdated(), 0, ZoneOffset.UTC)
+              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+      data.put("createdAt", document.lastUpdated());
+      data.put("createdAtReadable",
+          LocalDateTime.ofEpochSecond(document.lastUpdated(), 0, ZoneOffset.UTC)
+              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+      data.put("state", DocumentState.ACTIVE.toString());
       return docRef.set(data);
     } else {
-      System.out.println(String.format("Article with url %s already exists", document.url()));
+      System.out.printf("Article with url %s already exists%n", document.url());
     }
     return null;
   }
