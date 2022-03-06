@@ -4,7 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.google.api.core.ApiFuture;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.FirestoreOptions;
+import com.google.cloud.firestore.WriteResult;
+import com.google.common.collect.Lists;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
@@ -88,6 +99,31 @@ class LuceneIndexerTest {
     String lastUpdated = searcher.doc(topDocs.scoreDocs[0].doc).get("lastUpdated");
     assertNotNull(lastUpdated);
     assertTrue(Long.parseLong(lastUpdated) > 0);
+  }
+
+  @Test
+  void test() throws Exception {
+    String projectId = "crawl-and-search";
+    GoogleCredentials credentials = GoogleCredentials.fromStream(
+            new FileInputStream("/home/sergio/datastore-key.json"))
+        .createScoped(Collections.singleton("https://www.googleapis.com/auth/cloud-platform"));
+    FirestoreOptions firestoreOptions =
+        FirestoreOptions.getDefaultInstance().toBuilder()
+            .setProjectId(projectId)
+            .setCredentials(credentials)
+            .build();
+    Firestore db = firestoreOptions.getService();
+    DocumentReference docRef = db.collection("pages").document("testPage");
+
+    Map<String, Object> data = new HashMap<>();
+    data.put("url", "http://url1.com");
+    data.put("title", "Url 1");
+    data.put("text", "Url text");
+
+    ApiFuture<WriteResult> result = docRef.set(data);
+// ...
+// result.get() blocks on response
+    System.out.println("Update time : " + result.get().getUpdateTime());
   }
 
 }

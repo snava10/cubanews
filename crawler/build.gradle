@@ -1,4 +1,7 @@
 dependencies {
+    implementation 'com.google.cloud:google-cloud-firestore:1.32.0'
+    implementation platform('com.google.cloud:libraries-bom:24.3.0')
+    implementation 'com.google.cloud:google-cloud-storage'
     implementation 'com.sleepycat:je:18.3.12'
     implementation 'edu.uci.ics:crawler4j:4.4.0'
     implementation project(':core')

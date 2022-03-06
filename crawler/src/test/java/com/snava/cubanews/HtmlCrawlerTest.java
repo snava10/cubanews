@@ -25,7 +25,7 @@ class HtmlCrawlerTest {
     crawler = new HtmlCrawler(indexer, Stream.of(
         "https://url1.com/",
         "https://url2.com/"
-    ).collect(Collectors.toSet()));
+    ).collect(Collectors.toSet()), null);
   }
 
   @Test

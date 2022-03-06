@@ -1,5 +1,6 @@
 package com.snava.cubanews;
 
+import com.google.cloud.firestore.Firestore;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -18,7 +19,8 @@ public class CrawlerController implements Crawler {
     crawlStorage = new File(crawlerLocalDataPath);
   }
 
-  public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls, Indexer indexer)
+  public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
+      Indexer indexer, Firestore db)
       throws Exception {
     CrawlConfig config = new CrawlConfig();
     // TODO: Add config for hard coded parameter
@@ -32,7 +34,7 @@ public class CrawlerController implements Crawler {
     baseUrls.forEach(url -> crawlController.addSeed(url));
 
     CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(indexer,
-        baseUrls);
+        baseUrls, db);
     return Observable.fromCallable(() -> {
       try {
         crawlController.start(factory, numCrawlers);

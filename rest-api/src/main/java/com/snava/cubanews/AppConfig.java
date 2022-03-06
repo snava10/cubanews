@@ -2,7 +2,13 @@ package com.snava.cubanews;
 
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.FirestoreOptions;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -27,5 +33,19 @@ public class AppConfig {
             .equals("/") && !request.uri().getPath().contains("."),
         request -> ServerResponse.temporaryRedirect(URI.create("/"))
             .build());
+  }
+
+  @Bean
+  public Firestore firestore() throws IOException {
+    String projectId = "crawl-and-search";
+    GoogleCredentials credentials = GoogleCredentials.fromStream(
+            new FileInputStream("/etc/datastore/datastore-key"))
+        .createScoped(Collections.singleton("https://www.googleapis.com/auth/cloud-platform"));
+    FirestoreOptions firestoreOptions =
+        FirestoreOptions.getDefaultInstance().toBuilder()
+            .setProjectId(projectId)
+            .setCredentials(credentials)
+            .build();
+    return firestoreOptions.getService();
   }
 }
