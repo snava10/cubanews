@@ -27,11 +27,11 @@ public class Program {
     Firestore db = firestoreOptions.getService();
 
     CrawlerController controller = new CrawlerController("/tmp/crawler4j");
-    controller.start(100, 10, Stream.of(
+    controller.start(10, 10, Stream.of(
             "https://adncuba.com/noticias-de-cuba",
             "https://www.14ymedio.com/",
             "https://www.cibercuba.com/noticias"
-        ).collect(Collectors.toSet()), new LuceneIndexer("/tmp/cubanews"), db)
+        ).collect(Collectors.toSet()), new LuceneIndexer("/tmp/cubanews"), db, "pages-test")
         .doOnError(error -> {
           System.out.println(error.getLocalizedMessage());
           System.exit(1);

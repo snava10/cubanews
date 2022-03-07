@@ -17,11 +17,14 @@ public class CrawlController {
   @Autowired
   Firestore db;
 
+  @Autowired
+  String collectionName;
+
   @PostMapping("/api/crawl")
   public Mono<CrawlResponse> crawl(@RequestBody CrawlRequest crawlRequest) throws Exception {
     System.out.println(crawlRequest);
     crawler.start(crawlRequest.getLimit(), 12, crawlRequest.getBaseUrls(),
-            new LuceneIndexer("/tmp/" + crawlRequest.getIndexName()), db).subscribeOn(Schedulers.io())
+            new LuceneIndexer("/tmp/" + crawlRequest.getIndexName()), db, collectionName).subscribeOn(Schedulers.io())
         .subscribe();
     return Mono.just(new CrawlResponse(crawlRequest.getIndexName()));
   }
