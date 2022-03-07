@@ -48,4 +48,14 @@ public class AppConfig {
             .build();
     return firestoreOptions.getService();
   }
+
+  @Bean()
+  public String collectionName() {
+    return "pages";
+  }
+
+  @Bean
+  public String countersCollectionName() {
+    return "counters";
+  }
 }
