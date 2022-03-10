@@ -158,6 +158,10 @@ public class HtmlCrawler extends WebCrawler {
 
   private ApiFuture<WriteResult> increaseCounter(Firestore db, long counterIncrease)
       throws ExecutionException, InterruptedException {
+    if (counterIncrease == 0) {
+      System.out.println("Counter increase 0");
+      return null;
+    }      
     DocumentReference docRef = db.collection("counters")
         .document("pages-total-counter");
     ApiFuture<DocumentSnapshot> future = docRef.get();
