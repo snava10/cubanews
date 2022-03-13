@@ -25,4 +25,5 @@ dependencies {
     implementation 'com.google.cloud:google-cloud-firestore:1.32.0'
     implementation platform('com.google.cloud:libraries-bom:24.3.0')
     implementation 'com.google.cloud:google-cloud-storage'
+    implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
 }

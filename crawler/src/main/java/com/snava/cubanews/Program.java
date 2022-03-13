@@ -1,10 +1,5 @@
 package com.snava.cubanews;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
-import java.io.FileInputStream;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
