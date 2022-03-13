@@ -30,19 +30,16 @@ public class HtmlCrawler extends WebCrawler {
   private final Indexer indexer;
   private final Set<String> seeds;
   private Firestore db;
-  private final String collectionName;
 
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
   // TODO: Add config for hard coded value.
   // TODO: Evaluate what is the best value for this parameter.
   private final int indexBatch = 10;
 
-  public HtmlCrawler(Indexer indexer, Set<String> seeds, Firestore db, String collectionName) {
+  public HtmlCrawler(Indexer indexer, Set<String> seeds) {
     super();
     this.indexer = indexer;
     this.seeds = seeds;
-    this.db = db;
-    this.collectionName = collectionName;
   }
 
   @Override
@@ -97,7 +94,7 @@ public class HtmlCrawler extends WebCrawler {
 
   private void flushBuffer() {
     try {
-      indexer.index(saveDocsMetadata(docsToIndex));
+      indexer.index(docsToIndex);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -118,64 +115,6 @@ public class HtmlCrawler extends WebCrawler {
     return StringUtils.isNotBlank(indexDocument.url()) && StringUtils.isNotBlank(
         indexDocument.title())
         && StringUtils.isNotBlank(indexDocument.text());
-  }
-
-  private List<IndexDocument> saveDocsMetadata(List<IndexDocument> documents) throws Exception {
-    List<IndexDocument> newDocs = new ArrayList<>();
-    for (IndexDocument doc : documents) {
-      if (addDocMetadataIfDoesNotExists(doc, db, collectionName) != null) {
-        newDocs.add(doc);
-      }
-    }
-    increaseCounter(db, newDocs.size());
-    return newDocs;
-  }
-
-  private ApiFuture<WriteResult> addDocMetadataIfDoesNotExists(IndexDocument document,
-      Firestore db, String collectionName) throws Exception {
-    CollectionReference collectionReference = db.collection(collectionName);
-    Query query = collectionReference.whereEqualTo("url", document.url());
-    if (query.get().get().getDocumentChanges().isEmpty()) {
-      DocumentReference docRef = collectionReference.document();
-      Map<String, Object> data = new HashMap<>();
-      data.put("url", document.url());
-      data.put("title", document.title());
-      data.put("lastUpdated", document.lastUpdated());
-      data.put("lastUpdatedReadable",
-          LocalDateTime.ofEpochSecond(document.lastUpdated(), 0, ZoneOffset.UTC)
-              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-      data.put("createdAt", document.lastUpdated());
-      data.put("createdAtReadable",
-          LocalDateTime.ofEpochSecond(document.lastUpdated(), 0, ZoneOffset.UTC)
-              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-      data.put("state", DocumentState.ACTIVE.toString());
-      return docRef.set(data);
-    } else {
-      System.out.printf("Article with url %s already exists%n", document.url());
-    }
-    return null;
-  }
-
-  private ApiFuture<WriteResult> increaseCounter(Firestore db, long counterIncrease)
-      throws ExecutionException, InterruptedException {
-    if (counterIncrease == 0) {
-      System.out.println("Counter increase 0");
-      return null;
-    }      
-    DocumentReference docRef = db.collection("counters")
-        .document("pages-total-counter");
-    ApiFuture<DocumentSnapshot> future = docRef.get();
-    DocumentSnapshot document = future.get();
-    if (document.exists()) {
-      long current = document.getLong("totalDocs");
-      return docRef.update(new HashMap<String, Object>() {{
-        put("totalDocs", current + counterIncrease);
-        put("lastDelta", counterIncrease);
-        put("lastUpdated", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
-      }});
-    } else {
-      return null;
-    }
   }
 
 }
