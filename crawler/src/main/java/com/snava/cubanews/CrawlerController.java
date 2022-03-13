@@ -20,7 +20,7 @@ public class CrawlerController implements Crawler {
   }
 
   public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
-      Indexer indexer, Firestore db, String collectionName)
+      Indexer indexer)
       throws Exception {
     CrawlConfig config = new CrawlConfig();
     // TODO: Add config for hard coded parameter
@@ -34,7 +34,7 @@ public class CrawlerController implements Crawler {
     baseUrls.forEach(url -> crawlController.addSeed(url));
 
     CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(indexer,
-        baseUrls, db, collectionName);
+        baseUrls);
     return Observable.fromCallable(() -> {
       try {
         crawlController.start(factory, numCrawlers);

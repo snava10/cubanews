@@ -15,23 +15,12 @@ public class Program {
 
   public static void main(String[] args) throws Exception {
 
-    String projectId = "crawl-and-search";
-    GoogleCredentials credentials = GoogleCredentials.fromStream(
-            new FileInputStream("/etc/datastore/datastore-key"))
-        .createScoped(Collections.singleton("https://www.googleapis.com/auth/cloud-platform"));
-    FirestoreOptions firestoreOptions =
-        FirestoreOptions.getDefaultInstance().toBuilder()
-            .setProjectId(projectId)
-            .setCredentials(credentials)
-            .build();
-    Firestore db = firestoreOptions.getService();
-
     CrawlerController controller = new CrawlerController("/tmp/crawler4j");
     controller.start(10, 10, Stream.of(
             "https://adncuba.com/noticias-de-cuba",
             "https://www.14ymedio.com/",
             "https://www.cibercuba.com/noticias"
-        ).collect(Collectors.toSet()), new LuceneIndexer("/tmp/cubanews"), db, "pages-test")
+        ).collect(Collectors.toSet()), new LuceneIndexer("/tmp/cubanews"))
         .doOnError(error -> {
           System.out.println(error.getLocalizedMessage());
           System.exit(1);

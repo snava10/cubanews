@@ -34,28 +34,4 @@ public class AppConfig {
         request -> ServerResponse.temporaryRedirect(URI.create("/"))
             .build());
   }
-
-  @Bean
-  public Firestore firestore() throws IOException {
-    String projectId = "crawl-and-search";
-    GoogleCredentials credentials = GoogleCredentials.fromStream(
-            new FileInputStream("/etc/datastore/datastore-key"))
-        .createScoped(Collections.singleton("https://www.googleapis.com/auth/cloud-platform"));
-    FirestoreOptions firestoreOptions =
-        FirestoreOptions.getDefaultInstance().toBuilder()
-            .setProjectId(projectId)
-            .setCredentials(credentials)
-            .build();
-    return firestoreOptions.getService();
-  }
-
-  @Bean()
-  public String collectionName() {
-    return "pages";
-  }
-
-  @Bean
-  public String countersCollectionName() {
-    return "counters";
-  }
 }
