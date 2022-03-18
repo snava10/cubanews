@@ -1,26 +1,16 @@
 package com.snava.cubanews;
 
-import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.Query;
-import com.google.cloud.firestore.WriteResult;
+import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 public class HtmlCrawler extends WebCrawler {
@@ -29,17 +19,18 @@ public class HtmlCrawler extends WebCrawler {
       = Pattern.compile(".*(\\.(css|js|xml|gif|jpg|png|mp3|mp4|zip|gz|pdf))$");
   private final Indexer indexer;
   private final Set<String> seeds;
-  private Firestore db;
+  private final SqliteMetadataDatabase metadataDatabase;
 
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
   // TODO: Add config for hard coded value.
   // TODO: Evaluate what is the best value for this parameter.
   private final int indexBatch = 10;
 
-  public HtmlCrawler(Indexer indexer, Set<String> seeds) {
+  public HtmlCrawler(Indexer indexer, Set<String> seeds, SqliteMetadataDatabase metadataDatabase) {
     super();
     this.indexer = indexer;
     this.seeds = seeds;
+    this.metadataDatabase = metadataDatabase;
   }
 
   @Override
@@ -76,7 +67,10 @@ public class HtmlCrawler extends WebCrawler {
       System.out.printf("%s %s%n", title, url);
       // do something with the collected data
       IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text).build();
-      if (isAValidDocument(doc)) {
+      if (metadataDatabase.exists(doc.url())) {
+        // Todo: Use a logger
+        System.out.printf("Document with url: %s already exists%n", doc.url());
+      } else if (isAValidDocument(doc)) {
         docsToIndex.add(doc);
       } else {
         // Todo: Use a logger
@@ -95,6 +89,9 @@ public class HtmlCrawler extends WebCrawler {
   private void flushBuffer() {
     try {
       indexer.index(docsToIndex);
+      metadataDatabase.insertMany(docsToIndex.stream().map(
+          doc -> ImmutableMetadataDocument.builder().url(Objects.requireNonNull(doc.url())).build()
+      ).collect(Collectors.toList()));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

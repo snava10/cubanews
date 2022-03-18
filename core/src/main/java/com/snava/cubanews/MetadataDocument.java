@@ -17,5 +17,8 @@ public interface MetadataDocument {
   default long createdAt() {
     return 0;
   }
-  DocumentState state();
+  @Default
+  default DocumentState state() {
+    return DocumentState.ACTIVE;
+  };
 }

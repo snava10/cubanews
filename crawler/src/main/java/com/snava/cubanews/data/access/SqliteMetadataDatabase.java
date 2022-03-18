@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 
 public class SqliteMetadataDatabase {
 
@@ -39,6 +40,10 @@ public class SqliteMetadataDatabase {
     return conn;
   }
 
+  /**
+   * Opens the database connection. Creates the database and metadata table if it doesn't exists.
+   * @throws SQLException
+   */
   public void initialise() throws SQLException {
     connect();
     createMetadataTable();
@@ -89,6 +94,31 @@ public class SqliteMetadataDatabase {
       System.out.println(ex.getMessage());
       throw new RuntimeException(ex);
     }
+  }
+
+  public Optional<MetadataDocument> getByUrl(String url) {
+    String sql = "select id, url, createdAt, lastUpdated, state from " + tableName + " where url=?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, url);
+      ResultSet resultSet = stmt.executeQuery();
+      if (resultSet.next()) {
+        return Optional.of(ImmutableMetadataDocument.builder()
+            .id(resultSet.getInt("id"))
+            .url(resultSet.getString("url"))
+            .createdAt(resultSet.getLong("createdAt"))
+            .lastUpdated(resultSet.getLong("lastUpdated"))
+            .state(DocumentState.valueOf(resultSet.getString("state")))
+            .build());
+      }
+      return Optional.empty();
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+      throw new RuntimeException(ex);
+    }
+  }
+
+  public boolean exists(String url) {
+    return getByUrl(url).isPresent();
   }
 
   public void insertOne(MetadataDocument metadataDocument) {
