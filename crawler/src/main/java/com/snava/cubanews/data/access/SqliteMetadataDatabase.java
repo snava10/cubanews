@@ -121,6 +121,31 @@ public class SqliteMetadataDatabase {
     return getByUrl(url).isPresent();
   }
 
+  public int count() {
+    String sql = "Select count(id) as c from " + tableName;
+    try (Statement stmt = conn.createStatement()) {
+      ResultSet resultSet = stmt.executeQuery(sql);
+      resultSet.next();
+      return resultSet.getInt("c");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public int count(DocumentState documentState) {
+    String sql = "Select count(id) as c from " + tableName + " where state=?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, documentState.name());
+      ResultSet resultSet = stmt.executeQuery();
+      resultSet.next();
+      return resultSet.getInt("c");
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
   public void insertOne(MetadataDocument metadataDocument) {
     String sql = "INSERT INTO " + tableName + "(url,lastUpdated,createdAt,state) VALUES(?,?,?,?)";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
