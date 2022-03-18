@@ -1,12 +1,21 @@
 package com.snava.cubanews;
 
+import javax.annotation.Nullable;
+import org.immutables.value.Value.Default;
 import org.immutables.value.Value.Immutable;
 
 @Immutable
 public interface MetadataDocument {
-  int id();
+  @Nullable
+  Integer id();
   String url();
-  long lastUpdated();
-  long createdAt();
+  @Default
+  default long lastUpdated() {
+    return 0;
+  }
+  @Default
+  default long createdAt() {
+    return 0;
+  }
   DocumentState state();
 }
