@@ -3,7 +3,6 @@ package com.snava.cubanews;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -19,7 +18,7 @@ public class AppConfig {
   @Bean
   public String homePath() {
     try {
-      String path = "/data/cubanews/";
+      String path = "/tmp/cubanews/";
       Files.createDirectories(Paths.get(path));
       return path;
     } catch (Exception e) {
