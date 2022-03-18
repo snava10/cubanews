@@ -1,6 +1,6 @@
 package com.snava.cubanews;
 
-import com.google.cloud.firestore.Firestore;
+import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -20,7 +20,7 @@ public class CrawlerController implements Crawler {
   }
 
   public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
-      Indexer indexer)
+      Indexer indexer, SqliteMetadataDatabase metadataDatabase)
       throws Exception {
     CrawlConfig config = new CrawlConfig();
     // TODO: Add config for hard coded parameter
@@ -34,7 +34,7 @@ public class CrawlerController implements Crawler {
     baseUrls.forEach(url -> crawlController.addSeed(url));
 
     CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(indexer,
-        baseUrls);
+        baseUrls, metadataDatabase);
     return Observable.fromCallable(() -> {
       try {
         crawlController.start(factory, numCrawlers);

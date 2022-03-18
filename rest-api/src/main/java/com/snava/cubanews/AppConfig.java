@@ -2,13 +2,12 @@ package com.snava.cubanews;
 
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
-import java.io.FileInputStream;
+import com.snava.cubanews.data.access.SqliteMetadataDatabase;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -16,6 +15,22 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
 public class AppConfig {
+
+  @Bean
+  public String homePath() {
+    try {
+      String path = "/data/cubanews/";
+      Files.createDirectories(Paths.get(path));
+      return path;
+    } catch (Exception e) {
+      throw new RuntimeException("Error creating home folder", e);
+    }
+  }
+
+  @Bean
+  public String metadataTableName() {
+    return "pages";
+  }
 
   @Bean
   public Searcher searcher() {
@@ -33,5 +48,16 @@ public class AppConfig {
             .equals("/") && !request.uri().getPath().contains("."),
         request -> ServerResponse.temporaryRedirect(URI.create("/"))
             .build());
+  }
+
+  @Bean
+  SqliteMetadataDatabase metadataDatabase() throws IOException {
+    SqliteMetadataDatabase db = new SqliteMetadataDatabase(homePath() + "cubanews.db", metadataTableName());
+    try {
+      db.initialise();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    return db;
   }
 }

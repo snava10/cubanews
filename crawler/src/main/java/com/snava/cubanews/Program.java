@@ -1,10 +1,6 @@
 package com.snava.cubanews;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
-import java.io.FileInputStream;
-import java.util.Collections;
+import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,11 +12,13 @@ public class Program {
   public static void main(String[] args) throws Exception {
 
     CrawlerController controller = new CrawlerController("/tmp/crawler4j");
+    SqliteMetadataDatabase metadataDatabase = new SqliteMetadataDatabase("/tmp/cubanews/cubanews.db", "metaTable");
+    metadataDatabase.initialise();
     controller.start(10, 10, Stream.of(
             "https://adncuba.com/noticias-de-cuba",
             "https://www.14ymedio.com/",
             "https://www.cibercuba.com/noticias"
-        ).collect(Collectors.toSet()), new LuceneIndexer("/tmp/cubanews"))
+        ).collect(Collectors.toSet()), new LuceneIndexer("/tmp/cubanews/index"), metadataDatabase)
         .doOnError(error -> {
           System.out.println(error.getLocalizedMessage());
           System.exit(1);

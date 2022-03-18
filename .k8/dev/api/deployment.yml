@@ -23,7 +23,7 @@ spec:
           - containerPort: 8080
         volumeMounts:
         - name: storage
-          mountPath: /tmp
+          mountPath: /data
         - name: datastore-key
           mountPath: "/etc/datastore"
       volumes:

@@ -23,7 +23,7 @@ spec:
           - containerPort: 8080
         volumeMounts:
         - name: cubanews-persistent-storage
-          mountPath: /tmp
+          mountPath: /data
         - name: datastore-key
           mountPath: "/etc/datastore"
         env:
