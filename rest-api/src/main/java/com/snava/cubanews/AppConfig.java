@@ -18,7 +18,7 @@ public class AppConfig {
   @Bean
   public String homePath() {
     try {
-      String path = "/tmp/cubanews/";
+      String path = "/data/";
       Files.createDirectories(Paths.get(path));
       return path;
     } catch (Exception e) {
@@ -51,7 +51,9 @@ public class AppConfig {
 
   @Bean
   SqliteMetadataDatabase metadataDatabase() throws IOException {
-    SqliteMetadataDatabase db = new SqliteMetadataDatabase(homePath() + "cubanews.db", metadataTableName());
+    String databasePath = homePath() + "metadata/";
+    Files.createDirectories(Paths.get(databasePath));
+    SqliteMetadataDatabase db = new SqliteMetadataDatabase(databasePath + "cubanews.db", metadataTableName());
     try {
       db.initialise();
     } catch (Exception e) {

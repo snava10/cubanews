@@ -3,6 +3,7 @@ package com.snava.cubanews;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
@@ -79,4 +80,13 @@ public class LuceneIndexer extends AbstractIndexer {
     writer.commit();
   }
 
+  @Override
+  public void delete(List<String> docUrls) throws IOException {
+    List<Term> terms = docUrls.stream().map(url -> new Term("_id", Objects.requireNonNull(url))).collect(
+        Collectors.toList());
+    Term[] termsArray = new Term[terms.size()];
+    terms.toArray(termsArray);
+    writer.deleteDocuments(termsArray);
+    writer.commit();
+  }
 }
