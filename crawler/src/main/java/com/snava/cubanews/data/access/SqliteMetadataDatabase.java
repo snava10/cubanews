@@ -12,8 +12,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class SqliteMetadataDatabase {
 
@@ -164,10 +167,11 @@ public class SqliteMetadataDatabase {
   public void insertMany(List<MetadataDocument> metadataDocumentList) {
     String sql = "INSERT INTO " + tableName + "(url,lastUpdated,createdAt,state) VALUES(?,?,?,?)";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
       for (MetadataDocument metadataDocument : metadataDocumentList) {
         stmt.setString(1, metadataDocument.url());
-        stmt.setLong(2, metadataDocument.lastUpdated());
-        stmt.setLong(3, metadataDocument.createdAt());
+        stmt.setLong(2, timestamp);
+        stmt.setLong(3, timestamp);
         stmt.setObject(4, metadataDocument.state());
         stmt.addBatch();
       }
@@ -220,4 +224,76 @@ public class SqliteMetadataDatabase {
     }
   }
 
+  public int updateStateByAge(int amount, TimeUnit timeUnit, DocumentState state) {
+    long seconds = timeUnit.toSeconds(amount);
+    long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    long delta = timestamp - seconds;
+    String sql = "Update " + tableName + " SET state=? where createdAt < ?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, state.name());
+      stmt.setLong(2, delta);
+      return stmt.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public Iterable<List<String>> getDeletablePages(int amount, TimeUnit timeUnit, int batchSize) {
+    long seconds = timeUnit.toSeconds(amount);
+    long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    long delta = timestamp - seconds;
+    ResultSet resultSet;
+    String sql = "Select url from " + tableName + " where state='ACTIVE' and createdAt < ?";
+    PreparedStatement stmt;
+    try {
+      stmt = conn.prepareStatement(sql);
+      stmt.setLong(1, delta);
+      resultSet = stmt.executeQuery();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+    return () -> new UrlsIterator(stmt, resultSet, batchSize);
+  }
+
+  static class UrlsIterator implements Iterator<List<String>> {
+
+    private final PreparedStatement stmt;
+    private final ResultSet resultSet;
+    private final int batchSize;
+    List<String> batch = new ArrayList<>();
+
+    public UrlsIterator(PreparedStatement stmt, ResultSet resultSet, int batchSize) {
+      this.stmt = stmt;
+      this.resultSet = resultSet;
+      this.batchSize = batchSize;
+    }
+
+    @Override
+    public boolean hasNext() {
+      batch = new ArrayList<>();
+      try {
+        while (resultSet.next()) {
+          batch.add(resultSet.getString("url"));
+          if (batch.size() == batchSize) {
+            break;
+          }
+        }
+        if (batch.isEmpty()) {
+          resultSet.close();
+          stmt.close();
+        }
+        return !batch.isEmpty();
+      } catch (SQLException e) {
+        e.printStackTrace();
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public List<String> next() {
+      return batch;
+    }
+  }
 }

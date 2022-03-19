@@ -17,13 +17,14 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class SqliteMetadataDatabaseTest {
 
-  static SqliteMetadataDatabase metadataDatabase;
+  static SqliteMetadataDatabase db;
   static String dbPath;
   static Random r = new Random();
   static String metaTable = "metaTable";
@@ -34,14 +35,14 @@ class SqliteMetadataDatabaseTest {
     String s = currentRelativePath.toAbsolutePath().toString();
     System.out.println("Current absolute path is: " + s);
     dbPath = s + "test" + r.nextInt(100000000) + ".db";
-    metadataDatabase = new SqliteMetadataDatabase(dbPath, metaTable);
-    metadataDatabase.initialise();
+    db = new SqliteMetadataDatabase(dbPath, metaTable);
+    db.initialise();
   }
 
   @AfterEach
   void tearDown() throws SQLException {
     File f = new File(dbPath);
-    metadataDatabase.getConnection().close();
+    db.getConnection().close();
     assertThat(f.delete()).isTrue();
   }
 
@@ -55,7 +56,7 @@ class SqliteMetadataDatabaseTest {
 
   @Test
   void connect() {
-    assertThat(metadataDatabase.getConnection()).isNotNull();
+    assertThat(db.getConnection()).isNotNull();
   }
 
   @Test
@@ -64,7 +65,7 @@ class SqliteMetadataDatabaseTest {
         "SELECT name FROM sqlite_master WHERE type='table' AND name='%s'", metaTable
     );
     String indexExistSQL = "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_url'";
-    Statement stmt = metadataDatabase.getConnection().createStatement();
+    Statement stmt = db.getConnection().createStatement();
 
     stmt.execute(tableExistsSQL);
     ResultSet resultSet = stmt.getResultSet();
@@ -85,20 +86,20 @@ class SqliteMetadataDatabaseTest {
         .state(DocumentState.ACTIVE).createdAt(0L).lastUpdated(0L).build();
     MetadataDocument deletedDoc = ImmutableMetadataDocument.builder().url("url2")
         .state(DocumentState.DELETED).createdAt(0L).lastUpdated(0L).build();
-    metadataDatabase.insertMany(Arrays.asList(activeDoc, deletedDoc));
+    db.insertMany(Arrays.asList(activeDoc, deletedDoc));
 
-    MetadataDocument activeDocReal = metadataDatabase.getByUrlAndState("url1",
+    MetadataDocument activeDocReal = db.getByUrlAndState("url1",
         DocumentState.ACTIVE);
     activeDoc = ImmutableMetadataDocument.copyOf(activeDoc).withId(activeDocReal.id());
     assertThat(activeDocReal).isEqualTo(activeDoc);
 
-    MetadataDocument deletedDocReal = metadataDatabase.getByUrlAndState("url2",
+    MetadataDocument deletedDocReal = db.getByUrlAndState("url2",
         DocumentState.DELETED);
     deletedDoc = ImmutableMetadataDocument.copyOf(deletedDoc).withId(deletedDocReal.id());
     assertThat(deletedDocReal).isEqualTo(deletedDoc);
 
-    assertThat(metadataDatabase.getByUrlAndState("url1", DocumentState.DELETED)).isNull();
-    assertThat(metadataDatabase.getByUrlAndState("urlx", DocumentState.ACTIVE)).isNull();
+    assertThat(db.getByUrlAndState("url1", DocumentState.DELETED)).isNull();
+    assertThat(db.getByUrlAndState("urlx", DocumentState.ACTIVE)).isNull();
   }
 
   @Test
@@ -106,10 +107,10 @@ class SqliteMetadataDatabaseTest {
     long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
         .url("https://news.com/n1").state(DocumentState.ACTIVE).build();
-    metadataDatabase.insertOne(metadataDocument);
+    db.insertOne(metadataDocument);
 
     String sql = "Select * from " + metaTable;
-    try (Statement stmt = metadataDatabase.getConnection().createStatement()) {
+    try (Statement stmt = db.getConnection().createStatement()) {
       ResultSet resultSet = stmt.executeQuery(sql);
       assertThat(resultSet.next()).isTrue();
       assertThat(resultSet.getString("url")).isEqualTo("https://news.com/n1");
@@ -131,10 +132,10 @@ class SqliteMetadataDatabaseTest {
         .url("https://news.com/n2")
         .state(DocumentState.ACTIVE).build();
 
-    metadataDatabase.insertMany(Arrays.asList(metadataDocument, metadataDocument2));
+    db.insertMany(Arrays.asList(metadataDocument, metadataDocument2));
 
     String sql = "SELECT * FROM " + metaTable;
-    try (Statement stmt = metadataDatabase.getConnection().createStatement()) {
+    try (Statement stmt = db.getConnection().createStatement()) {
       ResultSet resultSet = stmt.executeQuery(sql);
       assertThat(resultSet.next()).isTrue();
       assertThat(resultSet.getString("url")).isEqualTo("https://news.com/n1");
@@ -158,10 +159,10 @@ class SqliteMetadataDatabaseTest {
     MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
         .url("https://news.com/n1")
         .state(DocumentState.ACTIVE).build();
-    metadataDatabase.insertOne(metadataDocument);
+    db.insertOne(metadataDocument);
     Thread.sleep(1000);
-    metadataDatabase.updateState(metadataDocument.url(), DocumentState.DELETED);
-    MetadataDocument md = metadataDatabase.getByUrlAndState(metadataDocument.url(),
+    db.updateState(metadataDocument.url(), DocumentState.DELETED);
+    MetadataDocument md = db.getByUrlAndState(metadataDocument.url(),
         DocumentState.DELETED);
     assertThat(md).isNotNull();
     assertThat(md.lastUpdated()).isGreaterThan(timestamp);
@@ -183,16 +184,69 @@ class SqliteMetadataDatabaseTest {
         Tuple.of(metadataDocument2.url(), DocumentState.DELETED)
     );
 
-    metadataDatabase.insertMany(Arrays.asList(metadataDocument, metadataDocument2));
-    metadataDatabase.updateManyStates(list);
-    assertThat(metadataDatabase.getByUrlAndState(metadataDocument.url(),
+    db.insertMany(Arrays.asList(metadataDocument, metadataDocument2));
+    db.updateManyStates(list);
+    assertThat(db.getByUrlAndState(metadataDocument.url(),
         DocumentState.DELETED)).isNotNull();
-    assertThat(metadataDatabase.getByUrlAndState(metadataDocument.url(),
+    assertThat(db.getByUrlAndState(metadataDocument.url(),
         DocumentState.DELETED).lastUpdated()).isGreaterThan(timestamp);
-    assertThat(metadataDatabase.getByUrlAndState(metadataDocument2.url(),
+    assertThat(db.getByUrlAndState(metadataDocument2.url(),
         DocumentState.DELETED)).isNotNull();
-    assertThat(metadataDatabase.getByUrlAndState(metadataDocument2.url(),
+    assertThat(db.getByUrlAndState(metadataDocument2.url(),
         DocumentState.DELETED).lastUpdated()).isGreaterThan(timestamp);
+  }
+
+  @Test
+  void updateStateByAge() throws Exception {
+    long createdAt = LocalDateTime.now().minusHours(25).toEpochSecond(ZoneOffset.UTC);
+    MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
+        .url("https://news.com/n1")
+        .state(DocumentState.ACTIVE).build();
+    MetadataDocument metadataDocument2 = ImmutableMetadataDocument.builder()
+        .url("https://news.com/n2")
+        .state(DocumentState.ACTIVE).build();
+
+    db.insertMany(Arrays.asList(metadataDocument, metadataDocument2));
+
+    String updateSql = String.format("UPDATE %s SET createdAt=%d where url='%s'", metaTable,
+        createdAt, metadataDocument.url());
+    Statement stmt = db.getConnection().createStatement();
+    stmt.executeUpdate(updateSql);
+    stmt.close();
+
+    int result = db.updateStateByAge(24, TimeUnit.HOURS, DocumentState.DELETED);
+    assertThat(result).isEqualTo(1);
+    assertThat(db.getByUrl(metadataDocument.url()).get().state()).isEqualTo(DocumentState.DELETED);
+    assertThat(db.getByUrl(metadataDocument2.url()).get().state()).isEqualTo(DocumentState.ACTIVE);
+  }
+
+  @Test
+  void getDeletablePages() throws SQLException {
+    long createdAt = LocalDateTime.now().minusHours(25).toEpochSecond(ZoneOffset.UTC);
+    for (int i = 0; i < 50; i++) {
+      MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
+          .url("https://news.com/n" + i)
+          .state(DocumentState.ACTIVE).build();
+      db.insertOne(metadataDocument);
+    }
+    String updateSql = String.format("UPDATE %s SET createdAt=%d where state='ACTIVE'", metaTable,
+        createdAt);
+    Statement stmt = db.getConnection().createStatement();
+    stmt.executeUpdate(updateSql);
+
+    for (int i = 50; i < 100; i++) {
+      MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
+          .url("https://news.com/n" + i)
+          .state(DocumentState.ACTIVE).build();
+      db.insertOne(metadataDocument);
+    }
+
+    int batches = 0;
+    for (List<String> urls: db.getDeletablePages(24, TimeUnit.HOURS, 10)) {
+      assertThat(urls.contains("https://news.com/n" + (batches * 10))).isTrue();
+      batches++;
+    }
+    assertThat(batches).isEqualTo(5);
   }
 
 }
