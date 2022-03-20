@@ -5,6 +5,7 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,11 +33,14 @@ public class CrawlController {
     return Mono.just(new CrawlResponse(crawlRequest.getIndexName()));
   }
 
-  @GetMapping("/api/clearold")
-  public Mono<Integer> clearOld(@RequestParam(value = "hours", defaultValue = "24") int hours,
-      String indexName) throws Exception {
-    int result = DeletePagesManager.deleteOldPages(hours, TimeUnit.HOURS, db,
-        new LuceneIndexer(homePath + indexName));
+  @GetMapping("/api/clearold/{indexName}")
+  public Mono<Integer> clearOld(@PathVariable String indexName,
+      @RequestParam(value = "amount", defaultValue = "24") int amount,
+      @RequestParam(value = "timeunit", defaultValue = "HOURS") String timeunit) throws Exception {
+    System.out.printf("Deleting pages older that %d %s%n", amount, timeunit);
+    int result = DeletePagesManager.deleteOldPages(
+        amount, TimeUnit.valueOf(timeunit), db, new LuceneIndexer(homePath + indexName)
+    );
     return Mono.just(result);
   }
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StringField;
@@ -12,7 +13,9 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.Terms;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TermInSetQuery;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
@@ -45,7 +48,7 @@ public class LuceneIndexer extends AbstractIndexer {
 
   private void saveDocument(IndexDocument doc) throws IOException {
     Document document = new Document();
-    document.add(new StringField("_id", Objects.requireNonNull(doc.url()), Store.NO));
+    document.add(new StringField("_id", Objects.requireNonNull(doc.url()), Store.YES));
     document.add(new TextField("title", Objects.requireNonNull(doc.title()), Store.YES));
     document.add(new TextField("url", Objects.requireNonNull(doc.url()), Store.YES));
     document.add(new TextField("text", Objects.requireNonNull(doc.text()), Store.YES));

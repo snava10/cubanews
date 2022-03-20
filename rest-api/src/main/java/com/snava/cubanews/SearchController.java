@@ -19,6 +19,9 @@ public class SearchController {
   @Autowired
   Searcher searcher;
 
+  @Autowired
+  String homePath;
+
   @GetMapping("/api/search/id/{indexId}")
   public Mono<List<IndexDocument>> search(@PathVariable long indexId,
       @RequestParam(value = "query") String query) throws Exception {
@@ -37,7 +40,7 @@ public class SearchController {
     System.out.println(indexName);
     System.out.println(query);
 
-    Directory index = FSDirectory.open(Paths.get(String.format("/tmp/%s", indexName)));
+    Directory index = FSDirectory.open(Paths.get(homePath + indexName));
     // TODO: Add config for hard coded values.
     return Mono.just(search(query, index, 50)).doOnNext(indexDocuments -> {
       try {

@@ -111,10 +111,16 @@ class LuceneIndexerTest {
     searcher = new IndexSearcher(indexReader);
     TopDocs topDocs = searcher.search(t, 100);
     assertThat(topDocs.totalHits.value).isEqualTo(50L);
+    indexReader.close();
 
+    assertThat(((AbstractIndexer)indexer).hasDeletions()).isFalse();
     indexer.delete(urls);
+
+    indexReader = DirectoryReader.open(memoryIndex);
+    searcher = new IndexSearcher(indexReader);
     topDocs = searcher.search(t, 100);
     assertThat(topDocs.totalHits.value).isEqualTo(0L);
+    indexReader.close();
   }
 
 }
