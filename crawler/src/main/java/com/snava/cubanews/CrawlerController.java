@@ -45,7 +45,6 @@ public class CrawlerController implements Crawler {
     }).doOnNext(o -> {
       System.out.println("Closing index writer");
       indexer.close();
-
     });
   }
 }
