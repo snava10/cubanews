@@ -14,12 +14,14 @@ public class DeletePagesManager {
       deleted += urls.size();
       indexer.delete(urls);
     }
-    int deletedMetadata = db.updateStateByAge(amount, timeUnit, DocumentState.DELETED);
+    int deletedMetadata = db.updateStateByAgeAndState(amount, timeUnit, DocumentState.ACTIVE,
+        DocumentState.DELETED);
+    indexer.close();
     if (deleted != deletedMetadata) {
       throw new RuntimeException(
-          String.format("Deleted %d, Deleted Metadata: %d", deleted, deletedMetadata));
+          String.format("Deleted %d, Deleted Metadata: %d", deleted, deletedMetadata)
+      );
     }
-
     return deletedMetadata;
   }
 

@@ -90,13 +90,11 @@ class SqliteMetadataDatabaseTest {
 
     MetadataDocument activeDocReal = db.getByUrlAndState("url1",
         DocumentState.ACTIVE);
-    activeDoc = ImmutableMetadataDocument.copyOf(activeDoc).withId(activeDocReal.id());
-    assertThat(activeDocReal).isEqualTo(activeDoc);
+    assertThat(activeDocReal.url()).isEqualTo(activeDoc.url());
 
     MetadataDocument deletedDocReal = db.getByUrlAndState("url2",
         DocumentState.DELETED);
-    deletedDoc = ImmutableMetadataDocument.copyOf(deletedDoc).withId(deletedDocReal.id());
-    assertThat(deletedDocReal).isEqualTo(deletedDoc);
+    assertThat(deletedDocReal.url()).isEqualTo(deletedDoc.url());
 
     assertThat(db.getByUrlAndState("url1", DocumentState.DELETED)).isNull();
     assertThat(db.getByUrlAndState("urlx", DocumentState.ACTIVE)).isNull();
@@ -214,7 +212,7 @@ class SqliteMetadataDatabaseTest {
     stmt.executeUpdate(updateSql);
     stmt.close();
 
-    int result = db.updateStateByAge(24, TimeUnit.HOURS, DocumentState.DELETED);
+    int result = db.updateStateByAgeAndState(24, TimeUnit.HOURS,DocumentState.ACTIVE, DocumentState.DELETED);
     assertThat(result).isEqualTo(1);
     assertThat(db.getByUrl(metadataDocument.url()).get().state()).isEqualTo(DocumentState.DELETED);
     assertThat(db.getByUrl(metadataDocument2.url()).get().state()).isEqualTo(DocumentState.ACTIVE);

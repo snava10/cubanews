@@ -21,7 +21,8 @@ class DeletePagesManagerTest {
     SqliteMetadataDatabase db = mock(SqliteMetadataDatabase.class);
     List<List<String>> iterable = Collections.singletonList(List.of("url1"));
     when(db.getDeletablePages(anyInt(), any(TimeUnit.class), anyInt())).thenReturn(iterable);
-    when(db.updateStateByAge(anyInt(), any(TimeUnit.class), any(DocumentState.class)))
+    when(db.updateStateByAgeAndState(anyInt(), any(TimeUnit.class), any(DocumentState.class),
+        any(DocumentState.class)))
         .thenReturn(1);
 
     Indexer indexer = mock(Indexer.class);
@@ -33,6 +34,6 @@ class DeletePagesManagerTest {
         .getDeletablePages(24, TimeUnit.HOURS, 100);
     verify(indexer, times(1)).delete(List.of("url1"));
     verify(db, times(1))
-        .updateStateByAge(24, TimeUnit.HOURS, DocumentState.DELETED);
+        .updateStateByAgeAndState(24, TimeUnit.HOURS, DocumentState.ACTIVE, DocumentState.DELETED);
   }
 }

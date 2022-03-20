@@ -224,14 +224,16 @@ public class SqliteMetadataDatabase {
     }
   }
 
-  public int updateStateByAge(int amount, TimeUnit timeUnit, DocumentState state) {
+  public int updateStateByAgeAndState(int amount, TimeUnit timeUnit, DocumentState current,
+      DocumentState state) {
     long seconds = timeUnit.toSeconds(amount);
     long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     long delta = timestamp - seconds;
-    String sql = "Update " + tableName + " SET state=? where createdAt < ?";
+    String sql = "Update " + tableName + " SET state=? where createdAt < ? and state=?";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
       stmt.setString(1, state.name());
       stmt.setLong(2, delta);
+      stmt.setString(3, current.name());
       return stmt.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();

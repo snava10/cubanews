@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.IndexDeletionPolicy;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
@@ -38,4 +39,7 @@ public abstract class AbstractIndexer implements Indexer {
     }
   }
 
+  public boolean hasDeletions() {
+    return writer.hasDeletions();
+  }
 }
