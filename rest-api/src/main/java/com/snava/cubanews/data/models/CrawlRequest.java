@@ -1,4 +1,4 @@
-package com.snava.cubanews;
+package com.snava.cubanews.data.models;
 
 import java.util.Optional;
 import java.util.Set;
