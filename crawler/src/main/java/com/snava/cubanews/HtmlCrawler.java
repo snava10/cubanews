@@ -37,11 +37,15 @@ public class HtmlCrawler extends WebCrawler {
   public boolean shouldVisit(Page referringPage, WebURL url) {
     String urlString = url.getURL().toLowerCase();
     return !EXCLUSIONS.matcher(urlString).matches()
-        && matchesAnySeed(url);
+        && matchesAnySeed(url) && !parameterised(url);
   }
 
   private boolean matchesAnySeed(WebURL url) {
     return seeds.stream().anyMatch(url.getURL()::startsWith);
+  }
+
+  private boolean parameterised(WebURL url) {
+    return url.getURL().contains("?");
   }
 
   @Override
@@ -70,11 +74,13 @@ public class HtmlCrawler extends WebCrawler {
       if (metadataDatabase.exists(doc.url())) {
         // Todo: Use a logger
         System.out.printf("Document with url: %s already exists%n", doc.url());
-      } else if (isAValidDocument(doc)) {
-        docsToIndex.add(doc);
-      } else {
+      } else if (!isAValidDocument(doc)) {
         // Todo: Use a logger
         System.out.println(getValidityDocumentExplanation(doc));
+      } else if (doc.url().contains("?")) {
+        System.out.println("Ignoring " + doc.url() + " because contains parameters.");
+      } else {
+        docsToIndex.add(doc);
       }
       if (docsToIndex.size() >= indexBatch) {
         flushBuffer();

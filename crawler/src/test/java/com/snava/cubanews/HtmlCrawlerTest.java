@@ -37,7 +37,7 @@ class HtmlCrawlerTest {
   }
 
   @ParameterizedTest
-  @CsvSource({",,", "  ,  ,  "})
+  @CsvSource({",,", "  ,  ,  ", "http://ad.com?a=1,goodTitle,goodText"})
   void visit_InvalidDocument(String url, String title, String text) {
     when(metadataDatabase.exists(anyString())).thenReturn(false);
     Page pageMock = mock(Page.class);
