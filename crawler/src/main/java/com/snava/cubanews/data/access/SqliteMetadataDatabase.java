@@ -66,12 +66,16 @@ public class SqliteMetadataDatabase {
         + "	url TEXT NOT NULL UNIQUE,\n"
         + "	lastUpdated NUMERIC NOT NULL,\n"
         + " createdAt NUMERIC NOT NULL, \n"
-        + " state TEXT NOT NULL);", tableName);
-    String sqlIndex = String.format("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON %s (url);",
+        + " state TEXT NOT NULL, \n"
+        + " hash TEXT);", tableName);
+    String urlIndexSql = String.format("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON %s (url);",
+        tableName);
+    String hashIndexSql = String.format("CREATE UNIQUE INDEX IF NOT EXISTS idx_hash ON %s (hash);",
         tableName);
     try (Statement stmt = conn.createStatement()) {
       stmt.execute(sql);
-      stmt.execute(sqlIndex);
+      stmt.execute(urlIndexSql);
+      stmt.execute(hashIndexSql);
     } catch (SQLException e) {
       e.printStackTrace();
       throw new RuntimeException(e);
@@ -120,6 +124,29 @@ public class SqliteMetadataDatabase {
     }
   }
 
+  public Optional<MetadataDocument> getByHash(String hash) {
+    String sql =
+        "select id, url, createdAt, lastUpdated, state from " + tableName + " where hash=?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, hash);
+      ResultSet resultSet = stmt.executeQuery();
+      if (resultSet.next()) {
+        return Optional.of(ImmutableMetadataDocument.builder()
+            .id(resultSet.getInt("id"))
+            .url(resultSet.getString("url"))
+            .createdAt(resultSet.getLong("createdAt"))
+            .lastUpdated(resultSet.getLong("lastUpdated"))
+            .state(DocumentState.valueOf(resultSet.getString("state")))
+            .hash(resultSet.getString("hash"))
+            .build());
+      }
+      return Optional.empty();
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+      throw new RuntimeException(ex);
+    }
+  }
+
   public boolean exists(String url) {
     return getByUrl(url).isPresent();
   }
@@ -150,13 +177,14 @@ public class SqliteMetadataDatabase {
   }
 
   public void insertOne(MetadataDocument metadataDocument) {
-    String sql = "INSERT INTO " + tableName + "(url,lastUpdated,createdAt,state) VALUES(?,?,?,?)";
+    String sql = "INSERT INTO " + tableName + "(url,lastUpdated,createdAt,state,hash) VALUES(?,?,?,?,?)";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
       long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
       stmt.setString(1, metadataDocument.url());
       stmt.setLong(2, timestamp);
       stmt.setLong(3, timestamp);
       stmt.setObject(4, metadataDocument.state());
+      stmt.setString(5, metadataDocument.hash());
       stmt.execute();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -165,7 +193,7 @@ public class SqliteMetadataDatabase {
   }
 
   public void insertMany(List<MetadataDocument> metadataDocumentList) {
-    String sql = "INSERT INTO " + tableName + "(url,lastUpdated,createdAt,state) VALUES(?,?,?,?)";
+    String sql = "INSERT INTO " + tableName + "(url,lastUpdated,createdAt,state,hash) VALUES(?,?,?,?,?)";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
       long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
       for (MetadataDocument metadataDocument : metadataDocumentList) {
@@ -173,6 +201,7 @@ public class SqliteMetadataDatabase {
         stmt.setLong(2, timestamp);
         stmt.setLong(3, timestamp);
         stmt.setObject(4, metadataDocument.state());
+        stmt.setString(5, metadataDocument.hash());
         stmt.addBatch();
       }
       int[] result = stmt.executeBatch();
@@ -256,17 +285,33 @@ public class SqliteMetadataDatabase {
       e.printStackTrace();
       throw new RuntimeException(e);
     }
-    return () -> new UrlsIterator(stmt, resultSet, batchSize);
+    return () -> new StringColumnIterator("url", stmt, resultSet, batchSize);
   }
 
-  static class UrlsIterator implements Iterator<List<String>> {
+  public Iterable<List<String>> getAllHashes(int limit) {
+    if (limit > (int)Math.pow(10, 7)) {
+      throw new RuntimeException("Loading too many hashes, the limit is 10M");
+    }
+    String sql = "Select hash from " + tableName + "LIMIT " + limit;
+    try (Statement stmt = conn.createStatement()) {
+      ResultSet resultSet = stmt.executeQuery(sql);
+      return () -> new StringColumnIterator("hash", stmt, resultSet, 10000);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
 
-    private final PreparedStatement stmt;
+  private static class StringColumnIterator implements Iterator<List<String>> {
+
+    private final String columnName;
+    private final Statement stmt;
     private final ResultSet resultSet;
     private final int batchSize;
     List<String> batch = new ArrayList<>();
 
-    public UrlsIterator(PreparedStatement stmt, ResultSet resultSet, int batchSize) {
+    public StringColumnIterator(String columnName, Statement stmt, ResultSet resultSet, int batchSize) {
+      this.columnName = columnName;
       this.stmt = stmt;
       this.resultSet = resultSet;
       this.batchSize = batchSize;
@@ -277,7 +322,7 @@ public class SqliteMetadataDatabase {
       batch = new ArrayList<>();
       try {
         while (resultSet.next()) {
-          batch.add(resultSet.getString("url"));
+          batch.add(resultSet.getString(columnName));
           if (batch.size() == batchSize) {
             break;
           }

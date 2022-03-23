@@ -7,12 +7,12 @@ import java.util.Set;
 public interface Crawler {
 
   Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
-      Indexer indexer, SqliteMetadataDatabase metadataDatabase) throws Exception;
+      Indexer indexer, SqliteMetadataDatabase metadataDatabase, PagesHashing pagesHashing) throws Exception;
 
   default Observable<Object> start(Set<String> baseUrls, Indexer indexer,
-      SqliteMetadataDatabase metadataDatabase)
+      SqliteMetadataDatabase metadataDatabase, PagesHashing pagesHashing)
       throws Exception {
-    return start(Integer.MAX_VALUE, 12, baseUrls, indexer, metadataDatabase);
+    return start(Integer.MAX_VALUE, 12, baseUrls, indexer, metadataDatabase, pagesHashing);
   }
 
 }

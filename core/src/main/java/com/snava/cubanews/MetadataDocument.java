@@ -21,4 +21,6 @@ public interface MetadataDocument {
   default DocumentState state() {
     return DocumentState.ACTIVE;
   };
+  @Nullable
+  String hash();
 }

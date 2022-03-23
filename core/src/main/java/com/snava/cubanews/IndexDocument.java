@@ -22,4 +22,6 @@ public interface IndexDocument {
   String title();
   @Nullable
   String text();
+  @Nullable
+  String hash();
 }

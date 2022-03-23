@@ -20,8 +20,9 @@ public class CrawlerController implements Crawler {
   }
 
   public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
-      Indexer indexer, SqliteMetadataDatabase metadataDatabase)
+      Indexer indexer, SqliteMetadataDatabase metadataDatabase, PagesHashing pagesHashing)
       throws Exception {
+    pagesHashing.initialise();
     CrawlConfig config = new CrawlConfig();
     // TODO: Add config for hard coded parameter
     config.setCrawlStorageFolder("/tmp");
@@ -34,7 +35,7 @@ public class CrawlerController implements Crawler {
     baseUrls.forEach(url -> crawlController.addSeed(url));
 
     CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(indexer,
-        baseUrls, metadataDatabase);
+        baseUrls, metadataDatabase, pagesHashing);
     return Observable.fromCallable(() -> {
       try {
         crawlController.start(factory, numCrawlers);

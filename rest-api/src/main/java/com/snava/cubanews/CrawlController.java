@@ -31,12 +31,16 @@ public class CrawlController {
   @Autowired
   SqliteMetadataDatabase db;
 
+  @Autowired
+  PagesHashing pagesHashing;
+
   @PostMapping("/api/crawl")
   public Mono<LongRunningOperationResponse> crawl(@RequestBody CrawlRequest crawlRequest)
       throws Exception {
     System.out.println(crawlRequest);
     crawler.start(crawlRequest.getLimit(), 12, crawlRequest.getBaseUrls(),
-            new LuceneIndexer(homePath + crawlRequest.getIndexName()), db).subscribeOn(Schedulers.io())
+            new LuceneIndexer(homePath + crawlRequest.getIndexName()), db, pagesHashing)
+        .subscribeOn(Schedulers.io())
         .subscribe();
     return Mono.just(
         new LongRunningOperationResponse(crawlRequest.getIndexName(), OperationStatus.IN_PROGRESS,

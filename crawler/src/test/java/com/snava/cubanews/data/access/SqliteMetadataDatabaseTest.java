@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -104,7 +105,8 @@ class SqliteMetadataDatabaseTest {
   void insertOne() {
     long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
-        .url("https://news.com/n1").state(DocumentState.ACTIVE).build();
+        .url("https://news.com/n1").state(DocumentState.ACTIVE)
+        .hash(DigestUtils.md5Hex("Doc1")).build();
     db.insertOne(metadataDocument);
 
     String sql = "Select * from " + metaTable;
@@ -156,7 +158,9 @@ class SqliteMetadataDatabaseTest {
     Thread.sleep(1000);
     MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
         .url("https://news.com/n1")
-        .state(DocumentState.ACTIVE).build();
+        .state(DocumentState.ACTIVE)
+        .hash(DigestUtils.md5Hex("Doc1"))
+        .build();
     db.insertOne(metadataDocument);
     Thread.sleep(1000);
     db.updateState(metadataDocument.url(), DocumentState.DELETED);
@@ -173,10 +177,14 @@ class SqliteMetadataDatabaseTest {
     Thread.sleep(1000);
     MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
         .url("https://news.com/n1")
-        .state(DocumentState.ACTIVE).build();
+        .state(DocumentState.ACTIVE)
+        .hash(DigestUtils.md5Hex("Doc1"))
+        .build();
     MetadataDocument metadataDocument2 = ImmutableMetadataDocument.builder()
         .url("https://news.com/n2")
-        .state(DocumentState.ACTIVE).build();
+        .state(DocumentState.ACTIVE)
+        .hash(DigestUtils.md5Hex("Doc2"))
+        .build();
     List<Tuple<String, DocumentState>> list = Arrays.asList(
         Tuple.of(metadataDocument.url(), DocumentState.DELETED),
         Tuple.of(metadataDocument2.url(), DocumentState.DELETED)
@@ -199,10 +207,10 @@ class SqliteMetadataDatabaseTest {
     long createdAt = LocalDateTime.now().minusHours(25).toEpochSecond(ZoneOffset.UTC);
     MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
         .url("https://news.com/n1")
-        .state(DocumentState.ACTIVE).build();
+        .state(DocumentState.ACTIVE).hash(DigestUtils.md5Hex("<html>Doc 1</html>")).build();
     MetadataDocument metadataDocument2 = ImmutableMetadataDocument.builder()
         .url("https://news.com/n2")
-        .state(DocumentState.ACTIVE).build();
+        .state(DocumentState.ACTIVE).hash("<html>Doc 2</html>").build();
 
     db.insertMany(Arrays.asList(metadataDocument, metadataDocument2));
 
@@ -224,7 +232,9 @@ class SqliteMetadataDatabaseTest {
     for (int i = 0; i < 50; i++) {
       MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
           .url("https://news.com/n" + i)
-          .state(DocumentState.ACTIVE).build();
+          .state(DocumentState.ACTIVE)
+          .hash(DigestUtils.md5Hex("Doc" + i))
+          .build();
       db.insertOne(metadataDocument);
     }
     String updateSql = String.format("UPDATE %s SET createdAt=%d where state='ACTIVE'", metaTable,
@@ -235,7 +245,9 @@ class SqliteMetadataDatabaseTest {
     for (int i = 50; i < 100; i++) {
       MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
           .url("https://news.com/n" + i)
-          .state(DocumentState.ACTIVE).build();
+          .state(DocumentState.ACTIVE)
+          .hash(DigestUtils.md5Hex("Doc" + i))
+          .build();
       db.insertOne(metadataDocument);
     }
 

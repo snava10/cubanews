@@ -61,4 +61,9 @@ public class AppConfig {
     }
     return db;
   }
+
+  @Bean
+  PagesHashing pagesHashing(SqliteMetadataDatabase db) {
+    return new PagesHashing(db);
+  }
 }

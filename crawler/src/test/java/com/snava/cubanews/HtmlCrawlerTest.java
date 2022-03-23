@@ -21,15 +21,17 @@ class HtmlCrawlerTest {
   HtmlCrawler crawler;
   Indexer indexer;
   SqliteMetadataDatabase metadataDatabase;
+  PagesHashing pagesHashing;
 
   @BeforeEach
   public void setup() {
     indexer = mock(Indexer.class);
     metadataDatabase = mock(SqliteMetadataDatabase.class);
+    pagesHashing = new PagesHashing(metadataDatabase);
     crawler = new HtmlCrawler(indexer, Stream.of(
         "https://url1.com/",
         "https://url2.com/"
-    ).collect(Collectors.toSet()), metadataDatabase);
+    ).collect(Collectors.toSet()), metadataDatabase, pagesHashing);
   }
 
   @Test

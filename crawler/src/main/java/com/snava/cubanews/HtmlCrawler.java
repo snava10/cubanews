@@ -20,24 +20,30 @@ public class HtmlCrawler extends WebCrawler {
   private final Indexer indexer;
   private final Set<String> seeds;
   private final SqliteMetadataDatabase metadataDatabase;
+  private final PagesHashing pagesHashing;
 
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
   // TODO: Add config for hard coded value.
   // TODO: Evaluate what is the best value for this parameter.
-  private final int indexBatch = 10;
+  private final int INDEX_BATCH = 100;
 
-  public HtmlCrawler(Indexer indexer, Set<String> seeds, SqliteMetadataDatabase metadataDatabase) {
+  public HtmlCrawler(Indexer indexer, Set<String> seeds, SqliteMetadataDatabase metadataDatabase,
+      PagesHashing pagesHashing) {
     super();
     this.indexer = indexer;
     this.seeds = seeds;
     this.metadataDatabase = metadataDatabase;
+    this.pagesHashing = pagesHashing;
   }
 
   @Override
   public boolean shouldVisit(Page referringPage, WebURL url) {
     String urlString = url.getURL().toLowerCase();
-    return !EXCLUSIONS.matcher(urlString).matches()
-        && matchesAnySeed(url) && !parameterised(url);
+    if (!EXCLUSIONS.matcher(urlString).matches()
+        && matchesAnySeed(url) && !parameterised(url)) {
+      return true;
+    }
+    return pagesHashing.pageExists(referringPage);
   }
 
   private boolean matchesAnySeed(WebURL url) {
@@ -67,10 +73,12 @@ public class HtmlCrawler extends WebCrawler {
       String title = htmlParseData.getTitle();
       String text = htmlParseData.getText();
       String html = htmlParseData.getHtml();
-      Set<WebURL> links = htmlParseData.getOutgoingUrls();
+//      Set<WebURL> links = htmlParseData.getOutgoingUrls();
       System.out.printf("%s %s%n", title, url);
       // do something with the collected data
-      IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text).build();
+      IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text)
+          .hash(pagesHashing.getHash(page))
+          .build();
       if (metadataDatabase.exists(doc.url())) {
         // Todo: Use a logger
         System.out.printf("Document with url: %s already exists%n", doc.url());
@@ -82,7 +90,7 @@ public class HtmlCrawler extends WebCrawler {
       } else {
         docsToIndex.add(doc);
       }
-      if (docsToIndex.size() >= indexBatch) {
+      if (docsToIndex.size() >= INDEX_BATCH) {
         flushBuffer();
       }
     }
@@ -96,7 +104,8 @@ public class HtmlCrawler extends WebCrawler {
     try {
       indexer.index(docsToIndex);
       metadataDatabase.insertMany(docsToIndex.stream().map(
-          doc -> ImmutableMetadataDocument.builder().url(Objects.requireNonNull(doc.url())).build()
+          doc -> ImmutableMetadataDocument.builder().url(Objects.requireNonNull(doc.url()))
+              .hash(doc.hash()).build()
       ).collect(Collectors.toList()));
     } catch (Exception e) {
       throw new RuntimeException(e);

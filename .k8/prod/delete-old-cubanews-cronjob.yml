@@ -17,5 +17,5 @@ spec:
               command:
                 - /bin/sh
                 - -ec
-                - "curl --location --request GET 'https://cubanews.icu/api/clearold/cubanews'"
+                - "curl --location --request GET 'https://cubanews.icu/api/clearold/cubanews?amount=7&timeunit=DAYS'"
           restartPolicy: OnFailure
