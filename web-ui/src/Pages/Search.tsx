@@ -6,6 +6,7 @@ import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
 import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
+import { Link } from "react-router-dom";
 
 function timeout(ms: any) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -77,6 +78,13 @@ export function Search() {
   return (
     <div>
       <Container maxWidth="lg">
+        <Grid container spacing={0} sx={{ paddingTop: 1 }}>
+          <Grid item xs={11} md={11}>
+          </Grid>
+          <Grid item xs={1} md={1}>
+           <Link to="About">About Us</Link>
+          </Grid>          
+        </Grid>
         <Grid container spacing={1}>
           {/* Name and logo */}
           <Grid item xs={12} md={12}>
