@@ -45,8 +45,8 @@ public class CrawlController {
 
   @GetMapping("/api/clearold/{indexName}")
   public Mono<LongRunningOperationResponse> clearOld(@PathVariable String indexName,
-      @RequestParam(value = "amount", defaultValue = "24") int amount,
-      @RequestParam(value = "timeunit", defaultValue = "HOURS") String timeunit) throws Exception {
+      @RequestParam(value = "amount", defaultValue = "3") int amount,
+      @RequestParam(value = "timeunit", defaultValue = "DAYS") String timeunit) throws Exception {
     System.out.printf("Deleting pages older that %d %s%n", amount, timeunit);
 
     Single.fromCallable(() -> clearOld(indexName, amount, TimeUnit.valueOf(timeunit)))
