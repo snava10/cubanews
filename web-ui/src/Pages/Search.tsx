@@ -35,7 +35,7 @@ export function Search() {
       qs = 'cuba';
     }
     setFirstLoad(false);
-    setSearchResults(generateResults(10));
+    setSearchResults([]);
     ReactGA.event({
       category: 'Search',
       action: 'Search',
