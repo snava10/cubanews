@@ -1,6 +1,7 @@
 import "./App.css";
 import { Link, BrowserRouter, Routes, Route } from "react-router-dom";
 import { Search } from "./Pages/Search";
+import { About } from "./Pages/About";
 import ReactGA from "react-ga4";
 
 const Home = () => {
@@ -19,7 +20,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Search />} />
+        <Route path="/" element={<Search/>} />
+        <Route path="/about" element={<About/>} />
       </Routes>
     </BrowserRouter>
   );
