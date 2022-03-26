@@ -35,7 +35,7 @@ export function Search() {
       qs = 'cuba';
     }
     setFirstLoad(false);
-    setSearchResults([]);
+    setSearchResults(generateResults(10));
     ReactGA.event({
       category: 'Search',
       action: 'Search',
@@ -79,10 +79,10 @@ export function Search() {
     <div>
       <Container maxWidth="lg">
         <Grid container spacing={0} sx={{ paddingTop: 1 }}>
-          <Grid item xs={11} md={11}>
+          <Grid item xs={10} md={10}>
           </Grid>
-          <Grid item xs={1} md={1}>
-           <Link to="About">About Us</Link>
+          <Grid item xs={2} md={2}>
+           <Link to="About">Sobre Nosotros</Link>
           </Grid>          
         </Grid>
         <Grid container spacing={1}>
@@ -102,7 +102,7 @@ export function Search() {
               onChange={handleChange}
               onKeyPress={handleKeyPress}
               value={queryString}
-              label="Type something you want to search!"
+              label="Escribe algo que desees buscar!"
               variant="outlined"
               size="small"
               fullWidth
@@ -110,7 +110,7 @@ export function Search() {
           </Grid>
           <Grid item xs={12} md={2} sx={{ display: 'flex' }}>
             <Button sx={{ flexGrow: 1 }} variant="contained" onClick={search}>
-              Search
+              Buscar
             </Button>
           </Grid>
 
