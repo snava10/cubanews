@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import { Container, Grid, TextField } from "@mui/material";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
@@ -14,7 +14,8 @@ function timeout(ms: any) {
 export function Search() {
   // console.log("[Search] called")
   const [searchResults, setSearchResults] = useState<Array<ResultCard>>([]);
-  const [queryString, setQueryString] = useState("");
+  const [queryString, setQueryString] = useState('');
+  const [firstLoad, setFirstLoad] = useState(true);
 
   function search() {
     // console.log("Search button pressed")
@@ -28,6 +29,11 @@ export function Search() {
 
     // Clear the search results
     // TODO: Put a searching annimation
+    let qs = queryString;
+    if (qs === null || qs.trim() === '') {
+      qs = 'cuba';
+    }
+    setFirstLoad(false);
     setSearchResults([]);
     ReactGA.event({
       category: 'Search',
@@ -36,7 +42,7 @@ export function Search() {
     } as UaEventOptions);
 
     // TODO: Parameterize the index name.
-    fetch(`https://cubanews.icu/api/search/name/cubanews?query=${queryString}`)
+    fetch(`https://cubanews.icu/api/search/name/cubanews?query=${qs}`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResults(data);
@@ -60,6 +66,13 @@ export function Search() {
       search();
     }
   }
+
+  useEffect(() => {
+    if (firstLoad) {
+      search();
+    }
+  });
+
   ReactGA.send("pageview");
   return (
     <div>
@@ -94,11 +107,13 @@ export function Search() {
           </Grid>
 
           {/* Results grid */}
+          <div>
           <Grid item xs={12}>
             <ResultStack
               searchResults={searchResults}
             />
           </Grid>
+          </div>
         </Grid>
       </Container>
     </div>
