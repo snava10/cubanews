@@ -14,9 +14,9 @@ export function SearchResultCard(props: { content: ResultCard }) {
             <a href={props.content.url}>{props.content.title}</a>
           </Typography>
           <Typography sx={{ mb: 1 }} color="text.secondary">
-            <a>{props.content.url}</a>
-            <a> - </a>
-            <a>{moment(date).fromNow()}</a>
+            <span>{props.content.url}</span>
+            <span> - </span>
+            <span>{moment(date).fromNow()}</span>
           </Typography>
           <Typography >
             {props.content.summary}
