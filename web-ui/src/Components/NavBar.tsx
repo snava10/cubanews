@@ -1,8 +1,7 @@
 import { AccountCircle } from "@material-ui/icons";
-import { AppBar, Toolbar, Typography, IconButton, Alert } from "@mui/material";
+import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
-import { DonationButton } from "./DonationButton";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,7 +28,6 @@ const useStyles = makeStyles((theme: Theme) =>
 export function NavBar() {
   const classes = useStyles();
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {};
-  const env = process.env.REACT_APP_ENV;
   return (
     <div>
       <AppBar position="static" sx={{ boxShadow: 0 }}>

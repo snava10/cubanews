@@ -1,21 +1,22 @@
 import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import { Alert, Container, Grid, TextField } from "@mui/material";
-import { ResultCard } from "../Helpers/resultsGenerator";
+import { Container, Grid, TextField } from "@mui/material";
+import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
 import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { NavBar } from "../Components/NavBar";
 import { DonationButton } from "../Components/DonationButton";
 
 
 export function Search() {
+  const env = process.env.REACT_APP_ENV;
+  const base_url = process.env.REACT_APP_BASE_URL;
   const [searchResults, setSearchResults] = useState<Array<ResultCard>>([]);
   const [queryString, setQueryString] = useState('');
   const [firstLoad, setFirstLoad] = useState(true);
-  const env = process.env.REACT_APP_ENV;
+  
 
   function search() {
 
@@ -43,7 +44,7 @@ export function Search() {
     }
 
     // TODO: Parameterize the index name.
-    fetch(`https://cubanews.icu/api/search/name/cubanews?query=${qs}`)
+    fetch(`${base_url}/api/search/name/cubanews?query=${qs}`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResults(data);
@@ -58,6 +59,7 @@ export function Search() {
             action: reason
           });
         } else {
+          setSearchResults(generateResults(10));
           console.log(reason);
         }        
       });
