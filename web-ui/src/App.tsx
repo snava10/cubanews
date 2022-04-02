@@ -15,7 +15,9 @@ const Home = () => {
 };
 
 function App() {
-  ReactGA.initialize('G-NLVF1S815F');
+  if (process.env.REACT_APP_ENV === 'PROD') {
+    ReactGA.initialize('G-NLVF1S815F');
+  } 
   
   return (
     <BrowserRouter>

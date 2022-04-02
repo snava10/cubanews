@@ -1,25 +1,23 @@
 import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import { Container, Grid, TextField } from "@mui/material";
-import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
+import { Alert, Container, Grid, TextField } from "@mui/material";
+import { ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
 import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
-import { Link } from "react-router-dom";
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { NavBar } from "../Components/NavBar";
+import { DonationButton } from "../Components/DonationButton";
 
-function timeout(ms: any) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 export function Search() {
-  // console.log("[Search] called")
   const [searchResults, setSearchResults] = useState<Array<ResultCard>>([]);
   const [queryString, setQueryString] = useState('');
   const [firstLoad, setFirstLoad] = useState(true);
+  const env = process.env.REACT_APP_ENV;
 
   function search() {
-    // console.log("Search button pressed")
 
     // uncomment and use pattern above to update the state.
     // timeout(2000).then(() => {
@@ -36,25 +34,32 @@ export function Search() {
     }
     setFirstLoad(false);
     setSearchResults([]);
-    ReactGA.event({
-      category: 'Search',
-      action: 'Search',
-      label: queryString
-    } as UaEventOptions);
+    if (env === 'PROD') {
+      ReactGA.event({
+        category: 'Search',
+        action: 'Search',
+        label: queryString
+      } as UaEventOptions);
+    }
 
     // TODO: Parameterize the index name.
     fetch(`https://cubanews.icu/api/search/name/cubanews?query=${qs}`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResults(data);
-        // console.log(data);
+        if (env === "DEV") {
+          console.log(data);
+        }        
       })
       .catch((reason: any) => {
-        ReactGA.event({
-          category: 'Error',
-          action: reason
-        });
-        console.log(reason);
+        if (env === 'PROD') {
+          ReactGA.event({
+            category: 'Error',
+            action: reason
+          });
+        } else {
+          console.log(reason);
+        }        
       });
   }
 
@@ -74,16 +79,18 @@ export function Search() {
     }
   });
 
-  ReactGA.send("pageview");
+  if (env === 'PROD') {
+    ReactGA.send("pageview");
+  }
+
   return (
     <div>
+      <NavBar />
+      <DonationButton />
       <Container maxWidth="lg">
         <Grid container spacing={0} sx={{ paddingTop: 1 }}>
           <Grid item xs={10} md={10}>
-          </Grid>
-          <Grid item xs={2} md={2}>
-           <Link to="About">Sobre Nosotros</Link>
-          </Grid>          
+          </Grid>                  
         </Grid>
         <Grid container spacing={1}>
           {/* Name and logo */}
