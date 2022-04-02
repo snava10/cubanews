@@ -43,7 +43,8 @@ export function DonationButton() {
           libre, y se mantiene con fondos personales. Si desea apoyarnos en
           nuestro empeño por divulgar la verdad sobre la situación de Cuba, por
           favor utilice el botón para donar. Todo lo recaudado se destinará a
-          mantener y expandir Cubanews. Muchas gracias.
+          mantener y expandir Cubanews. Valoramos su opinión y sugerencias, 
+          escríbanos a <a href="mailto:cubanews.icu@gmail.com">cubanews.icu@gmail.com</a>. Muchas gracias.
           <div ref={buttonRef} id={buttonId} />
         </Alert>
       </Collapse>
