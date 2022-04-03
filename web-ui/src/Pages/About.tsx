@@ -3,6 +3,7 @@ import { Box } from "@mui/system";
 import { UaEventOptions } from "react-ga4/types/ga4";
 import ReactGA from "react-ga4";
 import { CopyrightRounded } from "@material-ui/icons";
+import { NavBar } from "../Components/NavBar";
 
 export function About() {
   const env = process.env.REACT_APP_ENV;
@@ -15,7 +16,8 @@ export function About() {
   }
 
   return (
-    <Box>
+    <Box sx={{ mt: 10 }}>
+      <NavBar inSearchPage={false}/>
       <Container>
         <Grid item xs={12}>
           <Box

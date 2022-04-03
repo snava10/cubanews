@@ -85,12 +85,12 @@ export function Search() {
   }
 
   return (
-    <Box>
-      <NavBar />
+    <Box sx={{ mt: 12 }}>
+      <NavBar inSearchPage={true} />
       <Container>
         <Grid container spacing={1}>
           {/* Search bar and button */}
-          <Grid item xs={12} sx={{ mt: 12 }}>
+          <Grid item xs={12}>
             <Stack direction={{ xs: "column", md: "row" }} spacing={1}>
               <TextField
                 onChange={handleChange}
