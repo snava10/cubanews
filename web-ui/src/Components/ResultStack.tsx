@@ -5,6 +5,7 @@ import { SearchResultCard } from "./SearchResultCard";
 
 export function ResultStack(props: any) {
   // console.log("[Result stack] called")
+
   return (
     <Stack spacing={1}>
       {props.searchResults.length === 1 && props.searchResults[0].title === 'No results' ?
