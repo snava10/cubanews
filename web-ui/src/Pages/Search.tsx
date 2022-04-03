@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import { Container, Grid, TextField } from "@mui/material";
+import { Container, Grid, Stack, TextField } from "@mui/material";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
@@ -8,6 +8,7 @@ import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
 import { NavBar } from "../Components/NavBar";
 import { DonationButton } from "../Components/DonationButton";
+import ResultMasonry from "../Components/ResultMasonry";
 
 
 export function Search() {
@@ -16,7 +17,7 @@ export function Search() {
   const [searchResults, setSearchResults] = useState<Array<ResultCard>>([]);
   const [queryString, setQueryString] = useState('');
   const [firstLoad, setFirstLoad] = useState(true);
-  
+
 
   function search() {
 
@@ -50,7 +51,7 @@ export function Search() {
         setSearchResults(data);
         if (env === "DEV") {
           console.log(data);
-        }        
+        }
       })
       .catch((reason: any) => {
         if (env === 'PROD') {
@@ -61,7 +62,7 @@ export function Search() {
         } else {
           setSearchResults(generateResults(10));
           console.log(reason);
-        }        
+        }
       });
   }
 
@@ -86,14 +87,10 @@ export function Search() {
   }
 
   return (
-    <div>
+    <Box>
       <NavBar />
       <DonationButton />
-      <Container maxWidth="lg">
-        <Grid container spacing={0} sx={{ paddingTop: 1 }}>
-          <Grid item xs={10} md={10}>
-          </Grid>                  
-        </Grid>
+      <Container>
         <Grid container spacing={1}>
           {/* Name and logo */}
           <Grid item xs={12} md={12}>
@@ -106,33 +103,30 @@ export function Search() {
           </Grid>
 
           {/* Search bar and button */}
-          <Grid item xs={12} md={10}>
-            <TextField
-              onChange={handleChange}
-              onKeyPress={handleKeyPress}
-              value={queryString}
-              label="Escribe algo que desees buscar!"
-              variant="outlined"
-              size="small"
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} md={2} sx={{ display: 'flex' }}>
-            <Button sx={{ flexGrow: 1 }} variant="contained" onClick={search}>
-              Buscar
-            </Button>
+          <Grid item xs={12}>
+            <Stack direction={{xs:"column", md:"row"}} spacing={1}>
+              <TextField
+                onChange={handleChange}
+                onKeyPress={handleKeyPress}
+                value={queryString}
+                label="Escribe algo que desees buscar!"
+                variant="outlined"
+                size="small"
+                fullWidth
+              />
+              <Button sx={{ flexGrow: 1 }} variant="contained" onClick={search}>
+                Buscar
+              </Button>
+            </Stack>
           </Grid>
 
           {/* Results grid */}
-          <div>
-          <Grid item xs={12}>
-            <ResultStack
-              searchResults={searchResults}
-            />
+          <Grid item xs={12} sx={{mt:1}}>
+            <ResultStack searchResults={searchResults}/>
+            {/* <ResultMasonry searchResults={searchResults} /> */}
           </Grid>
-          </div>
         </Grid>
       </Container>
-    </div>
+    </Box>
   );
 }
