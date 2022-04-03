@@ -2,8 +2,10 @@ package com.snava.cubanews;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,11 @@ public class SearchController {
   }
 
   private List<IndexDocument> search(String query, Directory index, int limit) throws IOException {
+    List<Document> docs = searcher.search(query, index, limit);
+    if (docs.isEmpty()) {
+      return Collections.singletonList(ImmutableIndexDocument.builder()
+          .title("No results :(").build());
+    }
     return searcher.search(query, index, limit).stream().map(
         doc -> ImmutableIndexDocument.builder().url(doc.get("url"))
             .title(doc.get("title")).text(doc.get("text"))

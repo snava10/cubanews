@@ -16,7 +16,6 @@ export function Search() {
   const [queryString, setQueryString] = useState('');
   const [firstLoad, setFirstLoad] = useState(true);
 
-
   function search() {
 
     // uncomment and use pattern above to update the state.
@@ -46,7 +45,7 @@ export function Search() {
     fetch(`${base_url}/api/search/name/cubanews?query=${qs}`)
       .then((res) => res.json())
       .then((data) => {
-        setSearchResults(data);
+        setSearchResults(data);        
         if (env === "DEV") {
           console.log(data);
         }
@@ -58,7 +57,7 @@ export function Search() {
             action: reason
           });
         } else {
-          setSearchResults([]);
+          setSearchResults(generateResults(10));
           console.log(reason);
         }
       });

@@ -11,7 +11,7 @@ export function SearchResultCard(props: { content: ResultCard }) {
       <Card variant="outlined">
         <Box sx={{ padding: 2 }}>
           <Typography sx={{ mb: 0 }} gutterBottom variant="h6" component="div">
-            <a href={props.content.url}>{props.content.title}</a>
+            <a href={props.content.url} target="_blank">{props.content.title}</a>
           </Typography>
           <Typography sx={{ mb: 1 }} color="text.secondary">
             <span>{props.content.url}</span>
