@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 import { Container, Grid, Stack, TextField } from "@mui/material";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
@@ -8,6 +8,7 @@ import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
 import { NavBar } from "../Components/NavBar";
 import { DonationButton } from "../Components/DonationButton";
+import ResultMasonry from "../Components/ResultMasonry";
 
 export function Search() {
   const env = process.env.REACT_APP_ENV;
@@ -87,21 +88,10 @@ export function Search() {
   return (
     <Box>
       <NavBar />
-      <DonationButton />
       <Container>
         <Grid container spacing={1}>
-          {/* Name and logo */}
-          <Grid item xs={12}>
-            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 3 }}>
-              <Box sx={{ margin: 0, paddingLeft: 1, paddingRight: 1 }}>
-                <img src={`${process.env.PUBLIC_URL}/cuban-flag.svg`} height={70} width={100} alt="Cuban FLag" />
-              </Box>
-              <h2>Cuba News</h2>
-            </Box>
-          </Grid>
-
           {/* Search bar and button */}
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{mt:12}}>
             <Stack direction={{ xs: "column", md: "row" }} spacing={1}>
               <TextField
                 onChange={handleChange}
