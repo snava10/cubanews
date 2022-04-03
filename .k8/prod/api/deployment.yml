@@ -24,7 +24,7 @@ spec:
         resources:
           limits:
             memory: "1Gi"
-            cpu: "200m"
+            cpu: "500m"
         volumeMounts:
         - name: cubanews-persistent-storage
           mountPath: /data
