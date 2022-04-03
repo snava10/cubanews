@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import { Container, Grid, Stack, TextField } from "@mui/material";
+import { Chip, Container, Divider, Grid, Stack, TextField } from "@mui/material";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
 import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
 import { NavBar } from "../Components/NavBar";
+import { CopyrightRounded } from "@material-ui/icons";
 
 export function Search() {
   const env = process.env.REACT_APP_ENV;
@@ -89,7 +90,7 @@ export function Search() {
       <Container>
         <Grid container spacing={1}>
           {/* Search bar and button */}
-          <Grid item xs={12} sx={{mt:12}}>
+          <Grid item xs={12} sx={{ mt: 12 }}>
             <Stack direction={{ xs: "column", md: "row" }} spacing={1}>
               <TextField
                 onChange={handleChange}
@@ -113,6 +114,9 @@ export function Search() {
           </Grid>
         </Grid>
       </Container>
+      <Divider sx={{ m: 4 }}>
+        <Chip icon={<CopyrightRounded />} label="Cuba News" />
+      </Divider>
     </Box>
   );
 }
