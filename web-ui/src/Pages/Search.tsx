@@ -58,7 +58,7 @@ export function Search() {
             action: reason
           });
         } else {
-          setSearchResults(generateResults(10));
+          setSearchResults([]);
           console.log(reason);
         }
       });
