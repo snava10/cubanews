@@ -1,7 +1,8 @@
-import { Container, Grid, Typography } from "@mui/material";
+import { Chip, Container, Divider, Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { UaEventOptions } from "react-ga4/types/ga4";
 import ReactGA from "react-ga4";
+import { CopyrightRounded } from "@material-ui/icons";
 
 export function About() {
   const env = process.env.REACT_APP_ENV;
@@ -73,7 +74,7 @@ export function About() {
         </Typography>
 
         <Typography variant="subtitle2" paragraph>
-          Firmado, El equipo de Cubanews
+          Firmado, El equipo de Cuba News
         </Typography>
 
         {/* English */}
@@ -110,9 +111,12 @@ export function About() {
         </Typography>
 
         <Typography variant="subtitle2">
-          Signed, The Cubanews team
+          Signed, The Cuba News team
         </Typography>
       </Container>
+      <Divider sx={{ m: 4 }}>
+        <Chip icon={<CopyrightRounded />} label="Cuba News" />
+      </Divider>
     </Box>
   );
 }
