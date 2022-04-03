@@ -83,26 +83,15 @@ export function About() {
         </Typography>
 
         <Typography variant="body1" paragraph>
-          The main purpose of this website is to amplify the message of the
-          independent cuban media, provide a single entry point to find the
-          latest news about Cuba and combat the propaganda and missinformation
-          comming out of the dictatorial regime of Havana. Is primarly aimed to
-          those inside Cuba, with limited and slow internet connections, but
-          also to those around the world that may not be aware of the variaty of
-          independent cuban newspappers.
+          The main purpose of this website is to amplify the message of the independent Cuban media, provide a single entry point to find the latest news about Cuba and combat the propaganda and misinformation spread by the dictatorial regime in Havana. Cuba News is primarily aimed at those inside Cuba with limited and slow internet access, but also at those around the world that may not be aware of the variety of independent Cuban newspapers.
         </Typography>
 
         <Typography variant="body1" paragraph>
-          This work has been done by volunteers in their personal time and the
-          running of the website is completely financed with personal funds. Our
-          drive are our beleives of freedom, democracy and humans rights. As a
-          Cuban myself I want to see my country free of the communist
-          dictatorship that currently oppress it.
+          This work has been done by volunteers in their free time. The running of the website is fully financed with personal funds. Our drive is our belief in freedom, democracy and humans rights. As a Cuban myself, I want to see my country free of the communist dictatorship that currently oppresses it.
         </Typography>
 
         <Typography variant="body1" paragraph>
-          This is an open source project so if you have programming skills and
-          want to contribute please head over to{" "}
+          This is an open-source project, so if you have programming skills and want to contribute, please head over to{" "}
           <a href="https://github.com/snava10/cubanews">
             https://github.com/snava10/cubanews
           </a>{" "}
