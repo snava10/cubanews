@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
 import { SearchResultCard } from "./SearchResultCard";
 
-// Legacy old fucky style
+// We go with this while the masonry component is fucky. 
 
 export function ResultStack(props: any) {
   // console.log("[Result stack] called")

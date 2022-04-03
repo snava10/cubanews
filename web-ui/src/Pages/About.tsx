@@ -1,10 +1,10 @@
 import { Container, Grid } from "@mui/material";
 import { Box } from "@mui/system";
 import { DonationButton } from "../Components/DonationButton";
+
 export function About() {
   return (
     <div>
-      <DonationButton />
       <Container maxWidth="lg">      
         <Grid item xs={12} md={12}>
           <Box
