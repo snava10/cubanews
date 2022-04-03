@@ -1,7 +1,7 @@
-import { AccountCircle } from "@material-ui/icons";
-import { AppBar, Toolbar, Typography, IconButton, Tooltip, Avatar, Button } from "@mui/material";
+import { AppBar, Toolbar, Typography, IconButton, Tooltip, Avatar } from "@mui/material";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+import { AccountCircle } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,25 +31,33 @@ export function NavBar() {
   return (
     <div>
       <AppBar position="fixed" sx={{ boxShadow: 3 }}>
-        <Toolbar className={classes.whiteBackground}>
-          <Tooltip title="Open settings">
-            <IconButton sx={{ p: 0 }}>
-              <Avatar variant="square" src={`${process.env.PUBLIC_URL}/cuban-flag.svg`} />
-            </IconButton>
-          </Tooltip>
-
-          <Typography variant="body1" fontWeight="bold" className={classes.title} sx={{ p: 1 }}>
-            Cuba News
+        <Toolbar disableGutters className={classes.whiteBackground} sx={{ pl: 1, pr: 1 }}>
+          <Typography variant="body1" fontWeight="bold" className={classes.title}>
+            <Link to="about" className={classes.bareLink}>
+              <IconButton>
+                <Avatar variant="square" src={`${process.env.PUBLIC_URL}/cuban-flag.svg`} />
+              </IconButton>
+              Cuba News
+            </Link>
           </Typography>
 
-          <Button
+          {/* <Button
             variant="contained"
             color="success"
             sx={{ textTransform: 'none' }}
             component={Link} to="about"
           >
             Apóyanos
-          </Button>
+          </Button> */}
+
+          <IconButton
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            onClick={handleMenu}
+            color="primary">
+            <AccountCircle />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </div>

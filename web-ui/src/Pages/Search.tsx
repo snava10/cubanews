@@ -7,8 +7,6 @@ import { ResultStack } from "../Components/ResultStack";
 import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
 import { NavBar } from "../Components/NavBar";
-import { DonationButton } from "../Components/DonationButton";
-import ResultMasonry from "../Components/ResultMasonry";
 
 export function Search() {
   const env = process.env.REACT_APP_ENV;
