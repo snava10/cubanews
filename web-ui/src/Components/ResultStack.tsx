@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { SearchResultCard } from "./SearchResultCard";
 
 // We go with this while the masonry component is fucky. 
@@ -8,9 +8,15 @@ export function ResultStack(props: any) {
 
   return (
     <Stack spacing={1}>
-      {props.searchResults.length === 1 && props.searchResults[0].title === 'No results' ?
+      {props.searchResults.length === 0 ?
         // TODO: Make this a better UI.
-        <p>No se encontraron resultados. Por favor modifique su criterio de busqueda e intente nuevamente.</p> :
+        <Box sx={{textAlign: 'center'}}>
+          <img src="not-found.webp" style={{width:200}} />
+          <Typography variant="body1">
+            No pudimos encontrar lo que busca :(
+          </Typography>
+        </Box>
+        :
         props.searchResults.map((res: any) => (
           <SearchResultCard
             key={res.url}
