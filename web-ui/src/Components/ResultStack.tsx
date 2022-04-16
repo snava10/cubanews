@@ -1,7 +1,6 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
+import { CompactOriginalCard } from "./CompactOriginalCard";
 import { SearchResultCard } from "./SearchResultCard";
-
-// We go with this while the masonry component is fucky. 
 
 export function ResultStack(props: any) {
   // console.log("[Result stack] called")
@@ -20,7 +19,11 @@ export function ResultStack(props: any) {
       </Box>
     } 
     return props.searchResults.map((res: any) => (
-      <SearchResultCard
+      // <SearchResultCard
+      //   key={res.url}
+      //   content={res}
+      // />
+      <CompactOriginalCard
         key={res.url}
         content={res}
       />
