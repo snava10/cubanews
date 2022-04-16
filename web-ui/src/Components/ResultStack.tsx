@@ -1,5 +1,6 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { CompactOriginalCard } from "./CompactOriginalCard";
+import { GNewsInspiredCard } from "./GNewsInspiredCard";
 import { SearchResultCard } from "./SearchResultCard";
 
 export function ResultStack(props: any) {
@@ -23,7 +24,7 @@ export function ResultStack(props: any) {
       //   key={res.url}
       //   content={res}
       // />
-      <CompactOriginalCard
+      <GNewsInspiredCard
         key={res.url}
         content={res}
       />
@@ -31,7 +32,11 @@ export function ResultStack(props: any) {
   }
 
   return (
-    <Stack spacing={1}>
+    // Spacing value changes with card styles:
+    // - original = 1
+    // - compact original = 1
+    // - google news = 2
+    <Stack spacing={2}>
       <ConditionalResults />
     </Stack>
   )
