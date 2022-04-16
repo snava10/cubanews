@@ -1,6 +1,7 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { CompactOriginalCard } from "./CompactOriginalCard";
 import { GNewsInspiredCard } from "./GNewsInspiredCard";
+import { GNewsWithImageCard } from "./GNewsWithImageCard";
 import { SearchResultCard } from "./SearchResultCard";
 
 export function ResultStack(props: any) {
@@ -24,9 +25,10 @@ export function ResultStack(props: any) {
       //   key={res.url}
       //   content={res}
       // />
-      <GNewsInspiredCard
+      <GNewsWithImageCard
         key={res.url}
         content={res}
+        stackLayout={true}
       />
     ));
   }

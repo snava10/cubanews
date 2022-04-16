@@ -17,7 +17,7 @@ export function GNewsInspiredCard(props: { content: ResultCard }) {
   return (
     <Box>
       <Card variant="outlined" sx={{ borderRadius: 3}}>
-        <Box sx={{ padding: 2 }}>
+        <Box sx={{ padding: 2, pb: 1 }}>
           {/* Title */}
           <Typography variant="h6">
             <Link
@@ -51,7 +51,7 @@ export function GNewsInspiredCard(props: { content: ResultCard }) {
                   label={tag}
                   size="small"
                   color="primary"
-                  sx={{ mr: 1 }} />
+                  sx={{ mr: 1, mb: 1 }} />
               ))}
             </Box>
           }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Masonry } from "@mui/lab";
 import { SearchResultCard } from "./SearchResultCard";
+import { GNewsWithImageCard } from './GNewsWithImageCard';
 
 /**
  * Masonry problems with weird spacing behaviour:
@@ -13,13 +14,18 @@ export default function ResultMasonry(props: any) {
     <Masonry
       columns={{ xs: 1, sx: 1, sm: 2, md: 3, lg: 3, xl: 3 }}
       spacing={2}
-      sx={{margin: 0, mt: -1}}>
+      sx={{ margin: 0, mt: -1 }}>
       {props.searchResults.length === 1 && props.searchResults[0].title === 'No results' ?
         <p>No se encontraron resultados. Por favor modifique su criterio de busqueda e intente nuevamente.</p> :
         props.searchResults.map((res: any) => (
-          <SearchResultCard
+          // <SearchResultCard
+          //   key={res.url}
+          //   content={res}
+          // />
+          <GNewsWithImageCard
             key={res.url}
             content={res}
+            stackLayout={false}
           />
         ))
       }
