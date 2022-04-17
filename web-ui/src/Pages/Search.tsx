@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { AppBar, Avatar, Button, Chip, Container, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, IconButton, InputBase, List, ListItem, ListItemIcon, ListItemText, Paper, Stack, SwipeableDrawer, Switch, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, Chip, Container, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, IconButton, InputBase, Paper, SwipeableDrawer, Switch, Toolbar, Typography } from "@mui/material";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
 import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
-import { NavBar } from "../Components/NavBar";
-import { AccountCircle, CopyrightRounded } from "@material-ui/icons";
+import { CopyrightRounded } from "@material-ui/icons";
 import ResultMasonry from "../Components/ResultMasonry";
 import { Link } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';

@@ -1,8 +1,6 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { CompactOriginalCard } from "./CompactOriginalCard";
-import { GNewsInspiredCard } from "./GNewsInspiredCard";
 import { GNewsWithImageCard } from "./GNewsWithImageCard";
-import { SearchResultCard } from "./SearchResultCard";
 
 export function ResultStack(props: any) {
   // console.log("[Result stack] called")
