@@ -214,7 +214,7 @@ export function Search() {
                 </IconButton>
                 <InputBase
                   sx={{ ml: 1, flex: 1 }}
-                  placeholder="Escribe algo que desees buscar!"
+                  placeholder="Busca en Cuba News..."
                   onChange={handleChange}
                   onKeyPress={handleKeyPress}
                   value={queryString}
