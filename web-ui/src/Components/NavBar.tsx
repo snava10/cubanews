@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, IconButton, Tooltip, Avatar, Box } from "@mui/material";
+import { AppBar, Toolbar, Typography, IconButton, Avatar, Box } from "@mui/material";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import { AccountCircle } from "@material-ui/icons";
@@ -54,7 +54,11 @@ export function NavBar(props: any) {
 
   return (
     <AppBar position="fixed" sx={{ boxShadow: 3 }}>
-      <Toolbar disableGutters className={classes.whiteBackground} sx={{ pl: 1, pr: 1 }}>
+      <Toolbar
+        disableGutters
+        className={classes.whiteBackground}
+        sx={{ pl: 1, pr: 1 }}
+      >
         {appBarLeftComponent}
 
         {/* <Button

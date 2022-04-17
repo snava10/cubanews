@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import { Chip, Container, Divider, Grid, Stack, TextField } from "@mui/material";
+import { AppBar, Avatar, Chip, Container, Divider, Grid, IconButton, InputBase, Paper, Stack, TextField, Toolbar, Typography } from "@mui/material";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
 import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
 import { NavBar } from "../Components/NavBar";
-import { CopyrightRounded } from "@material-ui/icons";
+import { AccountCircle, CopyrightRounded } from "@material-ui/icons";
 import ResultMasonry from "../Components/ResultMasonry";
+import { Link } from "react-router-dom";
+import SearchIcon from '@mui/icons-material/Search';
 
 export function Search() {
   const env = process.env.REACT_APP_ENV;
@@ -46,7 +48,7 @@ export function Search() {
     fetch(`${base_url}/api/search/name/cubanews?query=${qs}`)
       .then((res) => res.json())
       .then((data) => {
-        setSearchResults(data);        
+        setSearchResults(data);
         if (env === "DEV") {
           console.log(data);
         }
@@ -86,34 +88,101 @@ export function Search() {
 
   return (
     <Box sx={{ mt: 12 }}>
-      <NavBar inSearchPage={true} />
-      <Container>
-        <Grid container spacing={1}>
-          {/* Search bar and button */}
-          <Grid item xs={12}>
-            <Stack direction={{ xs: "column", md: "row" }} spacing={1}>
-              <TextField
-                onChange={handleChange}
-                onKeyPress={handleKeyPress}
-                value={queryString}
-                label="Escribe algo que desees buscar!"
-                variant="outlined"
-                size="small"
-                fullWidth
-              />
-              <Button sx={{ flexGrow: 1 }} variant="contained" onClick={search}>
-                Buscar
-              </Button>
-            </Stack>
-          </Grid>
+      {/* <NavBar inSearchPage={true} /> */}
+      <AppBar position="fixed" sx={{ boxShadow: 3 }}>
+        <Toolbar
+          disableGutters
+          sx={{
+            pl: 1,
+            pr: 1,
+            backgroundColor: "white"
+          }}
+        >
+          <Grid
+            container
+            alignItems="center"
+          >
+            <Grid item xs={3} >
+              <Typography variant="body1" fontWeight="bold">
+                <Link to="about">
+                  <IconButton>
+                    <Box
+                      component="img"
+                      src={`${process.env.PUBLIC_URL}/logoAndType.svg`}
+                      alt="image"
+                      sx={{
+                        borderRadius: 3,
+                        width: 90
+                      }}
+                    />
+                  </IconButton>
 
-          {/* Results grid */}
-          <Grid item xs={12} sx={{ mt: 1 }}>
-            <ResultStack searchResults={searchResults} />
-            {/* <ResultMasonry searchResults={searchResults} /> */}
+                  {/* <IconButton>
+                    <Avatar variant="square" src={`${process.env.PUBLIC_URL}/cuban-flag.svg`} />
+                  </IconButton>
+                  Cuba News */}
+                </Link>
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              {/* <Stack direction="row" spacing={1}>
+                <TextField
+                  onChange={handleChange}
+                  onKeyPress={handleKeyPress}
+                  value={queryString}
+                  label="Escribe algo que desees buscar!"
+                  variant="filled"
+                  size="small"
+                  fullWidth
+                />
+                <Button sx={{ flexGrow: 1 }} variant="contained" onClick={search}>
+                  Buscar
+                </Button>
+              </Stack> */}
+
+              <Paper
+                component="form"
+                sx={{
+                  p: '2px 4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: "#f1f3f4"
+                }}
+              >
+                <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+                  <SearchIcon />
+                </IconButton>
+                <InputBase
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="Escribe algo que desees buscar!"
+                  onChange={handleChange}
+                  onKeyPress={handleKeyPress}
+                  value={queryString}
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={3} sx={{ textAlign: "end" }}>
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="primary">
+                <AccountCircle />
+              </IconButton>
+            </Grid>
           </Grid>
+        </Toolbar>
+      </AppBar>
+
+      {/* Results grid */}
+      <Container>
+        <Grid item xs={12} sx={{ mt: 1 }}>
+          <ResultStack searchResults={searchResults} />
+          {/* <ResultMasonry searchResults={searchResults} /> */}
         </Grid>
       </Container>
+
+      {/* Tiler stamp */}
       <Divider sx={{ m: 4 }}>
         <Chip icon={<CopyrightRounded />} label="Cuba News" />
       </Divider>
