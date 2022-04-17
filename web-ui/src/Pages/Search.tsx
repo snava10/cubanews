@@ -11,6 +11,8 @@ import { AccountCircle, CopyrightRounded } from "@material-ui/icons";
 import ResultMasonry from "../Components/ResultMasonry";
 import { Link } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
+import Menu from "@mui/icons-material/Menu";
 
 export function Search() {
   const env = process.env.REACT_APP_ENV;
@@ -20,7 +22,6 @@ export function Search() {
   const [firstLoad, setFirstLoad] = useState(true);
 
   function search() {
-
     // uncomment and use pattern above to update the state.
     // timeout(2000).then(() => {
     //   console.log("Timeout ended - [Search] state should be updated")
@@ -34,6 +35,7 @@ export function Search() {
     if (qs === null || qs.trim() === '') {
       qs = 'cuba';
     }
+
     setFirstLoad(false);
     setSearchResults([]);
     if (env === 'PROD') {
@@ -102,51 +104,24 @@ export function Search() {
             container
             alignItems="center"
           >
-            <Grid item xs={3} >
+            <Grid item xs={2} sm={3} >
               <Typography variant="body1" fontWeight="bold">
                 <Link to="about">
                   <IconButton>
-                    <Box
-                      component="img"
-                      src={`${process.env.PUBLIC_URL}/logoAndType.svg`}
-                      alt="image"
-                      sx={{
-                        borderRadius: 3,
-                        width: 90
-                      }}
-                    />
-                  </IconButton>
-
-                  {/* <IconButton>
                     <Avatar variant="square" src={`${process.env.PUBLIC_URL}/cuban-flag.svg`} />
                   </IconButton>
-                  Cuba News */}
                 </Link>
               </Typography>
             </Grid>
-            <Grid item xs={6}>
-              {/* <Stack direction="row" spacing={1}>
-                <TextField
-                  onChange={handleChange}
-                  onKeyPress={handleKeyPress}
-                  value={queryString}
-                  label="Escribe algo que desees buscar!"
-                  variant="filled"
-                  size="small"
-                  fullWidth
-                />
-                <Button sx={{ flexGrow: 1 }} variant="contained" onClick={search}>
-                  Buscar
-                </Button>
-              </Stack> */}
-
+            <Grid item xs={8} sm={6}>
               <Paper
                 component="form"
                 sx={{
                   p: '2px 4px',
                   display: 'flex',
                   alignItems: 'center',
-                  backgroundColor: "#f1f3f4"
+                  backgroundColor: "#f1f3f4",
+                  borderRadius: 2
                 }}
               >
                 <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
@@ -161,13 +136,13 @@ export function Search() {
                 />
               </Paper>
             </Grid>
-            <Grid item xs={3} sx={{ textAlign: "end" }}>
+            <Grid item xs={2} sm={3} sx={{ textAlign: "end" }}>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 color="primary">
-                <AccountCircle />
+                <MenuIcon />
               </IconButton>
             </Grid>
           </Grid>
