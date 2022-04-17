@@ -31,7 +31,7 @@ export function CompactOriginalCard(props: { content: ResultCard }) {
           {props.content.tags !== undefined && props.content.tags.length > 0 &&
             <Box sx={{ p: 0, m: 0 }}>
               {props.content.tags.map((tag: string) => (
-                <Chip key={tag} label={tag} size="small" sx={{ mr: 0.5 }} />
+                <Chip key={tag} label={tag} size="small" sx={{ mr: 0.5, mb:0.5 }} />
               ))}
             </Box>
           }

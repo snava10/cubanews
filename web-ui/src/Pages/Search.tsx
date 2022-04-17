@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
-import { AppBar, Avatar, Chip, Container, Divider, Grid, IconButton, InputBase, Paper, Stack, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, Button, Chip, Container, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, IconButton, InputBase, List, ListItem, ListItemIcon, ListItemText, Paper, Stack, SwipeableDrawer, Switch, TextField, Toolbar, Typography } from "@mui/material";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
@@ -12,7 +11,7 @@ import ResultMasonry from "../Components/ResultMasonry";
 import { Link } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
-import Menu from "@mui/icons-material/Menu";
+import React from "react";
 
 export function Search() {
   const env = process.env.REACT_APP_ENV;
@@ -20,6 +19,81 @@ export function Search() {
   const [searchResults, setSearchResults] = useState<Array<ResultCard>>([]);
   const [queryString, setQueryString] = useState('');
   const [firstLoad, setFirstLoad] = useState(true);
+
+  const [drawer, setDrawer] = React.useState({
+    top: false,
+    left: false,
+    bottom: false,
+    right: false,
+  });
+
+  const [styles, setStyles] = React.useState({
+    compact: false,
+    images: true,
+    girdLayout: false
+  })
+
+  type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
+  const toggleDrawer =
+    (anchor: Anchor, open: boolean) =>
+      (event: React.KeyboardEvent | React.MouseEvent) => {
+        if (
+          event &&
+          event.type === 'keydown' &&
+          ((event as React.KeyboardEvent).key === 'Tab' ||
+            (event as React.KeyboardEvent).key === 'Shift')
+        ) {
+          return;
+        }
+
+        setDrawer({ ...drawer, [anchor]: open });
+      };
+
+  const list = (anchor: Anchor) => (
+    <Box
+      sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+      role="presentation"
+      // onClick={toggleDrawer(anchor, false)}
+      onKeyDown={toggleDrawer(anchor, false)}
+    >
+      <FormControl component="fieldset" variant="standard" sx={{ m: 2 }}>
+        <FormLabel component="legend">Result cards styles</FormLabel>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch checked={styles.compact} onChange={() => setStyles({ ...styles, compact: !styles.compact })} />
+            }
+            label="Compact"
+          />
+          <FormControlLabel
+            control={
+              <Switch checked={styles.images} onChange={() => setStyles({ ...styles, images: !styles.images })} />
+            }
+            label="Images"
+          />
+          <FormControlLabel
+            control={
+              <Switch checked={styles.girdLayout} onChange={() => setStyles({ ...styles, girdLayout: !styles.girdLayout })} />
+            }
+            label="Grid layout"
+          />
+        </FormGroup>
+      </FormControl>
+      <Divider />
+      <FormControl component="fieldset" variant="standard" sx={{ m: 2 }}>
+        <FormLabel component="legend">Result filters</FormLabel>
+        <FormGroup>
+        </FormGroup>
+      </FormControl>
+      <Divider />
+      <FormControl component="fieldset" variant="standard" sx={{ m: 2 }}>
+        <FormLabel component="legend">Support us</FormLabel>
+        <FormGroup>
+        </FormGroup>
+      </FormControl>
+    </Box>
+  );
 
   function search() {
     // uncomment and use pattern above to update the state.
@@ -90,7 +164,19 @@ export function Search() {
 
   return (
     <Box sx={{ mt: 12 }}>
-      {/* <NavBar inSearchPage={true} /> */}
+      {/* Drawer */}
+      <React.Fragment key={"right"}>
+        <SwipeableDrawer
+          anchor={"right"}
+          open={drawer["right"]}
+          onClose={toggleDrawer("right", false)}
+          onOpen={toggleDrawer("right", true)}
+        >
+          {list("right")}
+        </SwipeableDrawer>
+      </React.Fragment>
+
+      {/* App bar */}
       <AppBar position="fixed" sx={{ boxShadow: 3 }}>
         <Toolbar
           disableGutters
@@ -141,7 +227,8 @@ export function Search() {
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
-                color="primary">
+                color="primary"
+                onClick={toggleDrawer("right", true)}>
                 <MenuIcon />
               </IconButton>
             </Grid>
@@ -152,8 +239,19 @@ export function Search() {
       {/* Results grid */}
       <Container>
         <Grid item xs={12} sx={{ mt: 1 }}>
-          <ResultStack searchResults={searchResults} />
-          {/* <ResultMasonry searchResults={searchResults} /> */}
+          {
+            styles.girdLayout ?
+              <ResultMasonry
+                searchResults={searchResults}
+                compact={styles.compact}
+                images={styles.images}
+              />
+              :
+              <ResultStack
+                searchResults={searchResults}
+                compact={styles.compact}
+                images={styles.images} />
+          }
         </Grid>
       </Container>
 

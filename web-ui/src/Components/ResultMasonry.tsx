@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Masonry } from "@mui/lab";
 import { SearchResultCard } from "./SearchResultCard";
 import { GNewsWithImageCard } from './GNewsWithImageCard';
+import { CompactOriginalCard } from './CompactOriginalCard';
 
 /**
  * Masonry problems with weird spacing behaviour:
@@ -10,6 +11,27 @@ import { GNewsWithImageCard } from './GNewsWithImageCard';
  */
 
 export default function ResultMasonry(props: any) {
+  function GetCard() {
+    if (props.compact) {
+      return props.searchResults.map((res: any) => (
+        <CompactOriginalCard
+          key={res.url}
+          content={res}
+        />
+      ));
+    } else {
+      return props.searchResults.map((res: any) => (
+        <GNewsWithImageCard
+          key={res.url}
+          content={res}
+          stackLayout={false}
+          compact={props.compact}
+          images={props.images}
+        />
+      ));
+    }
+  }
+
   return (
     <Masonry
       columns={{ xs: 1, sx: 1, sm: 2, md: 3, lg: 3, xl: 3 }}
@@ -17,16 +39,8 @@ export default function ResultMasonry(props: any) {
       sx={{ margin: 0, mt: -1 }}>
       {props.searchResults.length === 1 && props.searchResults[0].title === 'No results' ?
         <p>No se encontraron resultados. Por favor modifique su criterio de busqueda e intente nuevamente.</p> :
-        props.searchResults.map((res: any) => (
-          // <SearchResultCard
-          //   key={res.url}
-          //   content={res}
-          // />
-          <GNewsWithImageCard
-            key={res.url}
-            content={res}
-            stackLayout={false}
-          />
+        props.searchResults.map((res: any, index: any) => (
+          <GetCard key={index}/>
         ))
       }
     </Masonry>

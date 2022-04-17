@@ -11,7 +11,7 @@ import moment from 'moment';
  * - That little dot character between the news source and the update date. 
  */
 
-export function GNewsWithImageCard(props: { content: ResultCard, stackLayout: boolean }) {
+export function GNewsWithImageCard(props: { content: ResultCard, stackLayout: boolean, compact: boolean, images: boolean }) {
   const date = new Date(0);
 
   // Solution for toggling the position of the image in a result card.
@@ -24,7 +24,7 @@ export function GNewsWithImageCard(props: { content: ResultCard, stackLayout: bo
   return (
     <Box>
       <Card variant="outlined" sx={{ borderRadius: 3 }}>
-        {imageOnTopOfCard &&
+        {props.images && imageOnTopOfCard &&
           <CardMedia
             component="img"
             image={`${process.env.PUBLIC_URL}/image_placeholder.jpg`}
@@ -82,7 +82,7 @@ export function GNewsWithImageCard(props: { content: ResultCard, stackLayout: bo
               </Box>
             }
           </Box>
-          {!imageOnTopOfCard &&
+          {props.images && !imageOnTopOfCard &&
             <Box
               component="img"
               src={`${process.env.PUBLIC_URL}/image_placeholder.jpg`}
