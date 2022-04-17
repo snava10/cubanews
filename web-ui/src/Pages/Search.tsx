@@ -28,7 +28,7 @@ export function Search() {
 
   const [styles, setStyles] = React.useState({
     compact: false,
-    images: true,
+    images: false,
     girdLayout: false
   })
 
