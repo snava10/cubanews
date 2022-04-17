@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
-import { Chip, Container, Divider, Grid, Stack, TextField } from "@mui/material";
+import { AppBar, Avatar, Chip, Container, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, IconButton, InputBase, Paper, SwipeableDrawer, Switch, Toolbar, Typography } from "@mui/material";
 import { generateResults, ResultCard } from "../Helpers/resultsGenerator";
 import { Box } from "@mui/system";
 import { ResultStack } from "../Components/ResultStack";
 import ReactGA from "react-ga4";
 import { UaEventOptions } from "react-ga4/types/ga4";
-import { NavBar } from "../Components/NavBar";
 import { CopyrightRounded } from "@material-ui/icons";
+import ResultMasonry from "../Components/ResultMasonry";
+import { Link } from "react-router-dom";
+import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
+import React from "react";
 
 export function Search() {
   const env = process.env.REACT_APP_ENV;
@@ -16,8 +19,82 @@ export function Search() {
   const [queryString, setQueryString] = useState('');
   const [firstLoad, setFirstLoad] = useState(true);
 
-  function search() {
+  const [drawer, setDrawer] = React.useState({
+    top: false,
+    left: false,
+    bottom: false,
+    right: false,
+  });
 
+  const [styles, setStyles] = React.useState({
+    compact: false,
+    images: false,
+    girdLayout: false
+  })
+
+  type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
+  const toggleDrawer =
+    (anchor: Anchor, open: boolean) =>
+      (event: React.KeyboardEvent | React.MouseEvent) => {
+        if (
+          event &&
+          event.type === 'keydown' &&
+          ((event as React.KeyboardEvent).key === 'Tab' ||
+            (event as React.KeyboardEvent).key === 'Shift')
+        ) {
+          return;
+        }
+
+        setDrawer({ ...drawer, [anchor]: open });
+      };
+
+  const list = (anchor: Anchor) => (
+    <Box
+      sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+      role="presentation"
+      // onClick={toggleDrawer(anchor, false)}
+      onKeyDown={toggleDrawer(anchor, false)}
+    >
+      <FormControl component="fieldset" variant="standard" sx={{ m: 2 }}>
+        <FormLabel component="legend">Result cards styles</FormLabel>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch checked={styles.compact} onChange={() => setStyles({ ...styles, compact: !styles.compact })} />
+            }
+            label="Compact"
+          />
+          <FormControlLabel
+            control={
+              <Switch checked={styles.images} onChange={() => setStyles({ ...styles, images: !styles.images })} />
+            }
+            label="Images"
+          />
+          <FormControlLabel
+            control={
+              <Switch checked={styles.girdLayout} onChange={() => setStyles({ ...styles, girdLayout: !styles.girdLayout })} />
+            }
+            label="Grid layout"
+          />
+        </FormGroup>
+      </FormControl>
+      <Divider />
+      <FormControl component="fieldset" variant="standard" sx={{ m: 2 }}>
+        <FormLabel component="legend">Result filters</FormLabel>
+        <FormGroup>
+        </FormGroup>
+      </FormControl>
+      <Divider />
+      <FormControl component="fieldset" variant="standard" sx={{ m: 2 }}>
+        <FormLabel component="legend">Support us</FormLabel>
+        <FormGroup>
+        </FormGroup>
+      </FormControl>
+    </Box>
+  );
+
+  function search() {
     // uncomment and use pattern above to update the state.
     // timeout(2000).then(() => {
     //   console.log("Timeout ended - [Search] state should be updated")
@@ -31,6 +108,7 @@ export function Search() {
     if (qs === null || qs.trim() === '') {
       qs = 'cuba';
     }
+
     setFirstLoad(false);
     setSearchResults([]);
     if (env === 'PROD') {
@@ -45,7 +123,7 @@ export function Search() {
     fetch(`${base_url}/api/search/name/cubanews?query=${qs}`)
       .then((res) => res.json())
       .then((data) => {
-        setSearchResults(data);        
+        setSearchResults(data);
         if (env === "DEV") {
           console.log(data);
         }
@@ -85,34 +163,98 @@ export function Search() {
 
   return (
     <Box sx={{ mt: 12 }}>
-      <NavBar inSearchPage={true} />
-      <Container>
-        <Grid container spacing={1}>
-          {/* Search bar and button */}
-          <Grid item xs={12}>
-            <Stack direction={{ xs: "column", md: "row" }} spacing={1}>
-              <TextField
-                onChange={handleChange}
-                onKeyPress={handleKeyPress}
-                value={queryString}
-                label="Escribe algo que desees buscar!"
-                variant="outlined"
-                size="small"
-                fullWidth
-              />
-              <Button sx={{ flexGrow: 1 }} variant="contained" onClick={search}>
-                Buscar
-              </Button>
-            </Stack>
-          </Grid>
+      {/* Drawer */}
+      <React.Fragment key={"right"}>
+        <SwipeableDrawer
+          anchor={"right"}
+          open={drawer["right"]}
+          onClose={toggleDrawer("right", false)}
+          onOpen={toggleDrawer("right", true)}
+        >
+          {list("right")}
+        </SwipeableDrawer>
+      </React.Fragment>
 
-          {/* Results grid */}
-          <Grid item xs={12} sx={{ mt: 1 }}>
-            <ResultStack searchResults={searchResults} />
-            {/* <ResultMasonry searchResults={searchResults} /> */}
+      {/* App bar */}
+      <AppBar position="fixed" sx={{ boxShadow: 3 }}>
+        <Toolbar
+          disableGutters
+          sx={{
+            pl: 1,
+            pr: 1,
+            backgroundColor: "white"
+          }}
+        >
+          <Grid
+            container
+            alignItems="center"
+          >
+            <Grid item xs={2} sm={3} >
+              <Typography variant="body1" fontWeight="bold">
+                <Link to="about">
+                  <IconButton>
+                    <Avatar variant="square" src={`${process.env.PUBLIC_URL}/cuban-flag.svg`} />
+                  </IconButton>
+                </Link>
+              </Typography>
+            </Grid>
+            <Grid item xs={8} sm={6}>
+              <Paper
+                component="form"
+                sx={{
+                  p: '2px 4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: "#f1f3f4",
+                  borderRadius: 2
+                }}
+              >
+                <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+                  <SearchIcon />
+                </IconButton>
+                <InputBase
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="Busca en Cuba News..."
+                  onChange={handleChange}
+                  onKeyPress={handleKeyPress}
+                  value={queryString}
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={2} sm={3} sx={{ textAlign: "end" }}>
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="primary"
+                onClick={toggleDrawer("right", true)}>
+                <MenuIcon />
+              </IconButton>
+            </Grid>
           </Grid>
+        </Toolbar>
+      </AppBar>
+
+      {/* Results grid */}
+      <Container>
+        <Grid item xs={12} sx={{ mt: 1 }}>
+          {
+            styles.girdLayout ?
+              <ResultMasonry
+                searchResults={searchResults}
+                compact={styles.compact}
+                images={styles.images}
+              />
+              :
+              <ResultStack
+                searchResults={searchResults}
+                compact={styles.compact}
+                images={styles.images} />
+          }
         </Grid>
       </Container>
+
+      {/* Tiler stamp */}
       <Divider sx={{ m: 4 }}>
         <Chip icon={<CopyrightRounded />} label="Cuba News" />
       </Divider>

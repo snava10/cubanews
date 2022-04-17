@@ -12,7 +12,7 @@ export function generateResults(quantity: number) {
   for (let i = 0; i < quantity; i++) {
     var newCard: ResultCard = {
       url: `http://${generateRandomString(20, false)}`,
-      title: 'No results :(',  //average headline length
+      title: generateRandomString(65),  //average headline length
       lastUpdated: (new Date(2021, 11, 31, 12)).getTime() / 1000,
       summary: generateRandomString(200),
       tags: Array.from({ length: randomIntFromInterval(1, 6) }, () => generateRandomString(10, false))

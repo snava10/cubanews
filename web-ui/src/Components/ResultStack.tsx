@@ -1,34 +1,51 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
-import { SearchResultCard } from "./SearchResultCard";
-
-// We go with this while the masonry component is fucky. 
+import { CompactOriginalCard } from "./CompactOriginalCard";
+import { GNewsWithImageCard } from "./GNewsWithImageCard";
 
 export function ResultStack(props: any) {
   // console.log("[Result stack] called")
-  
+
   function ConditionalResults() {
-    if (props.searchResults.length === 1 && props.searchResults[0].title === 'No results :(') {
-      return <Box sx={{textAlign: 'center'}}>
-      <img src="not-found.webp" style={{width:200}} />
-      <Typography variant="body1">
-        No pudimos encontrar lo que busca :(
-      </Typography>
-    </Box>
-    } else if (props.searchResults.length === 0) {
-      return <Box sx={{textAlign: 'center'}}
+    if (props.searchResults.length === 1 && props.searchResults[0].title === 'No results :(') { // That weird no results case
+      return <Box sx={{ textAlign: 'center' }}>
+        <img src="not-found.webp" style={{ width: 200 }} />
+        <Typography variant="body1">
+          No pudimos encontrar lo que busca :(
+        </Typography>
+      </Box>
+    } else if (props.searchResults.length === 0) { // Loading
+      return <Box sx={{ textAlign: 'center' }}
       ><CircularProgress />
       </Box>
-    } 
-    return props.searchResults.map((res: any) => (
-      <SearchResultCard
-        key={res.url}
-        content={res}
-      />
-    ));
+    }
+
+    // Actual results
+    if (props.compact) {
+      return props.searchResults.map((res: any) => (
+        <CompactOriginalCard
+          key={res.url}
+          content={res}
+        />
+      ));
+    } else {
+      return props.searchResults.map((res: any) => (
+        <GNewsWithImageCard
+          key={res.url}
+          content={res}
+          stackLayout={true}
+          compact={props.compact}
+          images={props.images}
+        />
+      ));
+    }
   }
 
   return (
-    <Stack spacing={1}>
+    // Spacing value changes with card styles:
+    // - original = 1
+    // - compact original = 1
+    // - google news = 2
+    <Stack spacing={2}>
       <ConditionalResults />
     </Stack>
   )
