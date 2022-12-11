@@ -3,7 +3,7 @@ services:
     entrypoint:
       - sleep
       - infinity
-    image: adoptopenjdk/openjdk11:alpine
+    image: adoptopenjdk/openjdk17:alpine
     init: true
     volumes:
       - type: bind

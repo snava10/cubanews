@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:alpine
+FROM adoptopenjdk/openjdk17:alpine
 ARG JAR_FILE
 RUN echo ${JAR_FILE}
 COPY ${JAR_FILE} app.jar
