@@ -18,7 +18,7 @@ public class AppConfig {
   @Bean
   public String homePath() {
     try {
-      String path = "/data/";
+      String path = "/tmp/";
       Files.createDirectories(Paths.get(path));
       return path;
     } catch (Exception e) {

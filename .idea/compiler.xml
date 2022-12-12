@@ -6,11 +6,11 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.immutables/value/2.9.0/36d6ea4ee2bd9eff08d201f4db1d18e1bbef221e/value-2.9.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.immutables/value/2.9.2/831f8bed50d6d3f7d2c5bcc1955d3376d88eef3e/value-2.9.2.jar" />
         </processorPath>
         <module name="cubanews.core.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="11" />
+    <bytecodeTargetLevel target="17" />
   </component>
 </project>
