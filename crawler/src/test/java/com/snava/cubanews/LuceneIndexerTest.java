@@ -17,7 +17,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.junit.jupiter.api.AfterEach;
@@ -113,7 +112,7 @@ class LuceneIndexerTest {
     assertThat(topDocs.totalHits.value).isEqualTo(50L);
     indexReader.close();
 
-    assertThat(((AbstractIndexer)indexer).hasDeletions()).isFalse();
+    assertThat(((AbstractIndexer) indexer).hasDeletions()).isFalse();
     indexer.delete(urls);
 
     indexReader = DirectoryReader.open(memoryIndex);

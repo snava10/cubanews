@@ -1,9 +1,9 @@
 dependencies {
+    implementation project(':core')
     implementation platform('com.google.cloud:libraries-bom:26.1.5')
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'com.sleepycat:je:18.3.12'
     implementation 'edu.uci.ics:crawler4j:4.4.0'
-    implementation project(':core')
     implementation 'org.apache.lucene:lucene-core:9.4.2'
     implementation 'org.apache.lucene:lucene-queryparser:9.4.2'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.21'

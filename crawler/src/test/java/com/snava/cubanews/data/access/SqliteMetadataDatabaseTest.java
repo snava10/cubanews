@@ -62,8 +62,7 @@ class SqliteMetadataDatabaseTest {
   @Test
   void createMetadataTable() throws SQLException {
     String tableExistsSQL = String.format(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='%s'", metaTable
-    );
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='%s'", metaTable);
     String indexExistSQL = "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_url'";
     Statement stmt = db.getConnection().createStatement();
 
@@ -179,8 +178,7 @@ class SqliteMetadataDatabaseTest {
         .state(DocumentState.ACTIVE).build();
     List<Tuple<String, DocumentState>> list = Arrays.asList(
         Tuple.of(metadataDocument.url(), DocumentState.DELETED),
-        Tuple.of(metadataDocument2.url(), DocumentState.DELETED)
-    );
+        Tuple.of(metadataDocument2.url(), DocumentState.DELETED));
 
     db.insertMany(Arrays.asList(metadataDocument, metadataDocument2));
     db.updateManyStates(list);
@@ -212,7 +210,7 @@ class SqliteMetadataDatabaseTest {
     stmt.executeUpdate(updateSql);
     stmt.close();
 
-    int result = db.updateStateByAgeAndState(24, TimeUnit.HOURS,DocumentState.ACTIVE, DocumentState.DELETED);
+    int result = db.updateStateByAgeAndState(24, TimeUnit.HOURS, DocumentState.ACTIVE, DocumentState.DELETED);
     assertThat(result).isEqualTo(1);
     assertThat(db.getByUrl(metadataDocument.url()).get().state()).isEqualTo(DocumentState.DELETED);
     assertThat(db.getByUrl(metadataDocument2.url()).get().state()).isEqualTo(DocumentState.ACTIVE);
@@ -240,7 +238,7 @@ class SqliteMetadataDatabaseTest {
     }
 
     int batches = 0;
-    for (List<String> urls: db.getDeletablePages(24, TimeUnit.HOURS, 10)) {
+    for (List<String> urls : db.getDeletablePages(24, TimeUnit.HOURS, 10)) {
       assertThat(urls.contains("https://news.com/n" + (batches * 10))).isTrue();
       batches++;
     }

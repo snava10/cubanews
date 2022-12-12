@@ -16,13 +16,14 @@ dependencies {
     implementation project(':searcher')
     implementation project(':crawler')
     implementation 'org.springframework.boot:spring-boot-starter-webflux:3.0.0'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.apache.lucene:lucene-core:9.4.2'
     implementation 'org.apache.lucene:lucene-queryparser:9.4.2'
-    implementation group: 'org.springframework', name: 'spring-context', version: '5.3.14'
-    implementation group: 'org.springframework', name: 'spring-expression', version: '5.3.14'
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.21'
+    implementation 'org.springframework:spring-context:5.3.14'
+    implementation 'org.springframework:spring-expression:5.3.14'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
     implementation platform('com.google.cloud:libraries-bom:26.1.5')
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'org.xerial:sqlite-jdbc:3.40.0.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
