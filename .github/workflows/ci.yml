@@ -4,6 +4,11 @@ on:
   push:
     branches-ignore:
       - main
+
+env:
+  IMAGE: cubanews-rest-api
+  IMAGE_WEB: cubanews-web  
+
 jobs:
   build:
     name: Gradle Build
@@ -25,18 +30,92 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
+      - name: Upload rest-api jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: app.jar
+          path: rest-api/build/libs/*.jar
 
   build-web:
     name: React Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js 14
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 18
       - name: npm ci, build and test
         run: |
           cd web-ui;
           npm ci
           CI=false npm run build --if-present
+      - name: Upload react app
+        uses: actions/upload-artifact@v2
+        with:
+          name: webapp
+          path: web-ui/build
+    
+  push-rest-api:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download jar
+        uses: actions/download-artifact@v2
+        with:
+          name: app.jar
+
+      - name: Build image
+        run: |-
+          ls; cp rest-api-1.0.0-SNAPSHOT.jar rest-api/ ; ls rest-api;
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE;
+
+          docker build \
+            --tag "$IMAGE_ID:$GITHUB_SHA" \
+            --build-arg GITHUB_SHA="$GITHUB_SHA" \
+            --build-arg GITHUB_REF="$GITHUB_REF" \
+            --build-arg JAR_FILE=rest-api-1.0.0-SNAPSHOT.jar \
+            rest-api/ ; 
+
+      - name: Log in to registry
+        # This is where you will update the personal access token to GITHUB_TOKEN
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+
+      - name: Push image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE          
+          docker push $IMAGE_ID:$GITHUB_SHA
+    
+  push-web:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    needs: [build-web]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Webapp
+        uses: actions/download-artifact@v2
+        with:
+          name: webapp
+          path: web-ui/build/
+      
+      - name: Build image
+        run: |-
+          IMAGE_WEB_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_WEB;
+          docker build --tag "$IMAGE_WEB_ID:$GITHUB_SHA" web-ui/
+      
+      - name: Log in to registry
+        # This is where you will update the personal access token to GITHUB_TOKEN
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+
+      - name: Push Image
+        run: |
+          IMAGE_WEB_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_WEB;
+          docker push $IMAGE_WEB_ID:$GITHUB_SHA
+
