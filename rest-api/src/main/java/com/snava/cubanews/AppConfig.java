@@ -15,10 +15,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Configuration
 public class AppConfig {
 
+  private static String APP_DATA_DIR = "crawlers";
+
   @Bean
   public String homePath() {
     try {
-      String path = "/tmp/";
+      String path = "/" + APP_DATA_DIR + "/";
       Files.createDirectories(Paths.get(path));
       return path;
     } catch (Exception e) {
@@ -38,13 +40,13 @@ public class AppConfig {
 
   @Bean
   public Crawler crawler() {
-    return new CrawlerController("/tmp/crawler4j");
+    return new CrawlerController(homePath() + "crawler4j");
   }
 
   @Bean
   RouterFunction<ServerResponse> routerFunction() {
     return route(request -> !request.uri().getPath().startsWith("/api/") && !request.uri().getPath()
-            .equals("/") && !request.uri().getPath().contains("."),
+        .equals("/") && !request.uri().getPath().contains("."),
         request -> ServerResponse.temporaryRedirect(URI.create("/"))
             .build());
   }
