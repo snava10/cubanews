@@ -1,5 +1,5 @@
 version: "3.9"
-service:
+services:
   web:
     image: ghcr.io/snava10/cubanews-web:main
     ports:
@@ -10,7 +10,6 @@ service:
     ports:
       - "8080:8080"
     volumes:
-      - vol1:/home/docker-volumes/
-  volumes:
-    vol1:
-    
+      - vol1:/crawlers/
+volumes:
+  vol1:
