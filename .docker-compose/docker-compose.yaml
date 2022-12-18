@@ -1,0 +1,16 @@
+version: "3.9"
+service:
+  web:
+    image: ghcr.io/snava10/cubanews-web:main
+    ports:
+      - "80:80"
+  
+  res-api:
+    image: ghcr.io/snava10/cubanews-rest-api:main
+    ports:
+      - "8080:8080"
+    volumes:
+      - vol1:/home/docker-volumes/
+  volumes:
+    vol1:
+    
