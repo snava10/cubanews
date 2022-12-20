@@ -19,7 +19,7 @@ The container exposes port 80 with the command ```EXPOSE 80```
 
 ## API packaging
 
-### Nginx Proxy
+## Nginx Proxy
 
 In order to avoid CORS we need to use NGING as a reverse proxy. The external requests will always go to the Web App url on port 80, for example localhost:80
 However the API is running in a different container and in a different port (8080). Every time the Web client tries to call the API the browser will block
