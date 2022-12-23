@@ -3,6 +3,7 @@
 /build
 rest-api/src/main/resources/public
 */bin
+lambdas/.aws-sam
 # Ignore Gradle GUI config
 gradle-app.setting
 
