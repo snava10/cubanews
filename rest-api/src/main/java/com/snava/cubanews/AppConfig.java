@@ -15,12 +15,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Configuration
 public class AppConfig {
 
-  private static String APP_DATA_DIR = "crawlers";
+  private static final String APP_DATA_DIR = "crawlers";
 
   @Bean
   public String homePath() {
     try {
-      String path = "/" + APP_DATA_DIR + "/";
+      String path = System.getProperty("user.home") + "/" + APP_DATA_DIR + "/";
       Files.createDirectories(Paths.get(path));
       return path;
     } catch (Exception e) {

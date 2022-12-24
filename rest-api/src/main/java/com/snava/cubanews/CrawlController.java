@@ -32,12 +32,16 @@ public class CrawlController {
   SqliteMetadataDatabase db;
 
   @PostMapping("/api/crawl")
-  public Mono<LongRunningOperationResponse> crawl(@RequestBody CrawlRequest crawlRequest)
+  public Mono<LongRunningOperationResponse> crawl(
+          @RequestParam(value = "dryRun", defaultValue = "false") boolean dryRun,
+          @RequestBody CrawlRequest crawlRequest)
       throws Exception {
     System.out.println(crawlRequest);
-    crawler.start(crawlRequest.getLimit(), 12, crawlRequest.getBaseUrls(),
-            new LuceneIndexer(homePath + crawlRequest.getIndexName()), db).subscribeOn(Schedulers.io())
-        .subscribe();
+    if (!dryRun) {
+      crawler.start(crawlRequest.getLimit(), 12, crawlRequest.getBaseUrls(),
+                      new LuceneIndexer(homePath + crawlRequest.getIndexName()), db).subscribeOn(Schedulers.io())
+              .subscribe();
+    }
     return Mono.just(
         new LongRunningOperationResponse(crawlRequest.getIndexName(), OperationStatus.IN_PROGRESS,
             OperationType.CRAWL));
@@ -46,7 +50,7 @@ public class CrawlController {
   @GetMapping("/api/clearold/{indexName}")
   public Mono<LongRunningOperationResponse> clearOld(@PathVariable String indexName,
       @RequestParam(value = "amount", defaultValue = "3") int amount,
-      @RequestParam(value = "timeunit", defaultValue = "DAYS") String timeunit) throws Exception {
+      @RequestParam(value = "timeunit", defaultValue = "DAYS") String timeunit) {
     System.out.printf("Deleting pages older that %d %s%n", amount, timeunit);
 
     Single.fromCallable(() -> clearOld(indexName, amount, TimeUnit.valueOf(timeunit)))
