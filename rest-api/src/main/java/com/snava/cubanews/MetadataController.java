@@ -20,28 +20,7 @@ public class MetadataController {
     return Mono.just(new CountDocumentsResult(total, active, deleted));
   }
 
-  static class CountDocumentsResult {
-    private final int total;
-    private final int active;
-    private final int deleted;
-
-    CountDocumentsResult(int total, int active, int deleted) {
-      this.total = total;
-      this.active = active;
-      this.deleted = deleted;
-    }
-
-    public int getTotal() {
-      return total;
-    }
-
-    public int getActive() {
-      return active;
-    }
-
-    public int getDeleted() {
-      return deleted;
-    }
+  record CountDocumentsResult(int total, int active, int deleted) {
   }
 
 }
