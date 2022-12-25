@@ -16,11 +16,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SqliteMetadataDatabaseTest {
 
@@ -59,23 +62,25 @@ class SqliteMetadataDatabaseTest {
     assertThat(db.getConnection()).isNotNull();
   }
 
-  @Test
-  void createMetadataTable() throws SQLException {
+  @ParameterizedTest
+  @ValueSource(strings = {"metaTable", "operations"}) // six numbers
+  void createMetadataTable(String tableName) throws SQLException {
     String tableExistsSQL = String.format(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='%s'", metaTable);
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='%s'", tableName);
     String indexExistSQL = "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_url'";
     Statement stmt = db.getConnection().createStatement();
 
     stmt.execute(tableExistsSQL);
     ResultSet resultSet = stmt.getResultSet();
     resultSet.next();
-    assertThat(resultSet.getString("name")).isEqualTo(metaTable);
+    assertThat(resultSet.getString("name")).isEqualTo(tableName);
 
-    stmt.execute(indexExistSQL);
-    resultSet = stmt.getResultSet();
-    resultSet.next();
-    assertThat(resultSet.getString("name")).isEqualTo("idx_url");
-
+    if (Objects.equals(tableName, metaTable)) {
+      stmt.execute(indexExistSQL);
+      resultSet = stmt.getResultSet();
+      resultSet.next();
+      assertThat(resultSet.getString("name")).isEqualTo("idx_url");
+    }
     stmt.close();
   }
 
@@ -101,7 +106,6 @@ class SqliteMetadataDatabaseTest {
 
   @Test
   void insertOne() {
-    long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
         .url("https://news.com/n1").state(DocumentState.ACTIVE).build();
     db.insertOne(metadataDocument);
@@ -121,7 +125,6 @@ class SqliteMetadataDatabaseTest {
 
   @Test
   void insertMany() {
-    long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
         .url("https://news.com/n1")
         .state(DocumentState.ACTIVE).build();
@@ -212,12 +215,12 @@ class SqliteMetadataDatabaseTest {
 
     int result = db.updateStateByAgeAndState(24, TimeUnit.HOURS, DocumentState.ACTIVE, DocumentState.DELETED);
     assertThat(result).isEqualTo(1);
-    assertThat(db.getByUrl(metadataDocument.url()).get().state()).isEqualTo(DocumentState.DELETED);
-    assertThat(db.getByUrl(metadataDocument2.url()).get().state()).isEqualTo(DocumentState.ACTIVE);
+    assertThat(db.getByUrl(metadataDocument.url()).orElseThrow().state()).isEqualTo(DocumentState.DELETED);
+    assertThat(db.getByUrl(metadataDocument2.url()).orElseThrow().state()).isEqualTo(DocumentState.ACTIVE);
   }
 
   @Test
-  void getDeletablePages() throws SQLException {
+  void getDeletablePages() {
     long createdAt = LocalDateTime.now().minusHours(25).toEpochSecond(ZoneOffset.UTC);
     for (int i = 0; i < 50; i++) {
       MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
@@ -227,9 +230,11 @@ class SqliteMetadataDatabaseTest {
     }
     String updateSql = String.format("UPDATE %s SET createdAt=%d where state='ACTIVE'", metaTable,
         createdAt);
-    Statement stmt = db.getConnection().createStatement();
-    stmt.executeUpdate(updateSql);
-
+    try (Statement stmt = db.getConnection().createStatement()) {
+      stmt.executeUpdate(updateSql);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
     for (int i = 50; i < 100; i++) {
       MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
           .url("https://news.com/n" + i)

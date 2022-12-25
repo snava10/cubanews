@@ -24,17 +24,21 @@ public class SqliteMetadataDatabase {
   String dbPath;
   Connection conn;
   String tableName;
+  String operationsTableName;
 
   public SqliteMetadataDatabase(String dbPath, String tableName) {
     this.dbPath = dbPath;
     url += dbPath;
     this.tableName = tableName;
+    this.operationsTableName = "operations";
   }
 
+  @SuppressWarnings("unused")
   public String getUrl() {
     return url;
   }
 
+  @SuppressWarnings("unused")
   public String getDbPath() {
     return dbPath;
   }
@@ -44,14 +48,16 @@ public class SqliteMetadataDatabase {
   }
 
   /**
-   * Opens the database connection. Creates the database and metadata table if it doesn't exists.
-   * @throws SQLException
+   * Opens the database connection. Creates the database and metadata table if it doesn't exist.
+   * @throws SQLException Indicates failure to initialise database.
    */
   public void initialise() throws SQLException {
     connect();
     createMetadataTable();
+    createOperationsTable();
   }
 
+  @SuppressWarnings("unused")
   public void close() throws SQLException {
     conn.close();
   }
@@ -61,17 +67,36 @@ public class SqliteMetadataDatabase {
   }
 
   private void createMetadataTable() {
-    String sql = String.format("CREATE TABLE IF NOT EXISTS %s (\n"
-        + "	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\n"
-        + "	url TEXT NOT NULL UNIQUE,\n"
-        + "	lastUpdated NUMERIC NOT NULL,\n"
-        + " createdAt NUMERIC NOT NULL, \n"
-        + " state TEXT NOT NULL);", tableName);
+    String sql = String.format("""
+            CREATE TABLE IF NOT EXISTS %s (
+            	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+            	url TEXT NOT NULL UNIQUE,
+            	lastUpdated NUMERIC NOT NULL,
+             createdAt NUMERIC NOT NULL,\s
+             state TEXT NOT NULL);""", tableName);
     String sqlIndex = String.format("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON %s (url);",
         tableName);
     try (Statement stmt = conn.createStatement()) {
       stmt.execute(sql);
       stmt.execute(sqlIndex);
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void createOperationsTable() {
+    String sql = String.format("""
+            CREATE TABLE IF NOT EXISTS %s (
+             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+             type TEXT NOT NULL,
+             startedAt NUMERIC NOT NULL,
+             finishedAt NUMERIC,
+             lastUpdated INTEGER NOT NULL,
+             docsProcessed INTEGER NOT NULL DEFAULT 0,
+             description TEXT)""", operationsTableName);
+    try (Statement stmt = conn.createStatement()) {
+      stmt.execute(sql);
     } catch (SQLException e) {
       e.printStackTrace();
       throw new RuntimeException(e);
