@@ -16,10 +16,8 @@ public class Program {
     CrawlerController controller = new CrawlerController("/tmp/crawler4j");
     SqliteMetadataDatabase metadataDatabase = new SqliteMetadataDatabase(metadataDbName, "metaTable");
     metadataDatabase.initialise();
-    controller.start(10, 10, Stream.of(
-            "https://adncuba.com/noticias-de-cuba",
-            "https://www.14ymedio.com/",
-            "https://www.cibercuba.com/noticias"
+    controller.start(2, 10, Stream.of(
+            "https://www.cibercuba.com/noticias/2022-12-25-u1-e208512-s27061-cuentas-cubanas-cuc-seran-historia-proximo-miercoles"
         ).collect(Collectors.toSet()), new LuceneIndexer(indexPath), metadataDatabase)
         .doOnError(error -> {
           System.out.println(error.getLocalizedMessage());

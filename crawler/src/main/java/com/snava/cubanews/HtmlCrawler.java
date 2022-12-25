@@ -63,13 +63,10 @@ public class HtmlCrawler extends WebCrawler {
   public void visit(Page page) {
     String url = page.getWebURL().getURL();
 
-    if (page.getParseData() instanceof HtmlParseData) {
-      HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
+    if (page.getParseData() instanceof HtmlParseData htmlParseData) {
       String title = htmlParseData.getTitle();
-//      String text = htmlParseData.getText();
       String html = htmlParseData.getHtml();
-      String text = Jsoup.parse(html).text();
-      Set<WebURL> links = htmlParseData.getOutgoingUrls();
+      String text = html != null ? Jsoup.parse(html).text() : htmlParseData.getText();
       System.out.printf("%s %s%n", title, url);
       // do something with the collected data
       IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text).build();
@@ -80,6 +77,8 @@ public class HtmlCrawler extends WebCrawler {
         // Todo: Use a logger
         System.out.println(getValidityDocumentExplanation(doc));
       } else if (doc.url().contains("?")) {
+        // Todo: revise this as there may be valid articles being ignored.
+        // Possible solution would be to hash the text and compare by similarity to detect valid new articles and avoid duplicates.
         System.out.println("Ignoring " + doc.url() + " because contains parameters.");
       } else {
         docsToIndex.add(doc);
