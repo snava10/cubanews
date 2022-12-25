@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
 
 public class HtmlCrawler extends WebCrawler {
 
@@ -65,8 +66,9 @@ public class HtmlCrawler extends WebCrawler {
     if (page.getParseData() instanceof HtmlParseData) {
       HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
       String title = htmlParseData.getTitle();
-      String text = htmlParseData.getText();
+//      String text = htmlParseData.getText();
       String html = htmlParseData.getHtml();
+      String text = Jsoup.parse(html).text();
       Set<WebURL> links = htmlParseData.getOutgoingUrls();
       System.out.printf("%s %s%n", title, url);
       // do something with the collected data
