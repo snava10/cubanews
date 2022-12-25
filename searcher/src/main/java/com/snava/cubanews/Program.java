@@ -11,10 +11,12 @@ public class Program {
 
   public static void main(String[] args) throws IOException, ParseException {
 
-    Directory index = FSDirectory.open(Paths.get("/tmp/index"));
+    final String indexPath = System.getProperty("user.home") + args[0];
+    Directory index = FSDirectory.open(Paths.get(indexPath));
     Searcher searcher = new Searcher();
-    for (Document doc :searcher.search("text", "cine", index, 10)) {
+    for (Document doc :searcher.search("text", "cuba", index, 10)) {
       System.out.printf("%s %s%n", doc.get("url"), doc.get("title"));
+      System.out.println(doc.get("text"));
     }
   }
 
