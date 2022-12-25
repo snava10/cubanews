@@ -1,11 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Crawler Main" type="Application" factoryName="Application">
+  <configuration default="false" name="Searcher main" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.snava.cubanews.Program" />
-    <module name="cubanews.crawler.main" />
-    <option name="PROGRAM_PARAMETERS" value="/tmp/cubanews/cubanews.db /tmp/cubanews/index" />
+    <module name="cubanews.searcher.main" />
+    <option name="PROGRAM_PARAMETERS" value="/tmp/cubanews/index" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.snava.cubanews.data.access.*" />
+        <option name="PATTERN" value="com.snava.cubanews.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

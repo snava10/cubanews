@@ -11,7 +11,7 @@ public class Program {
 
   public static void main(String[] args) throws IOException, ParseException {
 
-    final String indexPath = System.getProperty("user.home") + args[0];
+    final String indexPath = args[0];
     Directory index = FSDirectory.open(Paths.get(indexPath));
     Searcher searcher = new Searcher();
     for (Document doc :searcher.search("text", "cuba", index, 10)) {
