@@ -32,19 +32,23 @@ public class CrawlerController implements Crawler {
     RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
     crawlController = new CrawlController(config, pageFetcher, robotstxtServer);
     baseUrls.forEach(url -> crawlController.addSeed(url));
-
+    Operation crawlOperation = ImmutableOperation.builder().type(OperationType.CRAWL)
+        .state(OperationState.IN_PROGRESS).build();
     CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(indexer,
-        baseUrls, metadataDatabase);
+        baseUrls, metadataDatabase, crawlOperation);
     return Observable.fromCallable(() -> {
       try {
+        metadataDatabase.insertOperation(crawlOperation);
         crawlController.start(factory, numCrawlers);
       } catch (Exception ex) {
         return Observable.error(ex);
       }
-      return true;
+      return crawlOperation;
     }).doOnNext(o -> {
       System.out.println("Closing index writer");
       indexer.close();
+      Operation op = (Operation)o;
+      metadataDatabase.completeOperation(op);
     });
   }
 }

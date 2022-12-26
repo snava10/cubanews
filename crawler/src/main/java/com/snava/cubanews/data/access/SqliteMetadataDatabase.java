@@ -3,7 +3,11 @@ package com.snava.cubanews.data.access;
 import com.google.cloud.Tuple;
 import com.snava.cubanews.DocumentState;
 import com.snava.cubanews.ImmutableMetadataDocument;
+import com.snava.cubanews.ImmutableOperation;
 import com.snava.cubanews.MetadataDocument;
+import com.snava.cubanews.Operation;
+import com.snava.cubanews.OperationState;
+import com.snava.cubanews.OperationType;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class SqliteMetadataDatabase {
@@ -49,6 +54,7 @@ public class SqliteMetadataDatabase {
 
   /**
    * Opens the database connection. Creates the database and metadata table if it doesn't exist.
+   *
    * @throws SQLException Indicates failure to initialise database.
    */
   public void initialise() throws SQLException {
@@ -68,12 +74,12 @@ public class SqliteMetadataDatabase {
 
   private void createMetadataTable() {
     String sql = String.format("""
-            CREATE TABLE IF NOT EXISTS %s (
-            	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-            	url TEXT NOT NULL UNIQUE,
-            	lastUpdated NUMERIC NOT NULL,
-             createdAt NUMERIC NOT NULL,\s
-             state TEXT NOT NULL);""", tableName);
+        CREATE TABLE IF NOT EXISTS %s (
+        	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+        	url TEXT NOT NULL UNIQUE,
+        	lastUpdated NUMERIC NOT NULL,
+         createdAt NUMERIC NOT NULL,\s
+         state TEXT NOT NULL);""", tableName);
     String sqlIndex = String.format("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON %s (url);",
         tableName);
     try (Statement stmt = conn.createStatement()) {
@@ -87,14 +93,15 @@ public class SqliteMetadataDatabase {
 
   private void createOperationsTable() {
     String sql = String.format("""
-            CREATE TABLE IF NOT EXISTS %s (
-             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-             type TEXT NOT NULL,
-             startedAt NUMERIC NOT NULL,
-             finishedAt NUMERIC,
-             lastUpdated INTEGER NOT NULL,
-             docsProcessed INTEGER NOT NULL DEFAULT 0,
-             description TEXT)""", operationsTableName);
+        CREATE TABLE IF NOT EXISTS %s (
+         id TEXT NOT NULL PRIMARY KEY UNIQUE,
+         type TEXT NOT NULL,
+         state TEXT NOT NULL,
+         startedAt NUMERIC NOT NULL,
+         finishedAt NUMERIC,
+         lastUpdated INTEGER NOT NULL,
+         docsProcessed INTEGER NOT NULL DEFAULT 0,
+         description TEXT NULL)""", operationsTableName);
     try (Statement stmt = conn.createStatement()) {
       stmt.execute(sql);
     } catch (SQLException e) {
@@ -104,7 +111,8 @@ public class SqliteMetadataDatabase {
   }
 
   public MetadataDocument getByUrlAndState(String url, DocumentState state) {
-    String sql = "select id, url, createdAt, lastUpdated, state from " + tableName + " where url=? and state=?";
+    String sql = "select id, url, createdAt, lastUpdated, state from " + tableName
+        + " where url=? and state=?";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
       stmt.setString(1, url);
       stmt.setString(2, state.name());
@@ -282,6 +290,79 @@ public class SqliteMetadataDatabase {
       throw new RuntimeException(e);
     }
     return () -> new UrlsIterator(stmt, resultSet, batchSize);
+  }
+
+  public void insertOperation(Operation operation) {
+    final String sql = String.format(
+        "INSERT INTO %s (id, type, state, startedAt, finishedAt, lastUpdated, docsProcessed) VALUES (?,?,?,?,?,?,?)",
+        operationsTableName);
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, String.valueOf(operation.id()));
+      stmt.setString(2, String.valueOf(operation.type()));
+      stmt.setString(3, String.valueOf(operation.state()));
+      stmt.setLong(4, operation.startedAt());
+      stmt.setLong(5, operation.finishedAt());
+      stmt.setLong(6, operation.lastUpdated());
+      stmt.setObject(7, operation.docsProcessed());
+      stmt.execute();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public synchronized void completeOperation(Operation op) {
+    long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    final String sql = String.format(
+        "UPDATE %s SET state=?, lastUpdated=?, finishedAt=? where id=?", operationsTableName);
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, String.valueOf(OperationState.COMPLETED));
+      stmt.setLong(2, timestamp);
+      stmt.setLong(3, timestamp);
+      stmt.setString(4, String.valueOf(op.id()));
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public synchronized void increaseOperationDocCounts(UUID opId, int amount) {
+    long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    Operation op = getOperationById(opId);
+    final String sql = String.format("UPDATE %s SET docsProcessed=?, lastUpdated=? where id=?",
+        operationsTableName);
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setInt(1, op.docsProcessed() + amount);
+      stmt.setLong(2, timestamp);
+      stmt.setString(3, String.valueOf(op.id()));
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public Operation getOperationById(UUID id) {
+    String sql = String.format("SELECT id, type, state, startedAt, finishedAt, lastUpdated, docsProcessed, description FROM %s WHERE id=?", operationsTableName);
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, String.valueOf(id));
+      ResultSet resultSet = stmt.executeQuery();
+      if (resultSet.next()) {
+        return ImmutableOperation.builder()
+            .id(UUID.fromString(resultSet.getString("id")))
+            .type(OperationType.valueOf(resultSet.getString("type")))
+            .state(OperationState.valueOf(resultSet.getString("state")))
+            .lastUpdated(resultSet.getLong("lastUpdated"))
+            .startedAt(resultSet.getLong("startedAt"))
+            .description(resultSet.getString("description"))
+            .docsProcessed(resultSet.getInt("docsProcessed"))
+            .finishedAt(resultSet.getLong("finishedAt"))
+            .build();
+      }
+      return null;
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+      throw new RuntimeException(ex);
+    }
   }
 
   static class UrlsIterator implements Iterator<List<String>> {
