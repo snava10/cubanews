@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -14,13 +13,11 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
-import org.apache.lucene.search.BoostQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.QueryBuilder;
 
 public class Searcher {
 
@@ -49,7 +46,7 @@ public class Searcher {
       } catch (ParseException e) {
         throw new RuntimeException(e);
       }
-    }).collect(Collectors.toList());
+    }).toList();
     BooleanQuery.Builder builder = new Builder();
     queries.forEach(q -> builder.add(q, Occur.SHOULD));
 
@@ -64,7 +61,8 @@ public class Searcher {
     return documents;
   }
 
-  public List<Document> search(String queryString, Directory index, int top)
+  public List<Document>
+  search(String queryString, Directory index, int top)
       throws IOException {
     return booleanSearch(Arrays.asList("title","url","text"), queryString, index, top);
   }

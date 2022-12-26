@@ -1,5 +1,7 @@
 package com.snava.cubanews;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -8,6 +10,8 @@ import org.immutables.value.Value.Immutable;
 import javax.annotation.Nullable;
 
 @Immutable
+@JsonSerialize(as = ImmutableOperation.class)
+@JsonDeserialize(as = ImmutableOperation.class)
 public interface Operation {
 
   @Default
