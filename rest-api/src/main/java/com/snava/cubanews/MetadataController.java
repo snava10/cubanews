@@ -1,6 +1,7 @@
 package com.snava.cubanews;
 
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,11 @@ public class MetadataController {
     int active = db.count(DocumentState.ACTIVE);
     int deleted = db.count(DocumentState.DELETED);
     return Mono.just(new CountDocumentsResult(total, active, deleted));
+  }
+
+  @GetMapping("/api/metadata/operations")
+  public Mono<List<Operation>> getOperations() {
+    return Mono.just(db.getOperations());
   }
 
   record CountDocumentsResult(int total, int active, int deleted) {

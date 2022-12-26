@@ -342,7 +342,9 @@ public class SqliteMetadataDatabase {
   }
 
   public Operation getOperationById(UUID id) {
-    String sql = String.format("SELECT id, type, state, startedAt, finishedAt, lastUpdated, docsProcessed, description FROM %s WHERE id=?", operationsTableName);
+    String sql = String.format(
+        "SELECT id, type, state, startedAt, finishedAt, lastUpdated, docsProcessed, description FROM %s WHERE id=?",
+        operationsTableName);
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
       stmt.setString(1, String.valueOf(id));
       ResultSet resultSet = stmt.executeQuery();
@@ -359,6 +361,33 @@ public class SqliteMetadataDatabase {
             .build();
       }
       return null;
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+      throw new RuntimeException(ex);
+    }
+  }
+
+  public List<Operation> getOperations() {
+    String sql = String.format(
+        "SELECT id, type, state, startedAt, finishedAt, lastUpdated, docsProcessed, description FROM %s",
+        operationsTableName);
+    List<Operation> result = new ArrayList<>();
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      ResultSet resultSet = stmt.executeQuery();
+      while (resultSet.next()) {
+        Operation op = ImmutableOperation.builder()
+            .id(UUID.fromString(resultSet.getString("id")))
+            .type(OperationType.valueOf(resultSet.getString("type")))
+            .state(OperationState.valueOf(resultSet.getString("state")))
+            .lastUpdated(resultSet.getLong("lastUpdated"))
+            .startedAt(resultSet.getLong("startedAt"))
+            .description(resultSet.getString("description"))
+            .docsProcessed(resultSet.getInt("docsProcessed"))
+            .finishedAt(resultSet.getLong("finishedAt"))
+            .build();
+        result.add(op);
+      }
+      return result;
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
       throw new RuntimeException(ex);

@@ -9,8 +9,8 @@ import org.immutables.value.Value.Default;
 import org.immutables.value.Value.Immutable;
 
 @Immutable
-@JsonSerialize(as = IndexDocument.class)
-@JsonDeserialize(as = IndexDocument.class)
+@JsonSerialize(as = ImmutableIndexDocument.class)
+@JsonDeserialize(as = ImmutableIndexDocument.class)
 public interface IndexDocument {
   @Default
   default long lastUpdated() {
