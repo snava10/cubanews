@@ -5,7 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.google.cloud.Tuple;
 import com.snava.cubanews.DocumentState;
 import com.snava.cubanews.ImmutableMetadataDocument;
+import com.snava.cubanews.ImmutableOperation;
 import com.snava.cubanews.MetadataDocument;
+import com.snava.cubanews.Operation;
+import com.snava.cubanews.OperationState;
+import com.snava.cubanews.OperationType;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +36,7 @@ class SqliteMetadataDatabaseTest {
   static String dbPath;
   static Random r = new Random();
   static String metaTable = "metaTable";
+  static String operationsTable = "operations";
 
   @BeforeEach
   void setUp() throws SQLException {
@@ -63,7 +69,8 @@ class SqliteMetadataDatabaseTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"metaTable", "operations"}) // six numbers
+  @ValueSource(strings = {"metaTable", "operations"})
+    // six numbers
   void createMetadataTable(String tableName) throws SQLException {
     String tableExistsSQL = String.format(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='%s'", tableName);
@@ -213,10 +220,13 @@ class SqliteMetadataDatabaseTest {
     stmt.executeUpdate(updateSql);
     stmt.close();
 
-    int result = db.updateStateByAgeAndState(24, TimeUnit.HOURS, DocumentState.ACTIVE, DocumentState.DELETED);
+    int result = db.updateStateByAgeAndState(24, TimeUnit.HOURS, DocumentState.ACTIVE,
+        DocumentState.DELETED);
     assertThat(result).isEqualTo(1);
-    assertThat(db.getByUrl(metadataDocument.url()).orElseThrow().state()).isEqualTo(DocumentState.DELETED);
-    assertThat(db.getByUrl(metadataDocument2.url()).orElseThrow().state()).isEqualTo(DocumentState.ACTIVE);
+    assertThat(db.getByUrl(metadataDocument.url()).orElseThrow().state()).isEqualTo(
+        DocumentState.DELETED);
+    assertThat(db.getByUrl(metadataDocument2.url()).orElseThrow().state()).isEqualTo(
+        DocumentState.ACTIVE);
   }
 
   @Test
@@ -248,6 +258,26 @@ class SqliteMetadataDatabaseTest {
       batches++;
     }
     assertThat(batches).isEqualTo(5);
+  }
+
+  @Test
+  void insertOperation() {
+    Operation operation = ImmutableOperation.builder().type(OperationType.CRAWL).state(
+        OperationState.IN_PROGRESS).build();
+    db.insertOperation(operation);
+    String sql = "Select * from " + operationsTable;
+    try (Statement stmt = db.getConnection().createStatement()) {
+      ResultSet resultSet = stmt.executeQuery(sql);
+      assertThat(resultSet.next()).isTrue();
+      assertThat(resultSet.getString("type")).isEqualTo(String.valueOf(OperationType.CRAWL));
+      assertThat(resultSet.getString("state")).isEqualTo(
+          String.valueOf(OperationState.IN_PROGRESS));
+      assertThat(UUID.fromString(resultSet.getString("id"))).isEqualTo(operation.id());
+      assertThat(resultSet.next()).isFalse();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      assertThat(true).isFalse();
+    }
   }
 
 }

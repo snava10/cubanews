@@ -10,14 +10,17 @@ import java.util.stream.Stream;
 public class Program {
 
   public static void main(String[] args) throws Exception {
-      final String metadataDbName = args[0];
-      final String indexPath = args[1];
+    final String metadataDbName = args[0];
+    final String indexPath = args[1];
 
     CrawlerController controller = new CrawlerController("/tmp/crawler4j");
-    SqliteMetadataDatabase metadataDatabase = new SqliteMetadataDatabase(metadataDbName, "metaTable");
+    SqliteMetadataDatabase metadataDatabase = new SqliteMetadataDatabase(metadataDbName,
+        "metaTable");
     metadataDatabase.initialise();
-    controller.start(2, 10, Stream.of(
-            "https://www.cibercuba.com/noticias/2022-12-25-u1-e208512-s27061-cuentas-cubanas-cuc-seran-historia-proximo-miercoles"
+    controller.start(10, 10, Stream.of(
+            "https://adncuba.com/noticias-de-cuba",
+            "https://www.14ymedio.com/",
+            "https://www.cibercuba.com/noticias"
         ).collect(Collectors.toSet()), new LuceneIndexer(indexPath), metadataDatabase)
         .doOnError(error -> {
           System.out.println(error.getLocalizedMessage());

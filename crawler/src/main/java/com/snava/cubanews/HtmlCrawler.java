@@ -22,16 +22,20 @@ public class HtmlCrawler extends WebCrawler {
   private final Set<String> seeds;
   private final SqliteMetadataDatabase metadataDatabase;
 
+  private final Operation crawlOperation;
+
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
   // TODO: Add config for hard coded value.
   // TODO: Evaluate what is the best value for this parameter.
   private final int indexBatch = 10;
 
-  public HtmlCrawler(Indexer indexer, Set<String> seeds, SqliteMetadataDatabase metadataDatabase) {
+  public HtmlCrawler(Indexer indexer, Set<String> seeds, SqliteMetadataDatabase metadataDatabase,
+      Operation crawlOperation) {
     super();
     this.indexer = indexer;
     this.seeds = seeds;
     this.metadataDatabase = metadataDatabase;
+    this.crawlOperation = crawlOperation;
   }
 
   @Override
@@ -99,6 +103,7 @@ public class HtmlCrawler extends WebCrawler {
       metadataDatabase.insertMany(docsToIndex.stream().map(
           doc -> ImmutableMetadataDocument.builder().url(Objects.requireNonNull(doc.url())).build()
       ).collect(Collectors.toList()));
+      metadataDatabase.increaseOperationDocCounts(crawlOperation.id(), docsToIndex.size());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

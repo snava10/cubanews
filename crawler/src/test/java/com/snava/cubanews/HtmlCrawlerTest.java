@@ -26,10 +26,12 @@ class HtmlCrawlerTest {
   public void setup() {
     indexer = mock(Indexer.class);
     metadataDatabase = mock(SqliteMetadataDatabase.class);
+    Operation op = ImmutableOperation.builder().type(OperationType.CRAWL)
+        .state(OperationState.IN_PROGRESS).build();
     crawler = new HtmlCrawler(indexer, Stream.of(
         "https://url1.com/",
         "https://url2.com/"
-    ).collect(Collectors.toSet()), metadataDatabase);
+    ).collect(Collectors.toSet()), metadataDatabase, op);
   }
 
   @Test
