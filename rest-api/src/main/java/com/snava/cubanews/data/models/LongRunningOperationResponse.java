@@ -1,9 +1,8 @@
 package com.snava.cubanews.data.models;
 
 public record LongRunningOperationResponse(String index,
-                                           com.snava.cubanews.data.models.LongRunningOperationResponse.OperationStatus status,
-                                           com.snava.cubanews.data.models.LongRunningOperationResponse.OperationType type) {
-
+                                           OperationStatus status,
+                                           OperationType type) {
 
   public enum OperationStatus {
     IN_PROGRESS,
