@@ -6,7 +6,6 @@ import com.snava.cubanews.data.models.LongRunningOperationResponse;
 import com.snava.cubanews.data.models.LongRunningOperationResponse.OperationStatus;
 import com.snava.cubanews.data.models.LongRunningOperationResponse.OperationType;
 import io.reactivex.Flowable;
-import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -33,14 +32,15 @@ public class CrawlController {
 
   @PostMapping("/api/crawl")
   public Mono<LongRunningOperationResponse> crawl(
-          @RequestParam(value = "dryRun", defaultValue = "false") boolean dryRun,
-          @RequestBody CrawlRequest crawlRequest)
+      @RequestParam(value = "dryRun", defaultValue = "false") boolean dryRun,
+      @RequestBody CrawlRequest crawlRequest)
       throws Exception {
     System.out.println(crawlRequest);
     if (!dryRun) {
       crawler.start(crawlRequest.getLimit(), 12, crawlRequest.getBaseUrls(),
-                      new LuceneIndexer(homePath + crawlRequest.getIndexName()), db).subscribeOn(Schedulers.io())
-              .subscribe();
+              new LuceneIndexer(homePath + crawlRequest.getIndexName()), db)
+          .subscribeOn(Schedulers.io())
+          .subscribe();
     }
     return Mono.just(
         new LongRunningOperationResponse(crawlRequest.getIndexName(), OperationStatus.IN_PROGRESS,
@@ -50,10 +50,10 @@ public class CrawlController {
   @GetMapping("/api/clearold/{indexName}")
   public Mono<LongRunningOperationResponse> clearOld(@PathVariable String indexName,
       @RequestParam(value = "amount", defaultValue = "3") int amount,
-      @RequestParam(value = "timeunit", defaultValue = "DAYS") String timeunit) {
+      @RequestParam(value = "timeunit", defaultValue = "DAYS") String timeunit) throws IOException {
     System.out.printf("Deleting pages older that %d %s%n", amount, timeunit);
-
-    Single.fromCallable(() -> clearOld(indexName, amount, TimeUnit.valueOf(timeunit)))
+    Indexer indexer = new LuceneIndexer(homePath + indexName);
+    DeletePagesManager.deleteOldPageReactive(amount, TimeUnit.valueOf(timeunit), db, indexer)
         .retryWhen(errors ->
             errors.zipWith(
                 Flowable.range(1, 10),
@@ -71,11 +71,6 @@ public class CrawlController {
 
     return Mono.just(new LongRunningOperationResponse(indexName, OperationStatus.IN_PROGRESS,
         OperationType.DELETE_OLD_PAGES));
-  }
-
-  private int clearOld(String indexName, int amount, TimeUnit timeUnit) throws IOException {
-    Indexer indexer = new LuceneIndexer(homePath + indexName);
-    return DeletePagesManager.deleteOldPages(amount, timeUnit, db, indexer);
   }
 
 }

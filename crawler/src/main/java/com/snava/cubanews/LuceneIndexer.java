@@ -3,19 +3,16 @@ package com.snava.cubanews;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.SortedNumericDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.Terms;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TermInSetQuery;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
@@ -52,6 +49,7 @@ public class LuceneIndexer extends AbstractIndexer {
     document.add(new TextField("title", Objects.requireNonNull(doc.title()), Store.YES));
     document.add(new TextField("url", Objects.requireNonNull(doc.url()), Store.YES));
     document.add(new TextField("text", Objects.requireNonNull(doc.text()), Store.YES));
+    document.add(new SortedNumericDocValuesField("lastUpdated", doc.lastUpdated()));
     document.add(new StringField("lastUpdated", String.valueOf(doc.lastUpdated()), Store.YES));
     Term term = new Term("_id", Objects.requireNonNull(doc.url()));
     TermQuery termQuery = new TermQuery(term);
@@ -85,8 +83,8 @@ public class LuceneIndexer extends AbstractIndexer {
 
   @Override
   public void delete(List<String> docUrls) throws IOException {
-    List<Term> terms = docUrls.stream().map(url -> new Term("_id", Objects.requireNonNull(url))).collect(
-        Collectors.toList());
+    List<Term> terms = docUrls.stream().map(url -> new Term("_id", Objects.requireNonNull(url)))
+        .toList();
     Term[] termsArray = new Term[terms.size()];
     terms.toArray(termsArray);
     writer.deleteDocuments(termsArray);
