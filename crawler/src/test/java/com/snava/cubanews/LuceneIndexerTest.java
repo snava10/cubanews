@@ -3,11 +3,17 @@ package com.snava.cubanews;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
@@ -50,11 +56,8 @@ class LuceneIndexerTest {
 
   @Test
   void index() throws Exception {
-    IndexDocument iDocument1 = ImmutableIndexDocument.builder()
-        .url("http://url1.com")
-        .title("doc1")
-        .text("doc1 content")
-        .build();
+    IndexDocument iDocument1 = ImmutableIndexDocument.builder().url("http://url1.com").title("doc1")
+        .text("doc1 content").build();
     indexer.index(iDocument1);
     indexReader = DirectoryReader.open(memoryIndex);
     searcher = new IndexSearcher(indexReader);
@@ -64,11 +67,8 @@ class LuceneIndexerTest {
 
   @Test
   void index_shouldNotDuplicateDocuments() throws IOException {
-    IndexDocument iDocument1 = ImmutableIndexDocument.builder()
-        .url("http://url1.com")
-        .title("doc1")
-        .text("doc1 content")
-        .build();
+    IndexDocument iDocument1 = ImmutableIndexDocument.builder().url("http://url1.com").title("doc1")
+        .text("doc1 content").build();
     indexer.index(iDocument1);
     indexer.index(iDocument1);
     indexReader = DirectoryReader.open(memoryIndex);
@@ -79,18 +79,19 @@ class LuceneIndexerTest {
 
   @Test
   void index_ShouldStoreLastUpdated() throws Exception {
-    IndexDocument iDocument1 = ImmutableIndexDocument.builder()
-        .url("http://url1.com")
-        .title("doc1")
-        .text("doc1 content")
-        .build();
+    IndexDocument iDocument1 = ImmutableIndexDocument.builder().url("http://url1.com").title("doc1")
+        .text("doc1 content").build();
     indexer.index(iDocument1);
     indexReader = DirectoryReader.open(memoryIndex);
     searcher = new IndexSearcher(indexReader);
     TopDocs topDocs = searcher.search(new TermQuery(new Term("_id", "http://url1.com")), 1);
     String lastUpdated = searcher.doc(topDocs.scoreDocs[0].doc).get("lastUpdated");
+    String expectedLastUpdated = LocalDate.ofEpochDay(
+        LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) / TimeUnit.DAYS.toSeconds(1)).format(
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(new Locale("es", "ES"))
+    );
     assertNotNull(lastUpdated);
-    assertTrue(Long.parseLong(lastUpdated) > 0);
+    assertEquals(expectedLastUpdated, lastUpdated);
   }
 
   @Test
@@ -98,11 +99,8 @@ class LuceneIndexerTest {
     List<String> urls = new ArrayList<>();
     for (int i = 0; i < 50; i++) {
       urls.add("http://url" + i);
-      IndexDocument iDocument1 = ImmutableIndexDocument.builder()
-          .url("http://url" + i)
-          .title("doc1")
-          .text("doc1 content")
-          .build();
+      IndexDocument iDocument1 = ImmutableIndexDocument.builder().url("http://url" + i)
+          .title("doc1").text("doc1 content").build();
       indexer.index(iDocument1);
     }
     TermQuery t = new TermQuery(new Term("title", "doc1"));

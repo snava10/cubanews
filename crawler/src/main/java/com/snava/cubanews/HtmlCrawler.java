@@ -79,7 +79,8 @@ public class HtmlCrawler extends WebCrawler {
       String text = html != null ? Jsoup.parse(html).text() : htmlParseData.getText();
       System.out.printf("%s %s%n", title, url);
       // do something with the collected data
-      IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text).build();
+      IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text)
+          .lastUpdated(getLastModified(page)).build();
       if (metadataDatabase.exists(doc.url())) {
         // Todo: Use a logger
         System.out.printf("Document with url: %s already exists%n", doc.url());
