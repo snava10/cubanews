@@ -5,13 +5,20 @@ import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.jsoup.Jsoup;
 
 public class HtmlCrawler extends WebCrawler {
@@ -66,7 +73,6 @@ public class HtmlCrawler extends WebCrawler {
   @Override
   public void visit(Page page) {
     String url = page.getWebURL().getURL();
-
     if (page.getParseData() instanceof HtmlParseData htmlParseData) {
       String title = htmlParseData.getTitle();
       String html = htmlParseData.getHtml();
@@ -80,7 +86,7 @@ public class HtmlCrawler extends WebCrawler {
       } else if (!isAValidDocument(doc)) {
         // Todo: Use a logger
         System.out.println(getValidityDocumentExplanation(doc));
-      } else if (doc.url().contains("?")) {
+      } else if (Objects.requireNonNull(doc.url()).contains("?")) {
         // Todo: revise this as there may be valid articles being ignored.
         // Possible solution would be to hash the text and compare by similarity to detect valid new articles and avoid duplicates.
         System.out.println("Ignoring " + doc.url() + " because contains parameters.");
@@ -108,6 +114,16 @@ public class HtmlCrawler extends WebCrawler {
       throw new RuntimeException(e);
     }
     docsToIndex.clear();
+  }
+
+  private long getLastModified(Page page) {
+    Optional<Header> lastModified = Arrays.stream(page.getFetchResponseHeaders())
+        .filter(h -> h.getName().equals("Last-Modified")).findFirst();
+    if (lastModified.isEmpty()) {
+      return LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    }
+    LocalDate date = LocalDate.parse(lastModified.get().getValue());
+    return date.toEpochSecond(LocalTime.now(), ZoneOffset.UTC);
   }
 
   private String getValidityDocumentExplanation(IndexDocument indexDocument) {

@@ -1,11 +1,16 @@
 package com.snava.cubanews;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.SortedNumericDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
@@ -24,6 +29,7 @@ public class LuceneIndexer extends AbstractIndexer {
     super(index);
   }
 
+  @SuppressWarnings("unused")
   public LuceneIndexer(String index, Analyzer analyzer)
       throws IOException {
     super(index, analyzer);
@@ -48,8 +54,11 @@ public class LuceneIndexer extends AbstractIndexer {
     document.add(new TextField("title", Objects.requireNonNull(doc.title()), Store.YES));
     document.add(new TextField("url", Objects.requireNonNull(doc.url()), Store.YES));
     document.add(new TextField("text", Objects.requireNonNull(doc.text()), Store.YES));
-//    document.add(new SortedNumericDocValuesField("lastUpdated", doc.lastUpdated()));
-    document.add(new StringField("lastUpdated", String.valueOf(doc.lastUpdated()), Store.YES));
+    document.add(new SortedNumericDocValuesField("lastUpdatedNumeric", doc.lastUpdated()));
+    document.add(new StringField("lastUpdated", LocalDate.ofEpochDay(doc.lastUpdated()).format(
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+            .withLocale(new Locale("es", "ES"))
+    ), Store.YES));
     Term term = new Term("_id", Objects.requireNonNull(doc.url()));
     TermQuery termQuery = new TermQuery(term);
 

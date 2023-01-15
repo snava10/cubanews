@@ -26,7 +26,6 @@ public class CrawlerController implements Crawler {
     // TODO: Add config for hard coded parameter
     config.setCrawlStorageFolder("/tmp");
     config.setMaxPagesToFetch(maxPagesToFetch);
-
     PageFetcher pageFetcher = new PageFetcher(config);
     RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
     RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
@@ -36,6 +35,7 @@ public class CrawlerController implements Crawler {
         .state(OperationState.IN_PROGRESS).build();
     CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(indexer,
         baseUrls, metadataDatabase, crawlOperation);
+
     return Observable.fromCallable(() -> {
       try {
         metadataDatabase.insertOperation(crawlOperation);

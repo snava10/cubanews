@@ -18,6 +18,7 @@ public class Program {
         "metaTable");
     metadataDatabase.initialise();
     controller.start(10, 10, Stream.of(
+        "https://diariodecuba.com/",
             "https://adncuba.com/noticias-de-cuba",
             "https://www.14ymedio.com/",
             "https://www.cibercuba.com/noticias"
