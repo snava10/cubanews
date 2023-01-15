@@ -1,6 +1,6 @@
 dependencies {
     implementation project(':core')
-    implementation platform('com.google.cloud:libraries-bom:26.1.5')
+    implementation platform('com.google.cloud:libraries-bom:26.3.0')
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'com.sleepycat:je:18.3.12'
     implementation 'edu.uci.ics:crawler4j:4.4.0'
@@ -9,6 +9,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.jsoup:jsoup:1.15.3'
-    testImplementation 'org.mockito:mockito-core:4.9.0'
+    implementation 'commons-codec:commons-codec:1.15'
+
+    testImplementation 'org.mockito:mockito-core:4.11.0'
 
 }
