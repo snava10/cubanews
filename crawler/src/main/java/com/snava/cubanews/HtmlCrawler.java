@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.jsoup.Jsoup;
@@ -104,11 +106,16 @@ public class HtmlCrawler extends WebCrawler {
     return docsToIndex;
   }
 
+  private String hashDocBody(IndexDocument doc) {
+    return DigestUtils.sha256Hex(doc.text());
+  }
+
   private void flushBuffer() {
     try {
       indexer.index(docsToIndex);
       metadataDatabase.insertMany(docsToIndex.stream().map(
-          doc -> ImmutableMetadataDocument.builder().url(Objects.requireNonNull(doc.url())).build()
+          doc -> ImmutableMetadataDocument.builder().url(Objects.requireNonNull(doc.url()))
+              .hash(hashDocBody(doc)).build()
       ).collect(Collectors.toList()));
       metadataDatabase.increaseOperationDocCounts(crawlOperation.id(), docsToIndex.size());
     } catch (Exception e) {
@@ -123,7 +130,8 @@ public class HtmlCrawler extends WebCrawler {
     if (lastModified.isEmpty()) {
       return LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
-    LocalDate date = LocalDate.parse(lastModified.get().getValue());
+    LocalDate date = LocalDate.parse(lastModified.get().getValue(),
+        DateTimeFormatter.RFC_1123_DATE_TIME);
     return date.toEpochSecond(LocalTime.now(), ZoneOffset.UTC);
   }
 

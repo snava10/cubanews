@@ -1,0 +1,2 @@
+ALTER TABLE metaTable
+  ADD hash VARCHAR;

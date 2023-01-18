@@ -16,6 +16,9 @@ public interface MetadataDocument {
 
   String url();
 
+  @Nullable
+  String hash();
+
   @Default
   default long lastUpdated() {
     return 0;
