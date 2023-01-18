@@ -30,6 +30,7 @@ public class SqliteMetadataDatabase {
   Connection conn;
   String tableName;
   String operationsTableName;
+  final int DB_VERSION = 1;
 
   public SqliteMetadataDatabase(String dbPath, String tableName) {
     this.dbPath = dbPath;
@@ -206,6 +207,7 @@ public class SqliteMetadataDatabase {
         stmt.setLong(2, timestamp);
         stmt.setLong(3, timestamp);
         stmt.setObject(4, metadataDocument.state());
+//        stmt.setString(5, metadataDocument.hash());
         stmt.addBatch();
       }
       int[] result = stmt.executeBatch();
