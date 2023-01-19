@@ -30,7 +30,6 @@ public class SqliteMetadataDatabase {
   Connection conn;
   String tableName;
   String operationsTableName;
-  final int DB_VERSION = 1;
 
   public SqliteMetadataDatabase(String dbPath, String tableName) {
     this.dbPath = dbPath;
@@ -390,6 +389,31 @@ public class SqliteMetadataDatabase {
         result.add(op);
       }
       return result;
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+      throw new RuntimeException(ex);
+    }
+  }
+
+  int getDatabaseVersion() {
+    String sql = "PRAGMA user_version";
+    try (Statement stmt = conn.createStatement()) {
+      ResultSet resultSet = stmt.executeQuery(sql);
+      return resultSet.getInt(1);
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+      throw new RuntimeException(ex);
+    }
+  }
+
+  void setDatabaseVersion(int version) {
+    String sql = String.format("PRAGMA user_version = %d;", version);
+    executeStatement(sql);
+  }
+
+  void executeStatement(String sql) {
+    try (Statement stmt = conn.createStatement()) {
+      stmt.execute(sql);
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
       throw new RuntimeException(ex);
