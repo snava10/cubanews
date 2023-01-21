@@ -1,7 +1,5 @@
 package com.snava.cubanews.data.access;
 
-import com.snava.cubanews.ImmutableSqliteMigrationResult;
-import com.snava.cubanews.SqliteMigrationResult;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,43 +7,47 @@ import java.util.Comparator;
 
 public class SqliteMigrationManager {
 
-  // Increasing this number will trigger the migrations
-  final int LAST_APPLIED_MIGRATION = 0;
-  final int NEWEST_MIGRATION = 1;
+  private final SqliteMetadataDatabase db;
 
-  public SqliteMigrationResult runMigrations() throws Exception {
-    SqliteMetadataDatabase db = new SqliteMetadataDatabase("/tmp/cubanews/cubanews.db", "na");
+  public SqliteMigrationManager(SqliteMetadataDatabase db) {
+    this.db = db;
+  }
+
+  public void runMigrations() throws Exception {
     db.initialise();
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     URL url = classLoader.getResource("db_migrations");
 
-    assert url != null;
+    if (url == null) {
+      throw new RuntimeException("The url for migrations cannot be null");
+    }
     int dbVersion = db.getDatabaseVersion();
     Files.list(Path.of(url.getPath())).sorted(Comparator.comparing(Path::getFileName))
-        .filter(path -> {
+        .filter(path -> path.getFileName().toString().startsWith("migration")).filter(path -> {
           String filename = path.getFileName().toString();
           int version = Integer.parseInt(filename.split("migration")[1].split("\\.")[0]);
           return version > dbVersion;
-        }).forEach(path -> {
-          try {
-            runMigration(path, db);
-          } catch (Exception ex) {
-          }
-        });
-
-    return ImmutableSqliteMigrationResult.builder().build();
+        }).forEach(this::runMigration);
   }
 
-  private boolean runMigration(Path p, SqliteMetadataDatabase db) throws Exception {
-    String sql = Files.readString(p);
-    db.executeStatement(sql);
-    int version = Integer.parseInt(p.getFileName().toString().split("migration")[1].split("\\.")[0]);
-    db.setDatabaseVersion(version);
-    return true;
+  private void runMigration(Path p) {
+    try {
+      System.out.printf("Running migration %s\n", p);
+      String sql = Files.readString(p);
+      db.updateStatement(sql);
+      int version = Integer.parseInt(
+          p.getFileName().toString().split("migration")[1].split("\\.")[0]);
+      db.setDatabaseVersion(version);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
   }
 
   public static void main(String[] args) throws Exception {
-    SqliteMigrationManager sqliteMigrationManager = new SqliteMigrationManager();
+    SqliteMetadataDatabase db = new SqliteMetadataDatabase("/tmp/cubanews-test/cubanews-test.db",
+        "pages");
+    db.initialise();
+    SqliteMigrationManager sqliteMigrationManager = new SqliteMigrationManager(db);
     sqliteMigrationManager.runMigrations();
   }
 

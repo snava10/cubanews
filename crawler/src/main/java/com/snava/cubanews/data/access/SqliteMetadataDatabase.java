@@ -78,7 +78,7 @@ public class SqliteMetadataDatabase {
         	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
         	url TEXT NOT NULL UNIQUE,
         	lastUpdated NUMERIC NOT NULL,
-         createdAt NUMERIC NOT NULL,\s
+         createdAt NUMERIC NOT NULL,
          state TEXT NOT NULL);""", tableName);
     String sqlIndex = String.format("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON %s (url);",
         tableName);
@@ -408,12 +408,12 @@ public class SqliteMetadataDatabase {
 
   void setDatabaseVersion(int version) {
     String sql = String.format("PRAGMA user_version = %d;", version);
-    executeStatement(sql);
+    updateStatement(sql);
   }
 
-  void executeStatement(String sql) {
+  void updateStatement(String sql) {
     try (Statement stmt = conn.createStatement()) {
-      stmt.execute(sql);
+      stmt.executeUpdate(sql);
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
       throw new RuntimeException(ex);
