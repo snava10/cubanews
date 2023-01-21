@@ -8,6 +8,9 @@ import com.snava.cubanews.MetadataDocument;
 import com.snava.cubanews.Operation;
 import com.snava.cubanews.OperationState;
 import com.snava.cubanews.OperationType;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -418,6 +421,18 @@ public class SqliteMetadataDatabase {
       System.out.println(ex.getMessage());
       throw new RuntimeException(ex);
     }
+  }
+
+  void backupDatabase() throws Exception {
+    Path backPath = Paths.get(this.dbPath + "_back");
+    Files.deleteIfExists(backPath);
+    Files.copy(Path.of(getDbPath()), backPath);
+  }
+
+  void restoreBackup() throws Exception {
+    Files.deleteIfExists(Path.of(this.dbPath));
+    Files.copy(Path.of(this.dbPath + "_back"), Path.of(getDbPath()));
+    Files.deleteIfExists(Path.of(this.dbPath + "_back"));
   }
 
   static class UrlsIterator implements Iterator<List<String>> {
