@@ -5,9 +5,7 @@ import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -125,14 +123,17 @@ public class HtmlCrawler extends WebCrawler {
   }
 
   private long getLastModified(Page page) {
+    if (page.getFetchResponseHeaders() == null) {
+      return LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    }
     Optional<Header> lastModified = Arrays.stream(page.getFetchResponseHeaders())
         .filter(h -> h.getName().equals("Last-Modified")).findFirst();
     if (lastModified.isEmpty()) {
       return LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
-    LocalDate date = LocalDate.parse(lastModified.get().getValue(),
+    LocalDateTime date = LocalDateTime.parse(lastModified.get().getValue(),
         DateTimeFormatter.RFC_1123_DATE_TIME);
-    return date.toEpochSecond(LocalTime.now(), ZoneOffset.UTC);
+    return date.toEpochSecond(ZoneOffset.UTC);
   }
 
   private String getValidityDocumentExplanation(IndexDocument indexDocument) {

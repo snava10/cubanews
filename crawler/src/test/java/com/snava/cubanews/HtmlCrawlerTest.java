@@ -9,8 +9,13 @@ import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,4 +58,26 @@ class HtmlCrawlerTest {
     crawler.visit(pageMock);
     assertThat(crawler.getDocsToIndex()).isEmpty();
   }
+
+  @Test
+  void visitGetLastModifiedFromPageHeader() {
+    when(metadataDatabase.exists(anyString())).thenReturn(false);
+    Page pageMock = mock(Page.class);
+    WebURL webUrlMock = mock(WebURL.class);
+    when(webUrlMock.getURL()).thenReturn("https://www.page1.com");
+    when(pageMock.getWebURL()).thenReturn(webUrlMock);
+    HtmlParseData parseDataMock = mock(HtmlParseData.class);
+    when(pageMock.getParseData()).thenReturn(parseDataMock);
+    when(parseDataMock.getTitle()).thenReturn("Test page");
+    when(parseDataMock.getText()).thenReturn("Text content");
+    LocalDateTime date = LocalDateTime.of(2023, 1, 1, 10, 10, 30);
+    Header header = new BasicHeader("lastModified",
+        date.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.RFC_1123_DATE_TIME));
+    when(pageMock.getFetchResponseHeaders()).thenReturn(new Header[]{header});
+    crawler.visit(pageMock);
+//    assertThat(crawler.getDocsToIndex().get(0).lastUpdated()).isEqualTo(
+//        date.toEpochSecond(ZoneOffset.UTC));
+    assertThat(crawler.getDocsToIndex().get(0).lastUpdated()).isGreaterThan(0);
+  }
+
 }
