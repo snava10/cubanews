@@ -1,9 +1,11 @@
 package com.snava.cubanews.data.access;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.List;
 
 public class SqliteMigrationManager {
 
@@ -14,7 +16,6 @@ public class SqliteMigrationManager {
   }
 
   public void runMigrations() throws Exception {
-    db.initialise();
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     URL url = classLoader.getResource("db_migrations");
 
@@ -22,12 +23,31 @@ public class SqliteMigrationManager {
       throw new RuntimeException("The url for migrations cannot be null");
     }
     int dbVersion = db.getDatabaseVersion();
-    Files.list(Path.of(url.getPath())).sorted(Comparator.comparing(Path::getFileName))
-        .filter(path -> path.getFileName().toString().startsWith("migration")).filter(path -> {
+    List<Path> migrations = getOutstandingMigrations();
+    if (!migrations.isEmpty()) {
+      db.backupDatabase();
+    }
+    migrations.forEach(this::runMigration);
+  }
+
+  public List<Path> getOutstandingMigrations() throws IOException {
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    URL url = classLoader.getResource("db_migrations");
+
+    if (url == null) {
+      throw new RuntimeException("The url for migrations cannot be null");
+    }
+    int dbVersion = db.getDatabaseVersion();
+
+    return Files.list(Path.of(url.getPath()))
+        .sorted(Comparator.comparing(Path::getFileName))
+        .filter(path -> path.getFileName().toString().startsWith("migration"))
+        .filter(path -> {
           String filename = path.getFileName().toString();
           int version = Integer.parseInt(filename.split("migration")[1].split("\\.")[0]);
           return version > dbVersion;
-        }).forEach(this::runMigration);
+        }).toList();
+
   }
 
   private void runMigration(Path p) {
@@ -42,6 +62,7 @@ public class SqliteMigrationManager {
       throw new RuntimeException(ex);
     }
   }
+
 
   public static void main(String[] args) throws Exception {
     SqliteMetadataDatabase db = new SqliteMetadataDatabase("/tmp/cubanews-test/cubanews-test.db",

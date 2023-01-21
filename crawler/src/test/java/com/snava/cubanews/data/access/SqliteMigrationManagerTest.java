@@ -30,6 +30,7 @@ class SqliteMigrationManagerTest {
   void tearDown() throws SQLException, IOException {
     db.close();
     FileUtils.forceDelete(FileUtils.getFile("cubanews-test.db"));
+    FileUtils.forceDelete(FileUtils.getFile("cubanews-test.db_back"));
   }
 
   @Test

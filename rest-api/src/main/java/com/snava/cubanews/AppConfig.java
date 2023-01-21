@@ -3,6 +3,7 @@ package com.snava.cubanews;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
+import com.snava.cubanews.data.access.SqliteMigrationManager;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -56,8 +57,10 @@ public class AppConfig {
     String databasePath = homePath() + "metadata/";
     Files.createDirectories(Paths.get(databasePath));
     SqliteMetadataDatabase db = new SqliteMetadataDatabase(databasePath + "cubanews.db", metadataTableName());
+    SqliteMigrationManager migrationManager = new SqliteMigrationManager(db);
     try {
       db.initialise();
+      migrationManager.runMigrations();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
