@@ -17,6 +17,8 @@ public interface IndexDocument {
     return LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
   }
   @Nullable
+  String lastUpdatedDisplay();
+  @Nullable
   String url();
   @Nullable
   String title();

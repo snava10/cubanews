@@ -88,8 +88,10 @@ public class SearchController {
             }
           }
           return ImmutableIndexDocument.builder().url(doc.get("url"))
-              .title(doc.get("title")).text(doc.get("text"))
+              .title(doc.get("title"))
+              .text(doc.get("text"))
               .lastUpdated(lastUpdated)
+              .lastUpdatedDisplay(doc.get("lastUpdated"))
               .build();
         }
     ).collect(Collectors.toList());

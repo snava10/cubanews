@@ -71,13 +71,12 @@ class HtmlCrawlerTest {
     when(parseDataMock.getTitle()).thenReturn("Test page");
     when(parseDataMock.getText()).thenReturn("Text content");
     LocalDateTime date = LocalDateTime.of(2023, 1, 1, 10, 10, 30);
-    Header header = new BasicHeader("lastModified",
+    Header header = new BasicHeader("Last-Modified",
         date.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.RFC_1123_DATE_TIME));
     when(pageMock.getFetchResponseHeaders()).thenReturn(new Header[]{header});
     crawler.visit(pageMock);
-//    assertThat(crawler.getDocsToIndex().get(0).lastUpdated()).isEqualTo(
-//        date.toEpochSecond(ZoneOffset.UTC));
-    assertThat(crawler.getDocsToIndex().get(0).lastUpdated()).isGreaterThan(0);
+    assertThat(crawler.getDocsToIndex().get(0).lastUpdated()).isEqualTo(
+        date.toEpochSecond(ZoneOffset.UTC));
   }
 
 }
