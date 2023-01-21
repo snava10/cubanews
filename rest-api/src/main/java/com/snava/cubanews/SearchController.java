@@ -1,9 +1,11 @@
 package com.snava.cubanews;
 
+import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.store.Directory;
@@ -23,6 +25,9 @@ public class SearchController {
 
   @Autowired
   String homePath;
+
+  @Autowired
+  SqliteMetadataDatabase db;
 
   @GetMapping("/api/search/id/{indexId}")
   public Mono<List<IndexDocument>> search(@PathVariable long indexId,
@@ -73,10 +78,20 @@ public class SearchController {
           .title("No results :(").build());
     }
     return searcher.search(query, index, limit).stream().map(
-        doc -> ImmutableIndexDocument.builder().url(doc.get("url"))
-            .title(doc.get("title")).text(doc.get("text"))
-            .lastUpdated(Long.parseLong(doc.get("lastUpdated")))
-            .build()
+        doc -> {
+          long lastUpdated = doc.get("lastUpdatedNumericStored") == null ? 0 : Long.parseLong(doc.get("lastUpdatedNumericStored"));
+
+          if (lastUpdated == 0) {
+            Optional<MetadataDocument> metadataDocument = db.getByUrl(doc.get("url"));
+            if (metadataDocument.isPresent()) {
+              lastUpdated = metadataDocument.get().lastUpdated();
+            }
+          }
+          return ImmutableIndexDocument.builder().url(doc.get("url"))
+              .title(doc.get("title")).text(doc.get("text"))
+              .lastUpdated(lastUpdated)
+              .build();
+        }
     ).collect(Collectors.toList());
   }
 

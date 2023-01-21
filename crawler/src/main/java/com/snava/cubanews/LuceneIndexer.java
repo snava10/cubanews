@@ -1,17 +1,18 @@
 package com.snava.cubanews;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.SortedNumericDocValuesField;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
@@ -56,8 +57,9 @@ public class LuceneIndexer extends AbstractIndexer {
     document.add(new TextField("url", Objects.requireNonNull(doc.url()), Store.YES));
     document.add(new TextField("text", Objects.requireNonNull(doc.text()), Store.YES));
     document.add(new SortedNumericDocValuesField("lastUpdatedNumeric", doc.lastUpdated()));
+    document.add(new StoredField("lastUpdatedNumericStored", doc.lastUpdated()));
     document.add(new StringField("lastUpdated",
-        LocalDate.ofEpochDay(doc.lastUpdated() / TimeUnit.DAYS.toSeconds(1)).format(
+        LocalDateTime.ofEpochSecond(doc.lastUpdated(), 0, ZoneOffset.UTC).format(
             DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
                 .withLocale(new Locale("es", "ES"))
         ), Store.YES));
