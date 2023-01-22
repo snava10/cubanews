@@ -398,7 +398,7 @@ public class SqliteMetadataDatabase {
     }
   }
 
-  int getDatabaseVersion() {
+  public int getDatabaseVersion() {
     String sql = "PRAGMA user_version";
     try (Statement stmt = conn.createStatement()) {
       ResultSet resultSet = stmt.executeQuery(sql);
@@ -423,13 +423,13 @@ public class SqliteMetadataDatabase {
     }
   }
 
-  void backupDatabase() throws Exception {
+  public void backupDatabase() throws Exception {
     Path backPath = Paths.get(this.dbPath + "_back");
     Files.deleteIfExists(backPath);
     Files.copy(Path.of(getDbPath()), backPath);
   }
 
-  void restoreBackup() throws Exception {
+  public void restoreBackup() throws Exception {
     Files.deleteIfExists(Path.of(this.dbPath));
     Files.copy(Path.of(this.dbPath + "_back"), Path.of(getDbPath()));
     Files.deleteIfExists(Path.of(this.dbPath + "_back"));

@@ -26,7 +26,13 @@ public class MetadataController {
     return Mono.just(db.getOperations());
   }
 
+  @GetMapping("/api/metadata/version")
+  public Mono<Integer> getMetadataDBVersion() {
+    return Mono.just(db.getDatabaseVersion());
+  }
+
   record CountDocumentsResult(int total, int active, int deleted) {
+
   }
 
 }
