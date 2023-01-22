@@ -4,6 +4,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import com.snava.cubanews.data.access.SqliteMigrationManager;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -35,6 +36,16 @@ public class AppConfig {
   }
 
   @Bean
+  public String migrationsDirectory() {
+    String path = System.getProperty("user.home") + "/db_migrations";
+    File theDir = new File(path);
+    if (!theDir.exists()){
+      theDir.mkdirs();
+    }
+    return path;
+  }
+
+  @Bean
   public Searcher searcher() {
     return new Searcher();
   }
@@ -57,7 +68,7 @@ public class AppConfig {
     String databasePath = homePath() + "metadata/";
     Files.createDirectories(Paths.get(databasePath));
     SqliteMetadataDatabase db = new SqliteMetadataDatabase(databasePath + "cubanews.db", metadataTableName());
-    SqliteMigrationManager migrationManager = new SqliteMigrationManager(db);
+    SqliteMigrationManager migrationManager = new SqliteMigrationManager(db, migrationsDirectory());
     try {
       db.initialise();
       migrationManager.runMigrations();
