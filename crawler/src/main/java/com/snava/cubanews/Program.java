@@ -3,6 +3,8 @@ package com.snava.cubanews;
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is for testing purposes. Not to be used in production.

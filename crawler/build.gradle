@@ -11,6 +11,10 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'commons-codec:commons-codec:1.15'
 
-    testImplementation 'org.mockito:mockito-core:4.11.0'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.6'
+    implementation 'com.amazonaws:aws-java-sdk-logs:1.12.395'
+    implementation group: 'ch.qos.logback', name : 'logback-classic', version: '1.4.5'
+    implementation group: 'com.j256.cloudwatchlogbackappender',name: 'cloudwatchlogbackappender' , version: '1.11'
 
+    testImplementation 'org.mockito:mockito-core:4.11.0'
 }

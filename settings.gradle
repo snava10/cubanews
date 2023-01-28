@@ -3,4 +3,5 @@ include 'crawler'
 include 'searcher'
 include 'core'
 include 'rest-api'
+include 'cloudwatch-logger'
 

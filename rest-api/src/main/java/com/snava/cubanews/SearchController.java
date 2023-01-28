@@ -29,12 +29,13 @@ public class SearchController {
   @Autowired
   SqliteMetadataDatabase db;
 
+  RatedLogger logger = new RatedLogger(SearchController.class, 0, 1, 1);
+
   @GetMapping("/api/search/id/{indexId}")
   public Mono<List<IndexDocument>> search(@PathVariable long indexId,
       @RequestParam(value = "query") String query) throws Exception {
-    // TODO: Replace println with proper logging
-    System.out.println(indexId);
-    System.out.println(query);
+    logger.info("{}", indexId);
+    logger.info(query);
     Directory index = FSDirectory.open(Paths.get(String.format("/tmp/%s", indexId)));
     // TODO: Add config for hard coded values.
     return Mono.just(search(query, index, 50));
@@ -43,9 +44,8 @@ public class SearchController {
   @GetMapping("/api/search/name/{indexName}")
   public Mono<List<IndexDocument>> searchByName(@PathVariable String indexName,
       @RequestParam(value = "query") String query) throws Exception {
-    // TODO: Replace println with proper logging
-    System.out.println(indexName);
-    System.out.println(query);
+    logger.info(indexName);
+    logger.info(query);
 
     Directory index = FSDirectory.open(Paths.get(homePath + indexName));
     // TODO: Add config for hard coded values.
