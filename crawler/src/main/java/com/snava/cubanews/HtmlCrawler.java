@@ -79,7 +79,7 @@ public class HtmlCrawler extends WebCrawler {
       String title = htmlParseData.getTitle();
       String html = htmlParseData.getHtml();
       String text = html != null ? Jsoup.parse(html).text() : htmlParseData.getText();
-      System.out.printf("%s %s%n", title, url);
+      logger.info("{} {}", title, url);
       // do something with the collected data
       IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text)
           .lastUpdated(getLastModified(page)).build();

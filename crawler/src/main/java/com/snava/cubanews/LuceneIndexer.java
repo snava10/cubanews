@@ -26,19 +26,23 @@ import org.apache.lucene.store.Directory;
 public class LuceneIndexer extends AbstractIndexer {
 
   IndexSearcher searcher;
+  RatedLogger logger;
 
   public LuceneIndexer(String index) throws IOException {
     super(index);
+    logger = new RatedLogger(LuceneIndexer.class);
   }
 
   @SuppressWarnings("unused")
   public LuceneIndexer(String index, Analyzer analyzer)
       throws IOException {
     super(index, analyzer);
+    logger = new RatedLogger(LuceneIndexer.class);
   }
 
   public LuceneIndexer(Directory directory, Analyzer analyzer) throws IOException {
     super(directory, analyzer);
+    logger = new RatedLogger(LuceneIndexer.class);
   }
 
   private IndexSearcher getIndexSearcher() throws IOException {
@@ -88,7 +92,7 @@ public class LuceneIndexer extends AbstractIndexer {
   public void index(List<IndexDocument> documents) throws IOException {
     for (IndexDocument document : documents) {
       saveDocument(document);
-      System.out.printf("%s %s", document.url(), document.title());
+      logger.info("{} {}", document.url(), document.title());
     }
     writer.commit();
   }

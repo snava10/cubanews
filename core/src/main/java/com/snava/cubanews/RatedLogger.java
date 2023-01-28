@@ -65,8 +65,8 @@ public class RatedLogger {
 
   private void log(LogLevel level, String message, Object... args) {
     try {
-      float prob = 1 - r.nextFloat();
-      if (prob >= rateMap.get(level)) {
+      float prob = r.nextFloat();
+      if (rateMap.get(level) == 1 || prob < rateMap.get(level)) {
         switch (level) {
           case DEBUG -> logger.debug(message, args);
           case INFO -> logger.info(message, args);
