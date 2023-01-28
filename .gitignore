@@ -17,3 +17,4 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 local-data
+aws.xml

@@ -9,8 +9,8 @@
 
   <appender name="CLOUDWATCH" class="com.j256.cloudwatchlogbackappender.CloudWatchAppender">
     <region>us-east-1</region>
-    <accessKeyId>AKIA5BOI76PVKM3MZDWX</accessKeyId>
-    <secretKey>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</secretKey>
+    <accessKeyId></accessKeyId>
+    <secretKey></secretKey>
     <logGroup>test-loggroup</logGroup>
     <logStream>test-logstream</logStream>
     <layout>
