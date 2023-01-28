@@ -14,9 +14,15 @@ public class CrawlerController implements Crawler {
 
   CrawlController crawlController;
   File crawlStorage;
+  RatedLogger logger;
+
+  public CrawlerController(String crawlerLocalDataPath, RatedLogger logger) {
+    crawlStorage = new File(crawlerLocalDataPath);
+    this.logger = logger;
+  }
 
   public CrawlerController(String crawlerLocalDataPath) {
-    crawlStorage = new File(crawlerLocalDataPath);
+    this(crawlerLocalDataPath, new RatedLogger(CrawlerController.class));
   }
 
   public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
@@ -45,7 +51,7 @@ public class CrawlerController implements Crawler {
       }
       return crawlOperation;
     }).doOnNext(o -> {
-      System.out.println("Closing index writer");
+      logger.info("Closing index writer");
       indexer.close();
       Operation op = (Operation)o;
       metadataDatabase.completeOperation(op);

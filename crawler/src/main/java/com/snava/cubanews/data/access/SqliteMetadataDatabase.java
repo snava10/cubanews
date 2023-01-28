@@ -8,6 +8,7 @@ import com.snava.cubanews.MetadataDocument;
 import com.snava.cubanews.Operation;
 import com.snava.cubanews.OperationState;
 import com.snava.cubanews.OperationType;
+import com.snava.cubanews.RatedLogger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,11 +35,14 @@ public class SqliteMetadataDatabase {
   String tableName;
   String operationsTableName;
 
+  RatedLogger logger;
+
   public SqliteMetadataDatabase(String dbPath, String tableName) {
     this.dbPath = dbPath;
     url += dbPath;
     this.tableName = tableName;
     this.operationsTableName = "operations";
+    this.logger = new RatedLogger(SqliteMetadataDatabase.class);
   }
 
   @SuppressWarnings("unused")
@@ -89,7 +93,7 @@ public class SqliteMetadataDatabase {
       stmt.execute(sql);
       stmt.execute(sqlIndex);
     } catch (SQLException e) {
-      e.printStackTrace();
+      logger.error("Error creating metadata table", e);
       throw new RuntimeException(e);
     }
   }

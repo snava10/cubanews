@@ -28,12 +28,13 @@ public class HtmlCrawler extends WebCrawler {
   private final Indexer indexer;
   private final Set<String> seeds;
   private final SqliteMetadataDatabase metadataDatabase;
-
+  private final RatedLogger logger;
   private final Operation crawlOperation;
 
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
   // TODO: Add config for hard coded value.
   // TODO: Evaluate what is the best value for this parameter.
+  @SuppressWarnings("FieldCanBeLocal")
   private final int indexBatch = 10;
 
   public HtmlCrawler(Indexer indexer, Set<String> seeds, SqliteMetadataDatabase metadataDatabase,
@@ -43,6 +44,7 @@ public class HtmlCrawler extends WebCrawler {
     this.seeds = seeds;
     this.metadataDatabase = metadataDatabase;
     this.crawlOperation = crawlOperation;
+    this.logger = new RatedLogger(HtmlCrawler.class);
   }
 
   @Override
@@ -82,15 +84,13 @@ public class HtmlCrawler extends WebCrawler {
       IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text)
           .lastUpdated(getLastModified(page)).build();
       if (metadataDatabase.exists(doc.url())) {
-        // Todo: Use a logger
-        System.out.printf("Document with url: %s already exists%n", doc.url());
+        logger.info("Document with url: {} already exists", doc.url());
       } else if (!isAValidDocument(doc)) {
-        // Todo: Use a logger
-        System.out.println(getValidityDocumentExplanation(doc));
+        logger.info(getValidityDocumentExplanation(doc));
       } else if (Objects.requireNonNull(doc.url()).contains("?")) {
         // Todo: revise this as there may be valid articles being ignored.
         // Possible solution would be to hash the text and compare by similarity to detect valid new articles and avoid duplicates.
-        System.out.println("Ignoring " + doc.url() + " because contains parameters.");
+        logger.info("Ignoring " + doc.url() + " because contains parameters.");
       } else {
         docsToIndex.add(doc);
       }
