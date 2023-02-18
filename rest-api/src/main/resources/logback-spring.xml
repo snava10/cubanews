@@ -17,7 +17,7 @@
         <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n</pattern>
       </encoder>
     </appender>
-    <root level="INFO">
+    <root level="DEBUG">
       <appender-ref ref="STDOUT"/>
     </root>
     <logger name="com.snava.cubanews" level="DEBUG" >
