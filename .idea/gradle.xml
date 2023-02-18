@@ -9,7 +9,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/cloudwatch-logger" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/crawler" />
             <option value="$PROJECT_DIR$/rest-api" />
