@@ -3,15 +3,23 @@
     <jmxConfigurator />
     <appender name="CLOUDWATCH" class="com.j256.cloudwatchlogbackappender.CloudWatchAppender">
       <region>us-east-1</region>
-      <accessKeyId></accessKeyId>
-      <secretKey></secretKey>
-      <logGroup>test-loggroup</logGroup>
-      <logStream>test-logstream</logStream>
+      <accessKeyId>AKIA5BOI76PVJXBQ6FAO</accessKeyId>
+      <secretKey>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</secretKey>
+      <logGroup>kolibri-loggroup</logGroup>
+      <logStream>kolibri-logstream</logStream>
       <layout>
         <pattern>[%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n</pattern>
       </layout>
       <maxBatchSize>32</maxBatchSize>
     </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+        <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n</pattern>
+      </encoder>
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="STDOUT"/>
+    </root>
     <logger name="com.snava.cubanews" level="DEBUG" >
       <appender-ref ref="CLOUDWATCH"/>
     </logger>
