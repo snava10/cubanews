@@ -6,6 +6,7 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import java.io.File;
 import java.util.Set;
@@ -25,13 +26,20 @@ public class CrawlerController implements Crawler {
     this(crawlerLocalDataPath, new RatedLogger(CrawlerController.class));
   }
 
-  public Observable<Object> start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
+  @Override
+  public Completable start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
       Indexer indexer, SqliteMetadataDatabase metadataDatabase)
       throws Exception {
     CrawlConfig config = new CrawlConfig();
     // TODO: Add config for hard coded parameter
     config.setCrawlStorageFolder("/tmp");
     config.setMaxPagesToFetch(maxPagesToFetch);
+    return start(config, numCrawlers, baseUrls, indexer, metadataDatabase);
+  }
+
+  @Override
+  public Completable start(CrawlConfig config, int numCrawlers, Set<String> baseUrls,
+      Indexer indexer, SqliteMetadataDatabase metadataDatabase) throws Exception {
     PageFetcher pageFetcher = new PageFetcher(config);
     RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
     RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
@@ -42,7 +50,7 @@ public class CrawlerController implements Crawler {
     CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(indexer,
         baseUrls, metadataDatabase, crawlOperation);
 
-    return Observable.fromCallable(() -> {
+    return Completable.fromObservable(Observable.fromCallable(() -> {
       try {
         metadataDatabase.insertOperation(crawlOperation);
         crawlController.start(factory, numCrawlers);
@@ -53,8 +61,8 @@ public class CrawlerController implements Crawler {
     }).doOnNext(o -> {
       logger.info("Closing index writer");
       indexer.close();
-      Operation op = (Operation)o;
+      Operation op = (Operation) o;
       metadataDatabase.completeOperation(op);
-    });
+    }));
   }
 }

@@ -30,6 +30,8 @@ public class CrawlController {
   @Autowired
   SqliteMetadataDatabase db;
 
+  RatedLogger logger = new RatedLogger(SearchController.class, 0, 1, 1);
+
   @PostMapping("/api/crawl")
   public Mono<LongRunningOperationResponse> crawl(
       @RequestParam(value = "dryRun", defaultValue = "false") boolean dryRun,
@@ -71,6 +73,29 @@ public class CrawlController {
 
     return Mono.just(new LongRunningOperationResponse(indexName, OperationStatus.IN_PROGRESS,
         OperationType.DELETE_OLD_PAGES));
+  }
+
+  @PostMapping("/api/v2/crawl/{projectName}")
+  public Mono<LongRunningOperationResponse> crawlV2(
+      @PathVariable String projectName,
+      @RequestParam(value = "dryRun", defaultValue = "false") boolean dryRun,
+      @RequestBody com.snava.cubanews.CrawlRequest crawlRequest) {
+    logger.info(projectName);
+    logger.info(String.join(", ", crawlRequest.indices()));
+    logger.info(String.join(", ", crawlRequest.baseUrls()));
+
+//    if (!dryRun) {
+//      crawler.start(crawlRequest.limit(), 12, crawlRequest.baseUrls(),
+//              new LuceneIndexer(homePath + crawlRequest.getIndexName()), db)
+//          .subscribeOn(Schedulers.io())
+//          .subscribe();
+//    }
+
+    return Mono.just(
+        new LongRunningOperationResponse(String.join(", ", crawlRequest.indices()),
+            OperationStatus.IN_PROGRESS,
+            OperationType.CRAWL)
+    );
   }
 
 }
