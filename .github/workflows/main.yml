@@ -97,6 +97,7 @@ jobs:
               --build-arg JAR_FILE=rest-api-1.0.0-SNAPSHOT.jar \
               --build-arg AWS_ACCESS_KEY_ID_ARG=${{ secrets.AWS_ACCESS_KEY_ID }} \
               --build-arg AWS_SECRET_ACCESS_KEY_ARG=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+              --build-arg SPRING_PROFILE_ARG=prod \
               rest-api/ ; 
 
         - name: Log in to registry
