@@ -38,7 +38,7 @@ public class Searcher {
     return documents;
   }
 
-  public List<Document> booleanSearch(List<String> fields, String queryString, Directory index, int top)
+  public List<SearcherResult> booleanSearch(List<String> fields, String queryString, Directory index, int top)
       throws IOException {
     List<Query> queries = fields.stream().map(field -> {
       try {
@@ -53,18 +53,23 @@ public class Searcher {
     IndexReader indexReader = DirectoryReader.open(index);
     IndexSearcher searcher = new IndexSearcher(indexReader);
     TopDocs topDocs = searcher.search(builder.build(), top);
-    List<Document> documents = new ArrayList<>();
+    List<SearcherResult> documents = new ArrayList<>();
     for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-      documents.add(searcher.doc(scoreDoc.doc));
+      SearcherResult sr = new SearcherResult(scoreDoc.score, searcher.doc(scoreDoc.doc));
+      documents.add(sr);
     }
     indexReader.close();
     return documents;
   }
 
-  public List<Document>
+  public List<SearcherResult>
   search(String queryString, Directory index, int top)
       throws IOException {
     return booleanSearch(Arrays.asList("title","url","text"), queryString, index, top);
   }
+
+  record SearcherResult(float score, Document doc) {
+  }
+
 
 }

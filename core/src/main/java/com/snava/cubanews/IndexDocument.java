@@ -24,4 +24,8 @@ public interface IndexDocument {
   String title();
   @Nullable
   String text();
+  @Default
+  default float score() {
+    return 0f;
+  }
 }

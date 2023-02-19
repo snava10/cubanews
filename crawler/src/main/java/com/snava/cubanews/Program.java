@@ -26,6 +26,6 @@ public class Program {
         .doOnError(error -> {
           System.out.println(error.getLocalizedMessage());
           System.exit(1);
-        }).blockingSubscribe();
+        }).blockingAwait();
   }
 }
