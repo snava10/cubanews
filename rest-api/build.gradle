@@ -25,5 +25,7 @@ dependencies {
     implementation platform('com.google.cloud:libraries-bom:26.1.5')
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'org.xerial:sqlite-jdbc:3.40.0.0'
+    implementation 'com.sleepycat:je:18.3.12'
+    implementation 'edu.uci.ics:crawler4j:4.4.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

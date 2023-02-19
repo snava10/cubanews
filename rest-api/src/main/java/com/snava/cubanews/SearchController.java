@@ -1,12 +1,16 @@
 package com.snava.cubanews;
 
+import com.snava.cubanews.Searcher.SearcherResult;
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -14,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -59,9 +64,22 @@ public class SearchController {
     });
   }
 
-  @PostMapping("/api/search/project/{projectName}")
-  public Mono<List<IndexDocument>> searchByProject(@PathVariable String projectName, @RequestParam(value="query") String query) throws Exception {
-    return Mono.empty();
+  @PostMapping("/api/search/project/{projectId}")
+  public Mono<List<IndexDocument>> searchByProject(@PathVariable String projectId,
+      @RequestBody SearchRequest searchRequest) {
+    Set<String> indices = searchRequest.indices().isEmpty() ? getIndicesForProject(projectId)
+        : searchRequest.indices();
+
+    return Mono.just(indices.parallelStream().flatMap(indexName -> {
+      try {
+        Directory index = FSDirectory.open(Paths.get(homePath + indexName));
+        return search(searchRequest.query(), index, 50).stream();
+      } catch (IOException e) {
+        logger.error(String.format("Error searching on index %s", indexName), e);
+        return Stream.empty();
+      }
+    }).sorted(Comparator.comparing(IndexDocument::score).reversed()).collect(Collectors.toList()));
+
   }
 
   @GetMapping("/api/search/html/{indexId}")
@@ -78,14 +96,17 @@ public class SearchController {
   }
 
   private List<IndexDocument> search(String query, Directory index, int limit) throws IOException {
-    List<Document> docs = searcher.search(query, index, limit);
-    if (docs.isEmpty()) {
+    logger.info("Searching {} on index {}", query, index.toString());
+    List<SearcherResult> searcherResults = searcher.search(query, index, limit);
+    if (searcherResults.isEmpty()) {
       return Collections.singletonList(ImmutableIndexDocument.builder()
           .title("No results :(").build());
     }
     return searcher.search(query, index, limit).stream().map(
-        doc -> {
-          long lastUpdated = doc.get("lastUpdatedNumericStored") == null ? 0 : Long.parseLong(doc.get("lastUpdatedNumericStored"));
+        searcherResult -> {
+          Document doc = searcherResult.doc();
+          long lastUpdated = doc.get("lastUpdatedNumericStored") == null ? 0
+              : Long.parseLong(doc.get("lastUpdatedNumericStored"));
 
           if (lastUpdated == 0) {
             Optional<MetadataDocument> metadataDocument = db.getByUrl(doc.get("url"));
@@ -98,9 +119,14 @@ public class SearchController {
               .text(doc.get("text"))
               .lastUpdated(lastUpdated)
               .lastUpdatedDisplay(doc.get("lastUpdated"))
+              .score(searcherResult.score())
               .build();
         }
     ).collect(Collectors.toList());
+  }
+
+  private Set<String> getIndicesForProject(String projectId) {
+    return Collections.emptySet();
   }
 
 }
