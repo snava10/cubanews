@@ -39,8 +39,8 @@ public class CrawlController {
       throws Exception {
     System.out.println(crawlRequest);
     if (!dryRun) {
-      crawler.start(crawlRequest.getLimit(), 12, crawlRequest.getBaseUrls(),
-              new LuceneIndexer(homePath + crawlRequest.getIndexName()), db)
+      crawler.start(crawlRequest.getLimit(), -1, 12, crawlRequest.getBaseUrls(),
+              new LuceneIndexer(homePath + crawlRequest.getIndexName(), crawlRequest.getIndexName()), db)
           .subscribeOn(Schedulers.io())
           .subscribe();
     }
@@ -54,7 +54,7 @@ public class CrawlController {
       @RequestParam(value = "amount", defaultValue = "3") int amount,
       @RequestParam(value = "timeunit", defaultValue = "DAYS") String timeunit) throws IOException {
     System.out.printf("Deleting pages older that %d %s%n", amount, timeunit);
-    Indexer indexer = new LuceneIndexer(homePath + indexName);
+    Indexer indexer = new LuceneIndexer(homePath + indexName, indexName);
     DeletePagesManager.deleteOldPageReactive(amount, TimeUnit.valueOf(timeunit), db, indexer)
         .retryWhen(errors ->
             errors.zipWith(
@@ -75,24 +75,22 @@ public class CrawlController {
         OperationType.DELETE_OLD_PAGES));
   }
 
-  @PostMapping("/api/v2/crawl/{projectName}")
-  public Mono<LongRunningOperationResponse> crawlV2(
+  @PostMapping("/api/crawl/{projectName}")
+  public Mono<LongRunningOperationResponse> crawlProject(
       @PathVariable String projectName,
       @RequestParam(value = "dryRun", defaultValue = "false") boolean dryRun,
-      @RequestBody com.snava.cubanews.CrawlRequest crawlRequest) {
+      @RequestBody com.snava.cubanews.CrawlRequest crawlRequest) throws Exception {
     logger.info(projectName);
-    logger.info(String.join(", ", crawlRequest.indices()));
-    logger.info(String.join(", ", crawlRequest.baseUrls()));
 
-//    if (!dryRun) {
-//      crawler.start(crawlRequest.limit(), 12, crawlRequest.baseUrls(),
-//              new LuceneIndexer(homePath + crawlRequest.getIndexName()), db)
-//          .subscribeOn(Schedulers.io())
-//          .subscribe();
-//    }
-
+    if (!dryRun) {
+      for (CrawlRequestData crawlRequestData : crawlRequest.data()) {
+        crawler.start(crawlRequestData.limit(), crawlRequestData.depth(), 12, crawlRequestData.baseUrls(),
+                new LuceneIndexer(homePath + crawlRequestData.indexName(), crawlRequestData.indexName()), db)
+            .subscribeOn(Schedulers.io()).subscribe();
+      }
+    }
     return Mono.just(
-        new LongRunningOperationResponse(String.join(", ", crawlRequest.indices()),
+        new LongRunningOperationResponse(projectName,
             OperationStatus.IN_PROGRESS,
             OperationType.CRAWL)
     );

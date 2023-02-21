@@ -26,11 +26,9 @@ import org.apache.lucene.store.Directory;
 public class LuceneIndexer extends AbstractIndexer {
 
   IndexSearcher searcher;
-  RatedLogger logger;
 
-  public LuceneIndexer(String index) throws IOException {
-    super(index);
-    logger = new RatedLogger(LuceneIndexer.class);
+  public LuceneIndexer(String indexPath, String indexName) throws IOException {
+    super(indexPath, indexName, LuceneIndexer.class);
   }
 
   @SuppressWarnings("unused")

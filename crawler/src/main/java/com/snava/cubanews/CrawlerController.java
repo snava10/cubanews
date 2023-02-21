@@ -27,13 +27,14 @@ public class CrawlerController implements Crawler {
   }
 
   @Override
-  public Completable start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
+  public Completable start(int maxPagesToFetch, int depth, int numCrawlers, Set<String> baseUrls,
       Indexer indexer, SqliteMetadataDatabase metadataDatabase)
       throws Exception {
     CrawlConfig config = new CrawlConfig();
     // TODO: Add config for hard coded parameter
-    config.setCrawlStorageFolder("/tmp");
+    config.setCrawlStorageFolder("/tmp/" + indexer.getIndexName());
     config.setMaxPagesToFetch(maxPagesToFetch);
+    config.setMaxDepthOfCrawling(depth);
     return start(config, numCrawlers, baseUrls, indexer, metadataDatabase);
   }
 

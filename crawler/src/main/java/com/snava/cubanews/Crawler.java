@@ -7,7 +7,7 @@ import java.util.Set;
 
 public interface Crawler {
 
-  Completable start(int maxPagesToFetch, int numCrawlers, Set<String> baseUrls,
+  Completable start(int maxPagesToFetch, int depth, int numCrawlers, Set<String> baseUrls,
       Indexer indexer, SqliteMetadataDatabase metadataDatabase) throws Exception;
 
   Completable start(CrawlConfig config, int numCrawlers, Set<String> baseUrls,
@@ -16,7 +16,7 @@ public interface Crawler {
   default Completable start(Set<String> baseUrls, Indexer indexer,
       SqliteMetadataDatabase metadataDatabase)
       throws Exception {
-    return start(Integer.MAX_VALUE, 12, baseUrls, indexer, metadataDatabase);
+    return start(-1, -1, 12, baseUrls, indexer, metadataDatabase);
   }
 
 }
