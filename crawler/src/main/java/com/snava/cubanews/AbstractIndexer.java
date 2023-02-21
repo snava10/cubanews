@@ -15,9 +15,13 @@ public abstract class AbstractIndexer implements Indexer {
   Analyzer analyzer;
   IndexWriterConfig indexWriterConfig;
   IndexWriter writer;
+  protected String indexName;
+  protected RatedLogger logger;
 
-  public AbstractIndexer(String index) throws IOException {
-    this(index, new StandardAnalyzer());
+  public AbstractIndexer(String indexPath, String indexName, Class clazz) throws IOException {
+    this(indexPath, new StandardAnalyzer());
+    logger = new RatedLogger(clazz);
+    this.indexName = indexName;
   }
 
   public AbstractIndexer(String index, Analyzer analyzer) throws IOException {
@@ -40,5 +44,9 @@ public abstract class AbstractIndexer implements Indexer {
 
   public boolean hasDeletions() {
     return writer.hasDeletions();
+  }
+
+  public String getIndexName() {
+    return indexName;
   }
 }

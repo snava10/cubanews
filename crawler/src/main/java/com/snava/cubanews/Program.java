@@ -17,12 +17,12 @@ public class Program {
     SqliteMetadataDatabase metadataDatabase = new SqliteMetadataDatabase(metadataDbName,
         "metaTable");
     metadataDatabase.initialise();
-    controller.start(10, 10, Stream.of(
+    controller.start(10, -1,10, Stream.of(
         "https://diariodecuba.com/",
             "https://adncuba.com/noticias-de-cuba",
             "https://www.14ymedio.com/",
             "https://www.cibercuba.com/noticias"
-        ).collect(Collectors.toSet()), new LuceneIndexer(indexPath), metadataDatabase)
+        ).collect(Collectors.toSet()), new LuceneIndexer(indexPath, indexPath.split("/")[1]), metadataDatabase)
         .doOnError(error -> {
           System.out.println(error.getLocalizedMessage());
           System.exit(1);
