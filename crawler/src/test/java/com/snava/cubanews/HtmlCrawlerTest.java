@@ -12,6 +12,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.http.Header;
@@ -33,10 +34,9 @@ class HtmlCrawlerTest {
     metadataDatabase = mock(SqliteMetadataDatabase.class);
     Operation op = ImmutableOperation.builder().type(OperationType.CRAWL)
         .state(OperationState.IN_PROGRESS).build();
-    crawler = new HtmlCrawler(indexer, Stream.of(
-        "https://url1.com/",
-        "https://url2.com/"
-    ).collect(Collectors.toSet()), metadataDatabase, op);
+    Set<String> seeds = Stream.of("https://url1.com/", "https://url2.com/")
+        .collect(Collectors.toSet());
+    crawler = new HtmlCrawler(indexer, seeds, seeds, metadataDatabase, op);
   }
 
   @Test

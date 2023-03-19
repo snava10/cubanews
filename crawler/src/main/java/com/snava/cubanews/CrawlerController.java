@@ -27,7 +27,7 @@ public class CrawlerController implements Crawler {
   }
 
   @Override
-  public Completable start(int maxPagesToFetch, int depth, int numCrawlers, Set<String> baseUrls,
+  public Completable start(int maxPagesToFetch, int depth, int numCrawlers, Set<String> seedUrls, Set<String> baseUrls,
       Indexer indexer, SqliteMetadataDatabase metadataDatabase)
       throws Exception {
     CrawlConfig config = new CrawlConfig();
@@ -35,21 +35,21 @@ public class CrawlerController implements Crawler {
     config.setCrawlStorageFolder("/tmp/" + indexer.getIndexName());
     config.setMaxPagesToFetch(maxPagesToFetch);
     config.setMaxDepthOfCrawling(depth);
-    return start(config, numCrawlers, baseUrls, indexer, metadataDatabase);
+    return start(config, numCrawlers, seedUrls, baseUrls, indexer, metadataDatabase);
   }
 
   @Override
-  public Completable start(CrawlConfig config, int numCrawlers, Set<String> baseUrls,
+  public Completable start(CrawlConfig config, int numCrawlers, Set<String> seedUrls, Set<String> baseUrls,
       Indexer indexer, SqliteMetadataDatabase metadataDatabase) throws Exception {
     PageFetcher pageFetcher = new PageFetcher(config);
     RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
     RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
     crawlController = new CrawlController(config, pageFetcher, robotstxtServer);
-    baseUrls.forEach(url -> crawlController.addSeed(url));
+    seedUrls.forEach(url -> crawlController.addSeed(url));
     Operation crawlOperation = ImmutableOperation.builder().type(OperationType.CRAWL)
         .state(OperationState.IN_PROGRESS).build();
     CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(indexer,
-        baseUrls, metadataDatabase, crawlOperation);
+        seedUrls, baseUrls, metadataDatabase, crawlOperation);
 
     return Completable.fromObservable(Observable.fromCallable(() -> {
       try {

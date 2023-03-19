@@ -39,8 +39,10 @@ public class CrawlController {
       throws Exception {
     System.out.println(crawlRequest);
     if (!dryRun) {
-      crawler.start(crawlRequest.getLimit(), -1, 12, crawlRequest.getBaseUrls(),
-              new LuceneIndexer(homePath + crawlRequest.getIndexName(), crawlRequest.getIndexName()), db)
+      crawler.start(crawlRequest.getLimit(), -1, 12, crawlRequest.getSeeds(),
+              crawlRequest.getBaseUrls(),
+              new LuceneIndexer(homePath + crawlRequest.getIndexName(), crawlRequest.getIndexName()),
+              db)
           .subscribeOn(Schedulers.io())
           .subscribe();
     }
@@ -84,8 +86,10 @@ public class CrawlController {
 
     if (!dryRun) {
       for (CrawlRequestData crawlRequestData : crawlRequest.data()) {
-        crawler.start(crawlRequestData.limit(), crawlRequestData.depth(), 12, crawlRequestData.baseUrls(),
-                new LuceneIndexer(homePath + crawlRequestData.indexName(), crawlRequestData.indexName()), db)
+        crawler.start(crawlRequestData.limit(), crawlRequestData.depth(), 12,
+                crawlRequestData.seeds(), crawlRequestData.baseUrls(),
+                new LuceneIndexer(homePath + crawlRequestData.indexName(),
+                    crawlRequestData.indexName()), db)
             .subscribeOn(Schedulers.io()).subscribe();
       }
     }

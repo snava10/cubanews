@@ -27,6 +27,7 @@ public class HtmlCrawler extends WebCrawler {
       = Pattern.compile(".*(\\.(css|js|xml|gif|jpg|png|mp3|mp4|zip|gz|pdf))$");
   private final Indexer indexer;
   private final Set<String> seeds;
+  private final Set<String> baseUrls;
   private final SqliteMetadataDatabase metadataDatabase;
   private final RatedLogger logger;
   private final Operation crawlOperation;
@@ -37,11 +38,12 @@ public class HtmlCrawler extends WebCrawler {
   @SuppressWarnings("FieldCanBeLocal")
   private final int indexBatch = 10;
 
-  public HtmlCrawler(Indexer indexer, Set<String> seeds, SqliteMetadataDatabase metadataDatabase,
+  public HtmlCrawler(Indexer indexer, Set<String> seeds, Set<String> baseUrls, SqliteMetadataDatabase metadataDatabase,
       Operation crawlOperation) {
     super();
     this.indexer = indexer;
     this.seeds = seeds;
+    this.baseUrls = baseUrls;
     this.metadataDatabase = metadataDatabase;
     this.crawlOperation = crawlOperation;
     this.logger = new RatedLogger(HtmlCrawler.class);
@@ -51,11 +53,11 @@ public class HtmlCrawler extends WebCrawler {
   public boolean shouldVisit(Page referringPage, WebURL url) {
     String urlString = url.getURL().toLowerCase();
     return !EXCLUSIONS.matcher(urlString).matches()
-        && matchesAnySeed(url) && !parameterised(url);
+        && matchesAnyBase(url) && !parameterised(url);
   }
 
-  private boolean matchesAnySeed(WebURL url) {
-    return seeds.stream().anyMatch(url.getURL()::startsWith);
+  private boolean matchesAnyBase(WebURL url) {
+    return baseUrls.stream().anyMatch(url.getURL()::startsWith);
   }
 
   private boolean parameterised(WebURL url) {

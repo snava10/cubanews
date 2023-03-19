@@ -24,4 +24,6 @@ public interface CrawlRequestData {
   String indexName();
 
   Set<String> baseUrls();
+
+  Set<String> seeds();
 }

@@ -7,16 +7,16 @@ import java.util.Set;
 
 public interface Crawler {
 
-  Completable start(int maxPagesToFetch, int depth, int numCrawlers, Set<String> baseUrls,
+  Completable start(int maxPagesToFetch, int depth, int numCrawlers, Set<String> seedUrls, Set<String> baseUrls,
       Indexer indexer, SqliteMetadataDatabase metadataDatabase) throws Exception;
 
-  Completable start(CrawlConfig config, int numCrawlers, Set<String> baseUrls,
+  Completable start(CrawlConfig config, int numCrawlers, Set<String> seedUrls, Set<String> baseUrls,
       Indexer indexer, SqliteMetadataDatabase metadataDatabase) throws Exception;
 
-  default Completable start(Set<String> baseUrls, Indexer indexer,
+  default Completable start(Set<String> seedUrls, Indexer indexer,
       SqliteMetadataDatabase metadataDatabase)
       throws Exception {
-    return start(-1, -1, 12, baseUrls, indexer, metadataDatabase);
+    return start(-1, -1, 12, seedUrls, seedUrls, indexer, metadataDatabase);
   }
 
 }
