@@ -55,7 +55,7 @@ export function Search() {
       query: qs,
       indices: ["cibercuba", "14ymedio", "adnCuba"],
       maxResultsPerIndex: 3,
-      grouping: "NONE",
+      grouping: "BY_INDEX_MAX",
     };
     // TODO: Parameterize the project name name.
     fetch(`${base_url}/api/search/project/cubanews`, {
