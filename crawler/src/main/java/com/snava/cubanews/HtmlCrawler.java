@@ -10,6 +10,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +33,8 @@ public class HtmlCrawler extends WebCrawler {
   private final RatedLogger logger;
   private final Operation crawlOperation;
 
+  private final Set<String> tagUrls;
+
   private final List<IndexDocument> docsToIndex = new ArrayList<>();
   // TODO: Add config for hard coded value.
   // TODO: Evaluate what is the best value for this parameter.
@@ -47,6 +50,9 @@ public class HtmlCrawler extends WebCrawler {
     this.metadataDatabase = metadataDatabase;
     this.crawlOperation = crawlOperation;
     this.logger = new RatedLogger(HtmlCrawler.class);
+    tagUrls = new HashSet<>();
+    tagUrls.addAll(baseUrls.stream().map(burl -> burl + "tags/").toList());
+    tagUrls.addAll(baseUrls.stream().map(burl -> burl + "etiqueta/").toList());
   }
 
   @Override
@@ -64,6 +70,10 @@ public class HtmlCrawler extends WebCrawler {
     return url.getURL().contains("?");
   }
 
+  private boolean isTagsPage(WebURL url) {
+    return tagUrls.stream().anyMatch(url.getURL()::startsWith);
+  }
+
   @Override
   public void onStart() {
     flushBuffer();
@@ -76,6 +86,7 @@ public class HtmlCrawler extends WebCrawler {
 
   @Override
   public void visit(Page page) {
+    WebURL webUrl = page.getWebURL();
     String url = page.getWebURL().getURL();
     if (page.getParseData() instanceof HtmlParseData htmlParseData) {
       String title = htmlParseData.getTitle();
@@ -93,6 +104,10 @@ public class HtmlCrawler extends WebCrawler {
         // Todo: revise this as there may be valid articles being ignored.
         // Possible solution would be to hash the text and compare by similarity to detect valid new articles and avoid duplicates.
         logger.info("Ignoring " + doc.url() + " because contains parameters.");
+      } else if (webUrl.getPath().split("/").length < 3) {
+        logger.info("Ignoring " + doc.url() + " because is too short to be a final article");
+      } else if (isTagsPage(webUrl)) {
+        logger.info("Ignoring " + doc.url() + " because is a tags page, not final article");
       } else {
         docsToIndex.add(doc);
       }
