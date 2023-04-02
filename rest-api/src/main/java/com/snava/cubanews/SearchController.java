@@ -4,10 +4,12 @@ import com.snava.cubanews.Searcher.SearcherResult;
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,20 +69,24 @@ public class SearchController {
   @PostMapping("/api/search/project/{projectId}")
   public Mono<List<IndexDocument>> searchByProject(@PathVariable String projectId,
       @RequestBody SearchRequest searchRequest) {
+    if (searchRequest.grouping() == SearchResultGrouping.BY_INDEX_MAX) {
+      return Mono.just(searchGroupingByIndex(projectId, searchRequest));
+    }
+
     Set<String> indices = searchRequest.indices().isEmpty() ? getIndicesForProject(projectId)
         : searchRequest.indices();
 
     return Mono.just(indices.parallelStream().flatMap(indexName -> {
       try {
         Directory index = FSDirectory.open(Paths.get(homePath + indexName));
-        return search(searchRequest.query(), index, 50).stream();
+        return search(searchRequest.query(), index, searchRequest.maxTotalResults()).stream();
       } catch (IOException e) {
         logger.error(String.format("Error searching on index %s", indexName), e);
         return Stream.empty();
       }
     }).sorted(Comparator.comparing(IndexDocument::score).reversed()).collect(Collectors.toList()));
-
   }
+
 
   @GetMapping("/api/search/html/{indexId}")
   public Mono<String> searchHtml(@PathVariable long indexId,
@@ -93,6 +99,56 @@ public class SearchController {
       sb.append("</ul></div></body></html>");
       return sb.toString();
     });
+  }
+
+  private List<IndexDocument> searchGroupingByIndex(String projectId, SearchRequest searchRequest) {
+    Set<String> indices = searchRequest.indices().isEmpty() ? getIndicesForProject(projectId)
+        : searchRequest.indices();
+
+    // Queue to hold index specific priority queues
+    PriorityQueue<PriorityQueue<IndexDocument>> priorityQueues = new PriorityQueue<>(
+        (pq1, pq2) -> {
+          if (pq1 == null && pq2 == null) {
+            throw new RuntimeException("Both priority queues are null, cannot compare them");
+          }
+          if (pq1 == null || pq1.isEmpty()) {
+            return 1;
+          }
+          if (pq2 == null || pq2.isEmpty()) {
+            return -1;
+          }
+          return Comparator.comparing(IndexDocument::score).reversed()
+              .compare(pq1.peek(), pq2.peek());
+        }
+    );
+
+    // Create index specific priority queues and add them to the priorityQueues heap.
+    indices.parallelStream().forEach(indexName -> {
+      try {
+        Directory index = FSDirectory.open(Paths.get(homePath + indexName));
+        List<IndexDocument> results = search(searchRequest.query(), index, 6);
+        PriorityQueue<IndexDocument> queue = new PriorityQueue<>(Comparator.comparing(IndexDocument::score).reversed());
+        queue.addAll(results);
+        priorityQueues.add(queue);
+      } catch (IOException e) {
+        logger.error(String.format("Error searching on index %s", indexName), e);
+      }
+    });
+
+    // Collapse the index based priority queues into a list, with documents group by index. Groups of 2.
+    List<IndexDocument> resultDocuments = new ArrayList<>();
+    while (resultDocuments.size() < searchRequest.maxTotalResults() && !priorityQueues.isEmpty()) {
+      PriorityQueue<IndexDocument> q = priorityQueues.poll();
+      if (q == null || q.isEmpty()) continue;
+      int count = 0;
+      while (count < searchRequest.maxResultsPerIndex() && !q.isEmpty()) {
+        IndexDocument doc = q.poll();
+        logger.debug(doc.url() + " " + doc.score());
+        resultDocuments.add(doc);
+        count++;
+      }
+    }
+    return resultDocuments;
   }
 
   private List<IndexDocument> search(String query, Directory index, int limit) throws IOException {
@@ -125,6 +181,12 @@ public class SearchController {
     ).collect(Collectors.toList());
   }
 
+  /**
+   * Not implemented.
+   * TODO: Implement this method, it should use Firebase to pull the project and the indices in it.
+   * @param projectId
+   * @return
+   */
   private Set<String> getIndicesForProject(String projectId) {
     return Collections.emptySet();
   }
