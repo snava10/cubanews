@@ -64,7 +64,8 @@ class HtmlCrawlerTest {
     when(metadataDatabase.exists(anyString())).thenReturn(false);
     Page pageMock = mock(Page.class);
     WebURL webUrlMock = mock(WebURL.class);
-    when(webUrlMock.getURL()).thenReturn("https://www.page1.com");
+    when(webUrlMock.getURL()).thenReturn("https://www.page1.com/xyz/abc.html");
+    when(webUrlMock.getPath()).thenReturn("/xyz/abc.html");
     when(pageMock.getWebURL()).thenReturn(webUrlMock);
     HtmlParseData parseDataMock = mock(HtmlParseData.class);
     when(pageMock.getParseData()).thenReturn(parseDataMock);
