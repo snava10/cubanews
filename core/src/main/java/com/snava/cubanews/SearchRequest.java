@@ -16,4 +16,18 @@ public interface SearchRequest {
   default Set<String> indices() {
     return Collections.emptySet();
   }
+  @Default
+  default int maxResultsPerIndex() {
+    return 5;
+  }
+  @Default
+  default int maxTotalResults() {
+    return 50;
+  }
+
+  @Default
+  default SearchResultGrouping grouping() {
+    return SearchResultGrouping.NONE;
+  }
+
 }
