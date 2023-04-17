@@ -1,4 +1,4 @@
-docker build --no-cache -t cubanews-rest-api:local \
+docker build --no-cache -t cubanews-api:local \
        --build-arg JAR_FILE=build/libs/rest-api-1.0.0-SNAPSHOT.jar \
        --build-arg AWS_ACCESS_KEY_ID_ARG=$AWS_ACCESS_KEY_ID \
        --build-arg AWS_SECRET_ACCESS_KEY_ARG=$AWS_SECRET_ACCESS_KEY \
