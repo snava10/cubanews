@@ -172,6 +172,9 @@ public class HtmlCrawler extends WebCrawler {
   }
 
   private String getSourceFromDomain(String domain) {
+    if (domain == null) {
+      return "";
+    }
     return switch (domain) {
       case "diariodecuba.com" -> "Diario de Cuba";
       case "adncuba.com" -> "ADN Cuba";
