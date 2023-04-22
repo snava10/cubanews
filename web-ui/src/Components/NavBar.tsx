@@ -1,8 +1,15 @@
-import { AppBar, Toolbar, Typography, IconButton, Tooltip, Avatar, Box } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Avatar,
+  Box,
+} from "@mui/material";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import { AccountCircle } from "@material-ui/icons";
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,33 +35,44 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function NavBar(props: any) {
   const classes = useStyles();
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => { };
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {};
 
   var inSearchPage = props.inSearchPage;
-  var appBarLeftComponent = <Box></Box>
+  var appBarLeftComponent = <Box></Box>;
 
   if (inSearchPage) {
-    appBarLeftComponent = <Typography variant="body1" fontWeight="bold" className={classes.title}>
-      <Link to="about" className={classes.bareLink}>
-        <IconButton>
-          <Avatar variant="square" src={`${process.env.PUBLIC_URL}/cuban-flag.svg`} />
-        </IconButton>
-        Cuba News
-      </Link>
-    </Typography>
+    appBarLeftComponent = (
+      <Typography variant="body1" fontWeight="bold" className={classes.title}>
+        <Link to="about" className={classes.bareLink}>
+          <IconButton>
+            <Avatar
+              variant="square"
+              src={`${process.env.PUBLIC_URL}/cuban-flag.svg`}
+            />
+          </IconButton>
+          Cuba News
+        </Link>
+      </Typography>
+    );
   } else {
-    appBarLeftComponent = <Typography variant="body1" fontWeight="bold" className={classes.title}>
-      <Link to="/" className={classes.bareLink}>
-        <IconButton>
-          <ArrowBackIcon />
-        </IconButton>
-      </Link>
-    </Typography>
+    appBarLeftComponent = (
+      <Typography variant="body1" fontWeight="bold" className={classes.title}>
+        <Link to="/" className={classes.bareLink}>
+          <IconButton>
+            <ArrowBackIcon />
+          </IconButton>
+        </Link>
+      </Typography>
+    );
   }
 
   return (
     <AppBar position="fixed" sx={{ boxShadow: 3 }}>
-      <Toolbar disableGutters className={classes.whiteBackground} sx={{ pl: 1, pr: 1 }}>
+      <Toolbar
+        disableGutters
+        className={classes.whiteBackground}
+        sx={{ pl: 1, pr: 1 }}
+      >
         {appBarLeftComponent}
 
         {/* <Button
@@ -71,7 +89,8 @@ export function NavBar(props: any) {
           aria-controls="menu-appbar"
           aria-haspopup="true"
           onClick={handleMenu}
-          color="primary">
+          color="primary"
+        >
           <AccountCircle />
         </IconButton>
       </Toolbar>

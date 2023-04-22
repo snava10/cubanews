@@ -53,12 +53,12 @@ export function Search() {
     }
     const data = {
       query: qs,
-      indices: ["cibercuba", "14ymedio", "adnCuba"],
+      indices: ["cibercuba", "14ymedio", "adnCuba", "diarioDeCuba"],
       maxResultsPerIndex: 3,
       grouping: "BY_INDEX_MAX",
     };
     // TODO: Parameterize the project name name.
-    fetch(`${base_url}/api/search/project/cubanews`, {
+    fetch(`${base_url}/api/search/project/cubanews_project`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,6 +67,7 @@ export function Search() {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         setSearchResults(data);
         if (env === "DEV") {
           console.log(data);

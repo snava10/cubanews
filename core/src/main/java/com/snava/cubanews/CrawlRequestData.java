@@ -3,6 +3,7 @@ package com.snava.cubanews;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.immutables.value.Value.Default;
 import org.immutables.value.Value.Immutable;
 
@@ -26,4 +27,6 @@ public interface CrawlRequestData {
   Set<String> baseUrls();
 
   Set<String> seeds();
+  @Nullable
+  String sourceName();
 }

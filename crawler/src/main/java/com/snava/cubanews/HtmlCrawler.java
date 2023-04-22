@@ -41,7 +41,8 @@ public class HtmlCrawler extends WebCrawler {
   @SuppressWarnings("FieldCanBeLocal")
   private final int indexBatch = 10;
 
-  public HtmlCrawler(Indexer indexer, Set<String> seeds, Set<String> baseUrls, SqliteMetadataDatabase metadataDatabase,
+  public HtmlCrawler(Indexer indexer, Set<String> seeds, Set<String> baseUrls,
+      SqliteMetadataDatabase metadataDatabase,
       Operation crawlOperation) {
     super();
     this.indexer = indexer;
@@ -95,7 +96,8 @@ public class HtmlCrawler extends WebCrawler {
       logger.info("{} {}", title, url);
       // do something with the collected data
       IndexDocument doc = ImmutableIndexDocument.builder().url(url).title(title).text(text)
-          .lastUpdated(getLastModified(page)).build();
+          .lastUpdated(getLastModified(page)).source(getSourceFromDomain(webUrl.getDomain()))
+          .build();
       if (metadataDatabase.exists(doc.url())) {
         logger.info("Document with url: {} already exists", doc.url());
       } else if (!isAValidDocument(doc)) {
@@ -167,6 +169,16 @@ public class HtmlCrawler extends WebCrawler {
     return StringUtils.isNotBlank(indexDocument.url()) && StringUtils.isNotBlank(
         indexDocument.title())
         && StringUtils.isNotBlank(indexDocument.text());
+  }
+
+  private String getSourceFromDomain(String domain) {
+    return switch (domain) {
+      case "diariodecuba.com" -> "Diario de Cuba";
+      case "adncuba.com" -> "ADN Cuba";
+      case "14ymedio.com" -> "14Ymedio";
+      case "cibercuba.com" -> "Cibercuba";
+      default -> domain.split("/.")[0];
+    };
   }
 
 }
