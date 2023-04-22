@@ -17,6 +17,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -101,6 +105,27 @@ public class SearchController {
     });
   }
 
+  @GetMapping("/api/search/logo/{newsSource}")
+  public Mono<ResponseEntity<byte[]>> getLogoImage(@PathVariable String newsSource)  {
+    return Mono.fromSupplier(() -> {
+      try {
+        ClassPathResource imgFile = new ClassPathResource(getLogoResourceFromNewsSourceName(newsSource));
+        byte[] bytes = StreamUtils.copyToByteArray(imgFile.getInputStream());
+        return ResponseEntity.ok()
+            .contentType(MediaType.IMAGE_JPEG)
+            .body(bytes);
+      } catch (IOException e) {
+        return ResponseEntity.notFound().build();
+      }
+    });
+  }
+
+  private String getLogoResourceFromNewsSourceName(String newsSource) {
+    String cleanSource = String.join("", newsSource.trim().toLowerCase().split(" "));
+    return "source-news-logos/" + cleanSource + ".jpg";
+
+  }
+
   private List<IndexDocument> searchGroupingByIndex(String projectId, SearchRequest searchRequest) {
     Set<String> indices = searchRequest.indices().isEmpty() ? getIndicesForProject(projectId)
         : searchRequest.indices();
@@ -176,6 +201,7 @@ public class SearchController {
               .lastUpdated(lastUpdated)
               .lastUpdatedDisplay(doc.get("lastUpdated"))
               .score(searcherResult.score())
+              .source(doc.get("source"))
               .build();
         }
     ).collect(Collectors.toList());

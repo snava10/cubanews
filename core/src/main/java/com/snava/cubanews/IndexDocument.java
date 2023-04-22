@@ -28,4 +28,9 @@ public interface IndexDocument {
   default float score() {
     return 0f;
   }
+  @Default
+  default String source() { return ""; }
+  @Default
+  default String logoKey() { return ""; }
+
 }

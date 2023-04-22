@@ -65,6 +65,7 @@ public class LuceneIndexer extends AbstractIndexer {
             DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
                 .withLocale(new Locale("es", "ES"))
         ), Store.YES));
+    document.add(new StoredField("source", doc.source()));
     Term term = new Term("_id", Objects.requireNonNull(doc.url()));
     TermQuery termQuery = new TermQuery(term);
 
@@ -104,4 +105,5 @@ public class LuceneIndexer extends AbstractIndexer {
     writer.deleteDocuments(termsArray);
     writer.commit();
   }
+
 }
