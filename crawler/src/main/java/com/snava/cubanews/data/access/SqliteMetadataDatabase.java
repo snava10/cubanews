@@ -70,6 +70,26 @@ public class SqliteMetadataDatabase {
     createOperationsTable();
   }
 
+  /**
+   * Just for testing
+   *
+   * @param sql
+   */
+  public void initialise(String sql) throws SQLException {
+    connect();
+    String sqlIndex = String.format("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON %s (url);",
+        tableName);
+    try (Statement stmt = conn.createStatement()) {
+      stmt.execute(sql);
+      stmt.execute(sqlIndex);
+    } catch (SQLException e) {
+      logger.error("Error creating metadata table", e);
+      throw new RuntimeException(e);
+    }
+
+    createOperationsTable();
+  }
+
   @SuppressWarnings("unused")
   public void close() throws SQLException {
     conn.close();
@@ -82,9 +102,9 @@ public class SqliteMetadataDatabase {
   private void createMetadataTable() {
     String sql = String.format("""
         CREATE TABLE IF NOT EXISTS %s (
-        	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-        	url TEXT NOT NULL UNIQUE,
-        	lastUpdated NUMERIC NOT NULL,
+         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+         url TEXT NOT NULL UNIQUE,
+         lastUpdated NUMERIC NOT NULL,
          createdAt NUMERIC NOT NULL,
          state TEXT NOT NULL);""", tableName);
     String sqlIndex = String.format("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON %s (url);",
@@ -118,7 +138,7 @@ public class SqliteMetadataDatabase {
   }
 
   public MetadataDocument getByUrlAndState(String url, DocumentState state) {
-    String sql = "select id, url, createdAt, lastUpdated, state from " + tableName
+    String sql = "select id, url, createdAt, lastUpdated, state, indexName from " + tableName
         + " where url=? and state=?";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
       stmt.setString(1, url);
@@ -130,6 +150,7 @@ public class SqliteMetadataDatabase {
             .url(resultSet.getString("url"))
             .createdAt(resultSet.getLong("createdAt")).lastUpdated(resultSet.getLong("lastUpdated"))
             .state(DocumentState.valueOf(resultSet.getString("state")))
+            .indexName(resultSet.getString("indexName"))
             .build();
       }
       return null;
@@ -140,7 +161,8 @@ public class SqliteMetadataDatabase {
   }
 
   public Optional<MetadataDocument> getByUrl(String url) {
-    String sql = "select id, url, createdAt, lastUpdated, state from " + tableName + " where url=?";
+    String sql = "select id, url, createdAt, lastUpdated, state, indexName from " + tableName
+        + " where url=?";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
       stmt.setString(1, url);
       ResultSet resultSet = stmt.executeQuery();
@@ -151,6 +173,7 @@ public class SqliteMetadataDatabase {
             .createdAt(resultSet.getLong("createdAt"))
             .lastUpdated(resultSet.getLong("lastUpdated"))
             .state(DocumentState.valueOf(resultSet.getString("state")))
+            .indexName(resultSet.getString("indexName"))
             .build());
       }
       return Optional.empty();
@@ -190,13 +213,15 @@ public class SqliteMetadataDatabase {
   }
 
   public void insertOne(MetadataDocument metadataDocument) {
-    String sql = "INSERT INTO " + tableName + "(url,lastUpdated,createdAt,state) VALUES(?,?,?,?)";
+    String sql = "INSERT INTO " + tableName
+        + "(url,lastUpdated,createdAt,state,indexName) VALUES(?,?,?,?,?)";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
       long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
       stmt.setString(1, metadataDocument.url());
       stmt.setLong(2, timestamp);
       stmt.setLong(3, timestamp);
       stmt.setObject(4, metadataDocument.state());
+      stmt.setString(5, metadataDocument.indexName());
       stmt.execute();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -205,7 +230,8 @@ public class SqliteMetadataDatabase {
   }
 
   public void insertMany(List<MetadataDocument> metadataDocumentList) {
-    String sql = "INSERT INTO " + tableName + "(url,lastUpdated,createdAt,state) VALUES(?,?,?,?)";
+    String sql = "INSERT INTO " + tableName
+        + "(url,lastUpdated,createdAt,state,indexName) VALUES(?,?,?,?,?)";
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
       long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
       for (MetadataDocument metadataDocument : metadataDocumentList) {
@@ -213,7 +239,7 @@ public class SqliteMetadataDatabase {
         stmt.setLong(2, timestamp);
         stmt.setLong(3, timestamp);
         stmt.setObject(4, metadataDocument.state());
-//        stmt.setString(5, metadataDocument.hash());
+        stmt.setString(5, metadataDocument.indexName());
         stmt.addBatch();
       }
       int[] result = stmt.executeBatch();
@@ -282,16 +308,19 @@ public class SqliteMetadataDatabase {
     }
   }
 
-  public Iterable<List<String>> getDeletablePages(int amount, TimeUnit timeUnit, int batchSize) {
+  public Iterable<List<String>> getDeletablePages(String indexName, int amount, TimeUnit timeUnit,
+      int batchSize) {
     long seconds = timeUnit.toSeconds(amount);
     long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     long delta = timestamp - seconds;
     ResultSet resultSet;
-    String sql = "Select url from " + tableName + " where state='ACTIVE' and createdAt < ?";
+    String sql = "Select url from " + tableName
+        + " where (indexName is NULL or indexName=?) and state='ACTIVE' and createdAt < ?";
     PreparedStatement stmt;
     try {
       stmt = conn.prepareStatement(sql);
-      stmt.setLong(1, delta);
+      stmt.setString(1, indexName);
+      stmt.setLong(2, delta);
       resultSet = stmt.executeQuery();
     } catch (SQLException e) {
       e.printStackTrace();

@@ -9,4 +9,6 @@ public interface Indexer {
   void delete(List<String> docUrls) throws IOException;
   void close() throws IOException;
   String getIndexName();
+  String getIndexPath();
+  String getProjectAndIndexName();
 }

@@ -45,7 +45,15 @@ class SqliteMetadataDatabaseTest {
     System.out.println("Current absolute path is: " + s);
     dbPath = s + "test" + r.nextInt(100000000) + ".db";
     db = new SqliteMetadataDatabase(dbPath, metaTable);
-    db.initialise();
+    String sql = """
+        CREATE TABLE IF NOT EXISTS metaTable (
+         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+         url TEXT NOT NULL UNIQUE,
+         lastUpdated NUMERIC NOT NULL,
+         createdAt NUMERIC NOT NULL,
+         state TEXT NOT NULL,
+         indexName TEXT NULL);""";
+    db.initialise(sql);
   }
 
   @AfterEach
@@ -232,6 +240,7 @@ class SqliteMetadataDatabaseTest {
   @Test
   void getDeletablePages() {
     long createdAt = LocalDateTime.now().minusHours(25).toEpochSecond(ZoneOffset.UTC);
+    String indexName = null;
     for (int i = 0; i < 50; i++) {
       MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
           .url("https://news.com/n" + i)
@@ -253,11 +262,48 @@ class SqliteMetadataDatabaseTest {
     }
 
     int batches = 0;
-    for (List<String> urls : db.getDeletablePages(24, TimeUnit.HOURS, 10)) {
+    for (List<String> urls : db.getDeletablePages(null, 24, TimeUnit.HOURS, 10)) {
       assertThat(urls.contains("https://news.com/n" + (batches * 10))).isTrue();
       batches++;
     }
     assertThat(batches).isEqualTo(5);
+  }
+  @Test
+  void getDeletablePagesFilteringIndexName() {
+    long createdAt = LocalDateTime.now().minusHours(25).toEpochSecond(ZoneOffset.UTC);
+    String indexName = "testIndex";
+    for (int i = 0; i < 50; i++) {
+      MetadataDocument metadataDocument = ImmutableMetadataDocument.builder()
+          .url("https://news.com/n" + i)
+          .state(DocumentState.ACTIVE).indexName(indexName + (i % 2 == 0 ? "Even" : "Odd")).build();
+      db.insertOne(metadataDocument);
+    }
+    String updateSql = String.format("UPDATE %s SET createdAt=%d where state='ACTIVE'", metaTable,
+        createdAt);
+    try (Statement stmt = db.getConnection().createStatement()) {
+      stmt.executeUpdate(updateSql);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+
+    for (List<String> urls : db.getDeletablePages("testIndexEven", 24, TimeUnit.HOURS, 100)) {
+      assertThat(urls.size()).isEqualTo(25);
+      for (int i = 0; i < 50; i+=2) {
+        assertThat(urls.contains("https://news.com/n" + i)).isTrue();
+      }
+    }
+
+    for (List<String> urls : db.getDeletablePages("testIndexOdd", 24, TimeUnit.HOURS, 100)) {
+      assertThat(urls.size()).isEqualTo(25);
+      for (int i = 1; i < 50; i+=2) {
+        assertThat(urls.contains("https://news.com/n" + i)).isTrue();
+      }
+    }
+
+    for (List<String> urls : db.getDeletablePages(null, 24, TimeUnit.HOURS, 100)) {
+      assertThat(urls.size()).isEqualTo(50);
+    }
+
   }
 
   @Test

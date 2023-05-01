@@ -76,6 +76,20 @@ public class CrawlController {
     return Mono.just(new LongRunningOperationResponse(indexName, OperationStatus.IN_PROGRESS,
         OperationType.DELETE_OLD_PAGES));
   }
+  @PostMapping("/api/clearold/project/{projectId}")
+  public Mono<LongRunningOperationResponse> clearOldProject(@PathVariable String projectId,
+      @RequestBody ClearOldRequest request) {
+    logger.info("Clearing old for project " + projectId);
+    request.data().forEach(d -> {
+      try {
+        clearOld(projectId + "/" + d.indexName(), d.amount(), d.timeunit());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+    return Mono.just(new LongRunningOperationResponse(projectId, OperationStatus.IN_PROGRESS,
+        OperationType.DELETE_OLD_PAGES));
+  }
 
   @PostMapping("/api/crawl/{projectName}")
   public Mono<LongRunningOperationResponse> crawlProject(

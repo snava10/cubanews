@@ -132,7 +132,7 @@ public class HtmlCrawler extends WebCrawler {
       indexer.index(docsToIndex);
       metadataDatabase.insertMany(docsToIndex.stream().map(
           doc -> ImmutableMetadataDocument.builder().url(Objects.requireNonNull(doc.url()))
-              .hash(hashDocBody(doc)).build()
+              .hash(hashDocBody(doc)).indexName(indexer.getProjectAndIndexName()).build()
       ).collect(Collectors.toList()));
       metadataDatabase.increaseOperationDocCounts(crawlOperation.id(), docsToIndex.size());
     } catch (Exception e) {
