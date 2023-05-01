@@ -68,7 +68,7 @@ export function Search() {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        setSearchResults(data);
+        setSearchResults(cleanNoResultsBlock(data));
         if (env === "DEV") {
           console.log(data);
         }
@@ -104,6 +104,13 @@ export function Search() {
 
   if (env === "PROD") {
     ReactGA.send("pageview");
+  }
+
+  function cleanNoResultsBlock(data: ResultCard[]): ResultCard[] {
+    if (data.length === 1) {
+      return data;
+    }
+    return data.filter((d) => d.title !== "No results :(");
   }
 
   return (
