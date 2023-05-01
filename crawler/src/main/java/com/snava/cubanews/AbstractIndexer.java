@@ -16,10 +16,12 @@ public abstract class AbstractIndexer implements Indexer {
   IndexWriterConfig indexWriterConfig;
   IndexWriter writer;
   protected String indexName;
+  protected String indexPath;
   protected RatedLogger logger;
 
   public AbstractIndexer(String indexPath, String indexName, Class clazz) throws IOException {
     this(indexPath, new StandardAnalyzer());
+    this.indexPath = indexPath;
     logger = new RatedLogger(clazz);
     this.indexName = indexName;
   }
@@ -49,4 +51,15 @@ public abstract class AbstractIndexer implements Indexer {
   public String getIndexName() {
     return indexName;
   }
+
+  public String getIndexPath() { return indexPath; }
+
+  public String getProjectAndIndexName() {
+    String[] path = indexPath.split("/");
+    if (path.length == 1) {
+      return path[0];
+    }
+    return path[path.length - 2] + "/" + path[path.length - 1];
+  }
+
 }

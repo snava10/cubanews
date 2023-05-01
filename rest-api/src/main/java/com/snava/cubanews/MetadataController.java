@@ -1,7 +1,9 @@
 package com.snava.cubanews;
 
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,5 +36,15 @@ public class MetadataController {
   record CountDocumentsResult(int total, int active, int deleted) {
 
   }
+  /**
+   * Not implemented.
+   * TODO: Implement this method, it should use Firebase to pull the project and the indices in it.
+   * @param projectId
+   * @return
+   */
+  public static Set<String> getIndicesForProject(String projectId) {
+    return Collections.emptySet();
+  }
+
 
 }

@@ -8,9 +8,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -18,6 +21,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class AppConfig {
 
   private static final String APP_DATA_DIR = "crawlers";
+
+  @Value("${spring.profiles.active}")
+  private String activeProfile;
 
   @Bean
   public String homePath() {
@@ -46,6 +52,13 @@ public class AppConfig {
   }
 
   @Bean
+  @Profile("dev")
+  public String migrationsDirectoryDev() {
+    Path resourceDirectory = Paths.get("rest-api","src","main","resources", "db_migrations");
+    return resourceDirectory.toFile().getAbsolutePath();
+  }
+
+  @Bean
   public Searcher searcher() {
     return new Searcher();
   }
@@ -68,7 +81,9 @@ public class AppConfig {
     String databasePath = homePath() + "metadata/";
     Files.createDirectories(Paths.get(databasePath));
     SqliteMetadataDatabase db = new SqliteMetadataDatabase(databasePath + "cubanews.db", metadataTableName());
-    SqliteMigrationManager migrationManager = new SqliteMigrationManager(db, migrationsDirectory());
+    String migrationsDirectory =
+        activeProfile.equals("dev") ? migrationsDirectoryDev() : migrationsDirectory();
+    SqliteMigrationManager migrationManager = new SqliteMigrationManager(db, migrationsDirectory);
     try {
       db.initialise();
       migrationManager.runMigrations();

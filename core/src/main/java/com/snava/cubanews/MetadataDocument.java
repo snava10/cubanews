@@ -33,4 +33,7 @@ public interface MetadataDocument {
   default DocumentState state() {
     return DocumentState.ACTIVE;
   }
+  @Default
+  @Nullable
+  default String indexName() { return null; }
 }

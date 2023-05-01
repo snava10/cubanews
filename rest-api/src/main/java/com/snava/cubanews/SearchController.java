@@ -1,5 +1,7 @@
 package com.snava.cubanews;
 
+import static com.snava.cubanews.MetadataController.getIndicesForProject;
+
 import com.snava.cubanews.Searcher.SearcherResult;
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
 import java.io.IOException;
@@ -205,16 +207,6 @@ public class SearchController {
               .build();
         }
     ).collect(Collectors.toList());
-  }
-
-  /**
-   * Not implemented.
-   * TODO: Implement this method, it should use Firebase to pull the project and the indices in it.
-   * @param projectId
-   * @return
-   */
-  private Set<String> getIndicesForProject(String projectId) {
-    return Collections.emptySet();
   }
 
 }
