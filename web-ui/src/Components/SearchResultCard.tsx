@@ -26,8 +26,10 @@ export function SearchResultCard(props: {
   useEffect(() => {
     async function fetchImage() {
       try {
-        const imageData = await readImage(props.content.source);
-        setImageUrl(imageData);
+        if (!imageUrl) {
+          const imageData = await readImage(props.content.source);
+          setImageUrl(imageData);
+        }
       } catch (error) {
         console.error("Failed to load logo image:", error);
       }
