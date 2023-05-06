@@ -110,6 +110,11 @@ public class HtmlCrawler extends WebCrawler {
         logger.info("Ignoring " + doc.url() + " because is too short to be a final article");
       } else if (isTagsPage(webUrl)) {
         logger.info("Ignoring " + doc.url() + " because is a tags page, not final article");
+      } else if (exclusionSet().contains(doc.url())) {
+        logger.info("Ignoring " + doc.url() + " because url is in the exclusion set");
+      } else if (Arrays.stream(prefixesToIgnore()).anyMatch(prefix -> Objects.requireNonNull(
+          doc.url()).startsWith(prefix))) {
+        logger.info("Ignoring " + doc.url() + " because contains a prefix manually excluded");
       } else {
         docsToIndex.add(doc);
       }
@@ -180,8 +185,17 @@ public class HtmlCrawler extends WebCrawler {
       case "adncuba.com" -> "ADN Cuba";
       case "14ymedio.com" -> "14Ymedio";
       case "cibercuba.com" -> "Cibercuba";
+      case "cubanet.org" -> "Cubanet";
       default -> domain.split("/.")[0];
     };
+  }
+
+  private String[] prefixesToIgnore() {
+    return new String[] {};
+  }
+
+  private Set<String> exclusionSet() {
+    return new HashSet<>();
   }
 
 }

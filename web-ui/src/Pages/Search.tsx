@@ -40,7 +40,7 @@ export function Search() {
     if (qs === null || qs.trim() === "") {
       const d = new Date();
       const formatDate = moment(d).format("dddd MMMM D YYYY");
-      qs = formatDate;
+      qs = "cuba " + formatDate;
     }
     setFirstLoad(false);
     setSearchResults([]);
@@ -53,7 +53,7 @@ export function Search() {
     }
     const data = {
       query: qs,
-      indices: ["cibercuba", "14ymedio", "adnCuba", "diarioDeCuba"],
+      indices: ["cibercuba", "14ymedio", "adnCuba", "diarioDeCuba", "cubanet"],
       maxResultsPerIndex: 3,
       grouping: "BY_INDEX_MAX",
     };
