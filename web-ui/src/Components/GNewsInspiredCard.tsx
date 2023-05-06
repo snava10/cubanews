@@ -49,8 +49,8 @@ export function GNewsInspiredCard(props: { content: ResultCard }) {
           <Box
             component="img"
             sx={{
-              height: 40,
-              width: 40,
+              height: 30,
+              width: 50,
               maxHeight: { xs: 233, md: 167 },
               maxWidth: { xs: 350, md: 250 },
             }}
@@ -64,6 +64,7 @@ export function GNewsInspiredCard(props: { content: ResultCard }) {
               fontWeight="bold"
               underline="hover"
               href={props.content.url}
+              target="_blank"
             >
               {props.content.title}
             </Link>
