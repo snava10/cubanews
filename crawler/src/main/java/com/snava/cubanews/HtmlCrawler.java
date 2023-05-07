@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -47,13 +48,19 @@ public class HtmlCrawler extends WebCrawler {
     super();
     this.indexer = indexer;
     this.seeds = seeds;
-    this.baseUrls = baseUrls;
+    this.baseUrls = baseUrls.stream().map(x -> {
+      if (x.endsWith("/")) {
+        return x;
+      }
+      return x + "/";
+    }).collect(Collectors.toSet());
     this.metadataDatabase = metadataDatabase;
     this.crawlOperation = crawlOperation;
     this.logger = new RatedLogger(HtmlCrawler.class);
     tagUrls = new HashSet<>();
-    tagUrls.addAll(baseUrls.stream().map(burl -> burl + "tags/").toList());
-    tagUrls.addAll(baseUrls.stream().map(burl -> burl + "etiqueta/").toList());
+    tagUrls.addAll(this.baseUrls.stream().map(burl -> burl + "tags/").toList());
+    tagUrls.addAll(this.baseUrls.stream().map(burl -> burl + "tag/").toList());
+    tagUrls.addAll(this.baseUrls.stream().map(burl -> burl + "etiqueta/").toList());
   }
 
   @Override
@@ -191,11 +198,19 @@ public class HtmlCrawler extends WebCrawler {
   }
 
   private String[] prefixesToIgnore() {
-    return new String[] {};
+    return new String[] {
+        "https://www.cubanet.org/author/",
+        "https://www.cubanet.org/categoria/",
+        "https://www.cubanet.org/htdocs/"
+    };
   }
 
   private Set<String> exclusionSet() {
-    return new HashSet<>();
+    return Stream.of(
+        "https://www.cubanet.org/sobre-cubanet/amp/",
+        "https://www.cubanet.org/galeria-de-videos/amp/",
+        "https://www.cubanet.org/aviso-de-privacidad/amp/"
+    ).collect(Collectors.toSet());
   }
 
 }
