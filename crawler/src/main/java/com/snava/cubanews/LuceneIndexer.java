@@ -98,6 +98,8 @@ public class LuceneIndexer extends AbstractIndexer {
 
   @Override
   public void delete(List<String> docUrls) throws IOException {
+    logger.info("Deleting {} urls", docUrls.size());
+    if (docUrls.size() > 0) logger.info(docUrls.get(0));
     List<Term> terms = docUrls.stream().map(url -> new Term("_id", Objects.requireNonNull(url)))
         .toList();
     Term[] termsArray = new Term[terms.size()];
