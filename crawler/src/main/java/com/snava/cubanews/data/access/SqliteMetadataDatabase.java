@@ -291,6 +291,19 @@ public class SqliteMetadataDatabase {
     }
   }
 
+  public int updateAllStates(DocumentState state) {
+    String sql = "UPDATE " + tableName + " SET state=?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, state.name());
+      int result = stmt.executeUpdate();
+      System.out.println("The number of rows updated: " + result);
+      return result;
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
   public int updateStateByAgeAndState(int amount, TimeUnit timeUnit, DocumentState current,
       DocumentState state) {
     long seconds = timeUnit.toSeconds(amount);

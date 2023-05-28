@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -31,6 +32,12 @@ public class MetadataController {
   @GetMapping("/api/metadata/version")
   public Mono<Integer> getMetadataDBVersion() {
     return Mono.just(db.getDatabaseVersion());
+  }
+
+  @GetMapping
+  public Mono<Integer> updateAllDocStates(
+      @RequestParam(value = "state", defaultValue = "ACTIVE") String state) {
+    return Mono.just(db.updateAllStates(DocumentState.valueOf(state)));
   }
 
   record CountDocumentsResult(int total, int active, int deleted) {
