@@ -308,7 +308,7 @@ public class SqliteMetadataDatabase {
     }
   }
 
-  public Iterable<List<String>> getDeletablePages(String indexName, int amount, TimeUnit timeUnit,
+  public Iterable<List<String>> getDeletablePages(String indexPath, int amount, TimeUnit timeUnit,
       int batchSize) {
     long seconds = timeUnit.toSeconds(amount);
     long timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
@@ -319,7 +319,7 @@ public class SqliteMetadataDatabase {
     PreparedStatement stmt;
     try {
       stmt = conn.prepareStatement(sql);
-      stmt.setString(1, indexName);
+      stmt.setString(1, indexPath);
       stmt.setLong(2, delta);
       resultSet = stmt.executeQuery();
     } catch (SQLException e) {

@@ -27,7 +27,8 @@ public class CrawlerController implements Crawler {
   }
 
   @Override
-  public Completable start(int maxPagesToFetch, int depth, int numCrawlers, Set<String> seedUrls, Set<String> baseUrls,
+  public Completable start(int maxPagesToFetch, int depth, int numCrawlers, Set<String> seedUrls,
+      Set<String> baseUrls,
       Indexer indexer, SqliteMetadataDatabase metadataDatabase)
       throws Exception {
     CrawlConfig config = new CrawlConfig();
@@ -39,7 +40,8 @@ public class CrawlerController implements Crawler {
   }
 
   @Override
-  public Completable start(CrawlConfig config, int numCrawlers, Set<String> seedUrls, Set<String> baseUrls,
+  public Completable start(CrawlConfig config, int numCrawlers, Set<String> seedUrls,
+      Set<String> baseUrls,
       Indexer indexer, SqliteMetadataDatabase metadataDatabase) throws Exception {
     PageFetcher pageFetcher = new PageFetcher(config);
     RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
@@ -52,18 +54,14 @@ public class CrawlerController implements Crawler {
         seedUrls, baseUrls, metadataDatabase, crawlOperation);
 
     return Completable.fromObservable(Observable.fromCallable(() -> {
-      try {
-        metadataDatabase.insertOperation(crawlOperation);
-        crawlController.start(factory, numCrawlers);
-      } catch (Exception ex) {
-        return Observable.error(ex);
-      }
-      return crawlOperation;
-    }).doOnNext(o -> {
-      logger.info("Closing index writer");
-      indexer.close();
-      Operation op = (Operation) o;
-      metadataDatabase.completeOperation(op);
-    }));
+          metadataDatabase.insertOperation(crawlOperation);
+          crawlController.start(factory, numCrawlers);
+          return crawlOperation;
+        }).doOnError(error -> logger.error(error.getMessage()))
+        .doOnNext(o -> {
+          logger.info("Closing index writer");
+          indexer.close();
+          metadataDatabase.completeOperation(o);
+        }));
   }
 }

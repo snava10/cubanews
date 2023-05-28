@@ -8,11 +8,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 public class TestHttpServer {
-
   HttpServer server;
   Crawler crawler;
   public void start() throws IOException {
@@ -27,16 +25,11 @@ public class TestHttpServer {
     server.stop(0);
   }
   static class MyHandler implements HttpHandler {
+    String currentDir = System.getProperty("user.dir");
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-      String resourceName = "cuba.html";
-      // Get the path of the resources folder
-      Path resourcePath = Paths.get(MyHandler.class.getClassLoader().getResource(resourceName).getPath());
-      String resourcesFolder = resourcePath.getParent().toString();
-
-      System.out.println("Resources folder path: " + resourcesFolder);
       String requestPath = exchange.getRequestURI().getPath();
-      String filePath = resourcesFolder + "/sites/" + requestPath + ".html"; // Modify this to the actual path of your HTML directory
+      String filePath = currentDir + "/sites" + requestPath; // Modify this to the actual path of your HTML directory
 
       File file = new File(filePath);
       if (file.exists() && file.isFile()) {
@@ -48,6 +41,7 @@ public class TestHttpServer {
 
     private void sendFileResponse(File file, HttpExchange exchange) throws IOException {
       exchange.sendResponseHeaders(200, file.length());
+      exchange.getResponseHeaders().put("Content-Type", Stream.of("text/html").toList());
       OutputStream outputStream = exchange.getResponseBody();
       Files.copy(file.toPath(), outputStream);
       outputStream.close();

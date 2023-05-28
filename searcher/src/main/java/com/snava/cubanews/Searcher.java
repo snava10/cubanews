@@ -73,8 +73,7 @@ public class Searcher {
     return booleanSearch(Arrays.asList("title", "url", "text"), queryString, index, top);
   }
 
-  record SearcherResult(float score, Document doc) {
-
+  public record SearcherResult(float score, Document doc) {
   }
 
   public Query boostLast24hourDocs(Query mainQuery, String updatedField, float boostFactor) {
