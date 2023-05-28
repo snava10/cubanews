@@ -34,7 +34,7 @@ public class MetadataController {
     return Mono.just(db.getDatabaseVersion());
   }
 
-  @GetMapping
+  @GetMapping("/api/metadata/updateState")
   public Mono<Integer> updateAllDocStates(
       @RequestParam(value = "state", defaultValue = "ACTIVE") String state) {
     return Mono.just(db.updateAllStates(DocumentState.valueOf(state)));
