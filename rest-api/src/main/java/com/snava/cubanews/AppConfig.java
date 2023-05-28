@@ -22,7 +22,7 @@ public class AppConfig {
 
   private static final String APP_DATA_DIR = "crawlers";
 
-  @Value("${spring.profiles.active}")
+  @Value("${spring.profiles.active:test}")
   private String activeProfile;
 
   @Bean
@@ -59,6 +59,13 @@ public class AppConfig {
   }
 
   @Bean
+  @Profile("test")
+  public String migrationsDirectoryTest() {
+    Path resourceDirectory = Paths.get("src","main","resources", "db_migrations");
+    return resourceDirectory.toFile().getAbsolutePath();
+  }
+
+  @Bean
   public Searcher searcher() {
     return new Searcher();
   }
@@ -80,9 +87,10 @@ public class AppConfig {
   SqliteMetadataDatabase metadataDatabase() throws IOException {
     String databasePath = homePath() + "metadata/";
     Files.createDirectories(Paths.get(databasePath));
-    SqliteMetadataDatabase db = new SqliteMetadataDatabase(databasePath + "cubanews.db", metadataTableName());
+    SqliteMetadataDatabase db =
+        new SqliteMetadataDatabase(databasePath + "cubanews.db", metadataTableName());
     String migrationsDirectory =
-        activeProfile.equals("dev") ? migrationsDirectoryDev() : migrationsDirectory();
+        activeProfile.equals("dev") ? migrationsDirectoryDev() : activeProfile.equals("test") ? migrationsDirectoryTest() : migrationsDirectory();
     SqliteMigrationManager migrationManager = new SqliteMigrationManager(db, migrationsDirectory);
     try {
       db.initialise();

@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="LuceneBoostingExample" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="com.snava.cubanews.LuceneBoostingExample" />
+    <module name="cubanews.searcher.main" />
+    <option name="PROGRAM_PARAMETERS" value="/tmp/cubanews/index2" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.snava.cubanews.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
