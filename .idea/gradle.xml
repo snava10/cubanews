@@ -11,7 +11,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/crawler" />
-            <option value="$PROJECT_DIR$/e2e-test" />
             <option value="$PROJECT_DIR$/e2e-tests" />
             <option value="$PROJECT_DIR$/rest-api" />
             <option value="$PROJECT_DIR$/searcher" />

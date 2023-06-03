@@ -3,6 +3,5 @@ include 'crawler'
 include 'searcher'
 include 'core'
 include 'rest-api'
-include 'e2e-test'
 include 'e2e-tests'
 

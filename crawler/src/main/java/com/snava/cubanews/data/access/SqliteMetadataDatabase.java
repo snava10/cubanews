@@ -481,6 +481,25 @@ public class SqliteMetadataDatabase {
     Files.deleteIfExists(Path.of(this.dbPath + "_back"));
   }
 
+  public List<MetadataDocument> getAll() throws SQLException {
+    String sql = "Select * from " + tableName;
+    List<MetadataDocument> result = new ArrayList<>();
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+      ResultSet resultSet = stmt.executeQuery();
+      while (resultSet.next()) {
+        MetadataDocument doc = ImmutableMetadataDocument.builder()
+            .id(resultSet.getInt("id"))
+            .url(resultSet.getString("url"))
+            .createdAt(resultSet.getLong("createdAt")).lastUpdated(resultSet.getLong("lastUpdated"))
+            .state(DocumentState.valueOf(resultSet.getString("state")))
+            .indexName(resultSet.getString("indexName"))
+            .build();
+        result.add(doc);
+      }
+      return result;
+    }
+  }
+
   static class UrlsIterator implements Iterator<List<String>> {
 
     private final PreparedStatement stmt;

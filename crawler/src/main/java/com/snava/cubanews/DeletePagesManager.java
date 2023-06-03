@@ -11,6 +11,7 @@ public class DeletePagesManager {
   public static int deleteOldPages(int amount, TimeUnit timeUnit, SqliteMetadataDatabase db,
       Indexer indexer) throws IOException {
     long deleted = 0;
+    System.out.printf("Deleting for index %s%n", indexer.getProjectAndIndexName());
     for (List<String> urls : db.getDeletablePages(indexer.getProjectAndIndexName(), amount, timeUnit, 100)) {
       deleted += urls.size();
       indexer.delete(urls);

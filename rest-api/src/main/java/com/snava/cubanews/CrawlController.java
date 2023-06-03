@@ -57,6 +57,7 @@ public class CrawlController {
       @RequestParam(value = "timeunit", defaultValue = "DAYS") String timeunit) throws IOException {
     System.out.printf("Deleting pages older that %d %s%n", amount, timeunit);
     Indexer indexer = new LuceneIndexer(homePath + indexName, indexName);
+    logger.info(indexer.getIndexPath());
     DeletePagesManager.deleteOldPageReactive(amount, TimeUnit.valueOf(timeunit), db, indexer)
         .retryWhen(errors ->
             errors.zipWith(
@@ -82,7 +83,7 @@ public class CrawlController {
     logger.info("Clearing old for project " + projectId);
     request.data().forEach(d -> {
       try {
-        clearOld(projectId + "/" + d.indexName(), d.amount(), d.timeunit());
+        clearOld(d.indexName(), d.amount(), d.timeunit());
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

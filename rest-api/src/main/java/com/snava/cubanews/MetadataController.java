@@ -1,6 +1,7 @@
 package com.snava.cubanews;
 
 import com.snava.cubanews.data.access.SqliteMetadataDatabase;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -51,6 +52,10 @@ public class MetadataController {
    */
   public static Set<String> getIndicesForProject(String projectId) {
     return Collections.emptySet();
+  }
+  @GetMapping("/api/metadata/all")
+  public List<MetadataDocument> queryMetadata() throws SQLException {
+    return db.getAll();
   }
 
 
