@@ -10,3 +10,6 @@ storage
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Added by Apify CLI
+.venv
