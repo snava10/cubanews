@@ -1,6 +1,6 @@
 {
 	"actorSpecification": 1,
-	"name": "cubanews-crawler",
+	"name": "adncuba-crawler",
 	"version": "0.0",
 	"buildTag": "latest",
 	"environmentVariables": {}

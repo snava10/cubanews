@@ -7,9 +7,7 @@
     "outDir": "dist",
     "noUnusedLocals": false,
     "lib": ["DOM"],
-    "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": false
   },
-  "exclude": ["node_modules/**"],
-  "include": ["*/**/*.ts", "*.ts"]
+  "include": ["./src/**/*"]
 }
