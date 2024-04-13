@@ -7,7 +7,14 @@
  */
 import { PlaywrightCrawler } from "crawlee";
 import moment from "moment";
-import { Actor } from "apify";
+import { Actor, ApifyClient } from "apify";
+
+export class NewsItem {
+  "title": string;
+  "url": string;
+  "updated": number;
+  "isoDate": string;
+}
 
 const startPages = new Set([
   "https://adncuba.com/",
@@ -23,10 +30,34 @@ function parseDate(rawDate: string): moment.Moment {
   return moment(rawDate.trim().split(": ")[1], "ddd, MM/DD/YYYY - HH:mm");
 }
 
+export async function getData(): Promise<NewsItem[]> {
+  const token = process.env.APIFY_TOKEN;
+  const client = new ApifyClient({ token });
+  const datasetCollectionClient = client.datasets();
+  const listDatasets = await datasetCollectionClient.list();
+  const dataset = listDatasets.items.find((dataset) =>
+    dataset.name?.startsWith("adncuba")
+  );
+  // If dataset found, return its ID
+  if (!dataset) {
+    return [];
+  }
+
+  const { items } = await client.dataset(dataset.id).listItems();
+  const newsItems = items
+    .map((item) => item as unknown)
+    .map((item) => item as NewsItem);
+
+  return newsItems;
+}
+
 export default class AdnCubaCrawler {
   crawler = new PlaywrightCrawler({
     // Use the requestHandler to process each of the crawled pages.
-    async requestHandler({ request, page, enqueueLinks, log, pushData }) {
+    async requestHandler({ request, page, enqueueLinks, log }) {
+      const dataset = await Actor.openDataset("adncuba-dataset", {
+        forceCloud: true,
+      });
       const title = await page.title();
       log.info(`Title of ${request.loadedUrl} is '${title}'`);
       if (request.loadedUrl && isValid(request.loadedUrl)) {
@@ -38,7 +69,7 @@ export default class AdnCubaCrawler {
           const momentDate = parseDate(rawDate);
           log.info(`Last updated: ${momentDate.toISOString()}`);
           // Save results as JSON to ./storage/datasets/default
-          await pushData({
+          await dataset.pushData({
             title,
             url: request.loadedUrl,
             updated: momentDate.unix(),
@@ -65,6 +96,10 @@ export default class AdnCubaCrawler {
 
   public async run(): Promise<void> {
     await Actor.init();
+    const dataset = await Actor.openDataset("adncuba-dataset", {
+      forceCloud: true,
+    });
+    await dataset.drop();
     await this.crawler.run([...startPages]);
     await Actor.exit();
   }

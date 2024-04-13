@@ -2,7 +2,7 @@
 
 // Importing necessary modules
 import yargs from "yargs";
-import AdnCubaCrawler from "../adncuba_crawler.ts";
+import AdnCubaCrawler from "../../adncuba-crawler/src/adncuba_crawler.ts";
 
 // Define the version of your application
 const VERSION = "1.0.0";
