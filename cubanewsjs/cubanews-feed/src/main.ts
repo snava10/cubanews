@@ -1,20 +1,34 @@
-// Apify SDK - toolkit for building Apify Actors (Read more at https://docs.apify.com/sdk/js/)
-import { Actor } from 'apify';
-// Crawlee - web scraping and browser automation library (Read more at https://crawlee.dev)
-// import { CheerioCrawler } from 'crawlee';
+import { Actor } from "apify";
+import express from "express";
 
-// this is ESM project, and as such, it requires you to specify extensions in your relative imports
-// read more about this here: https://nodejs.org/docs/latest-v18.x/api/esm.html#mandatory-file-extensions
-// note that we need to use `.js` even when inside TS files
-// import { router } from './routes.js';
-
-// The init() call configures the Actor for its environment. It's recommended to start every Actor with an init()
 await Actor.init();
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-console.log('Hello from the Actor!');
-/**
- * Actor code
- */
+const {
+  APIFY_CONTAINER_PORT,
+  APIFY_CONTAINER_URL,
+  APIFY_DEFAULT_KEY_VALUE_STORE_ID,
+} = process.env;
 
-// Gracefully exit the Actor process. It's recommended to quit all Actors with an exit()
-await Actor.exit();
+app.get("/feed", (_req, res) => {
+  res.send(
+    JSON.stringify({
+      banter: "Greetings from the cubanews feed service :)",
+      data: [],
+    })
+  );
+});
+
+if (APIFY_CONTAINER_PORT) {
+  app.listen(APIFY_CONTAINER_PORT, () => {
+    console.log(
+      `Cubanews news feed is listening at URL ${APIFY_CONTAINER_URL}.`
+    );
+  });
+} else {
+  app.listen(3001, () => {
+    console.log(`Cubanews news feed is listening at URL localhost.`);
+  });
+}
