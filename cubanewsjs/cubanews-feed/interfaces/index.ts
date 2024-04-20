@@ -15,7 +15,11 @@ export type ResponseError = {
 
 export type NewsItem = {
   title: string;
+  source: string;
   url: string;
+  updated: number;
+  isoDate: string;
+  feedts: number | null | undefined;
 };
 
 export type NewsFeed = {
