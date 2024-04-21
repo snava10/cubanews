@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import type { FeedResponseData } from "../interfaces";
 import NewsItemComponent from "../components/NewsItem";
+import Head from "next/head";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -17,10 +18,15 @@ export default function Index() {
   console.log(data);
 
   return (
-    <ul>
-      {data.content.feed.map((x) => (
-        <NewsItemComponent item={x} />
-      ))}
-    </ul>
+    <>
+      <Head>
+        <link rel="icon" href="/cuban-flag.svg" />
+      </Head>
+      <ul>
+        {data.content.feed.map((x) => (
+          <NewsItemComponent item={x} />
+        ))}
+      </ul>
+    </>
   );
 }
