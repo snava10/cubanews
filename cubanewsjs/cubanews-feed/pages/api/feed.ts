@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { FeedResponseData, NewsFeed, NewsItem } from "../../interfaces";
+import { FeedResponseData, NewsItem } from "../../interfaces";
 import { createKysely } from "@vercel/postgres-kysely";
 import { Database } from "./dataschema";
 
