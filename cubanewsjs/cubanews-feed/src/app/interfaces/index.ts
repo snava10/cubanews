@@ -23,11 +23,11 @@ export type NewsItem = {
 };
 
 export type NewsFeed = {
-  timestamp: number;
+  timestamp: number | null | undefined;
   feed: Array<NewsItem>;
 };
 
 export type FeedResponseData = {
   banter: string;
-  content: NewsFeed;
+  content?: NewsFeed;
 };
