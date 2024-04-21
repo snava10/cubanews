@@ -20,7 +20,7 @@ export default function Index() {
   return (
     <>
       <Head>
-        <link rel="icon" href="/cuban-flag.svg" />
+        <link rel="icon" href="/cuban-flag.ico" />
       </Head>
       <ul>
         {data.content.feed.map((x) => (
