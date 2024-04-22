@@ -1,6 +1,9 @@
+"use client";
+
 import { Grid, Typography, Divider, Chip, Container } from "@mui/material";
 import { Box } from "@mui/system";
 import CopyrightIcon from "@mui/icons-material/Copyright";
+import Image from "next/image";
 
 export default function About() {
   return (
@@ -17,7 +20,7 @@ export default function About() {
             }}
           >
             <Box sx={{ margin: 0, paddingLeft: 1, paddingRight: 1 }}>
-              <img
+              <Image
                 src={`cuban-flag.svg`}
                 height={70}
                 width={100}
