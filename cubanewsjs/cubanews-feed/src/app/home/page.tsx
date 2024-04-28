@@ -22,16 +22,24 @@ export default function Home() {
   return (
     <>
       <Container>
-        <Typography>Noticias Destacadas</Typography>
+        <Box
+          style={{
+            marginTop: 8,
+            marginBottom: 8,
+          }}
+        >
+          <Typography variant="h4">Noticias Destacadas</Typography>
+        </Box>
+
         <Stack spacing={1}>
           {data.content?.feed.map((x) => (
             <NewsItemComponent key={x.title} item={x} />
           ))}
         </Stack>
       </Container>
-      <Container>
+      {/* <Container>
         <Typography>Publicaciones</Typography>
-      </Container>
+      </Container> */}
     </>
   );
 }

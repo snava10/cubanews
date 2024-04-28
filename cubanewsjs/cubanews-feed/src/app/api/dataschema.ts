@@ -10,6 +10,7 @@ export interface FeedTable {
   content: string;
   updated: number; // This is the news item updated field.
   isodate: string;
+  tags: string;
 }
 
 export interface Database {
