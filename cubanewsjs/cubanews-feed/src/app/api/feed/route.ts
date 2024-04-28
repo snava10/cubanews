@@ -26,10 +26,19 @@ export async function GET(
       { status: 200 }
     );
   }
-  return getFeed();
+
+  const page = parseInt(request.nextUrl.searchParams.get("page") ?? "0");
+  const pageSize = parseInt(
+    request.nextUrl.searchParams.get("pageSize") ?? "10"
+  );
+
+  return getFeed(page, pageSize);
 }
 
-async function getFeed(): Promise<NextResponse<FeedResponseData | null>> {
+async function getFeed(
+  page: number,
+  pageSize: number
+): Promise<NextResponse<FeedResponseData | null>> {
   const latestFeedts = await db
     .selectFrom("feed")
     .select([sql`max(feed.feedts)`.as("feedts")])
@@ -49,10 +58,12 @@ async function getFeed(): Promise<NextResponse<FeedResponseData | null>> {
     .selectFrom("feed")
     .selectAll()
     .where("feed.feedts", "=", latestFeedtsValue)
+    .orderBy("updated desc")
+    .offset(page * pageSize)
+    .limit(pageSize)
     .execute();
 
   const items = feeds.map((f) => {
-    console.log(f.isodate);
     const ni = {
       title: f.title,
       source: f.source,
@@ -60,6 +71,8 @@ async function getFeed(): Promise<NextResponse<FeedResponseData | null>> {
       updated: f.updated,
       isoDate: f.isodate.toString(),
       feedts: f.feedts,
+      content: f.content,
+      tags: ["derechos-humanos", "deporte", "politica"],
     } as NewsItem;
     return ni;
   });

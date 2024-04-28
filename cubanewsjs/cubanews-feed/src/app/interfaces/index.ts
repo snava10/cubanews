@@ -20,6 +20,8 @@ export type NewsItem = {
   updated: number;
   isoDate: string;
   feedts: number | null | undefined;
+  content: string | null | undefined;
+  tags: Array<string>;
 };
 
 export type NewsFeed = {
