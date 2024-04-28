@@ -26,7 +26,7 @@ const styles = {
 
 const Navbar = () => {
   var leftComponent =
-    usePathname() === "/" ? (
+    usePathname() === "/home" ? (
       <Typography
         variant="body1"
         fontWeight="bold"
