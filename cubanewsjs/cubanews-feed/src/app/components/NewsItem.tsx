@@ -46,24 +46,16 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
                 component="div"
                 color="text.secondary"
               >
-                <span>
-                  <Link href={item.url}>{item.title}</Link>
-                </span>
-                <span> - </span>
-                <span
-                  style={{
-                    fontStyle: "normal",
-                    fontSize: "small",
-                  }}
-                >
-                  {moment(item.isoDate).fromNow()}
-                </span>
+                <Link href={item.url}>{item.title}</Link>
               </Typography>
-              <Typography>
-                {item.content == ""
-                  ? "Here goes the summary of the content"
-                  : item.content}
+              <Typography variant="body2">
+                {moment(item.isoDate).fromNow()}
               </Typography>
+              {item.content && item.content?.length > 0 ? (
+                <Typography>{item.content}</Typography>
+              ) : (
+                <></>
+              )}
             </Box>
             {item.tags !== undefined && item.tags.length > 0 && (
               <Box sx={{ paddingTop: 0 }}>

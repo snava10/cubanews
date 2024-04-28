@@ -72,7 +72,7 @@ async function getFeed(
       isoDate: f.isodate.toString(),
       feedts: f.feedts,
       content: f.content,
-      tags: ["derechos-humanos", "deporte", "politica"],
+      tags: f.tags ? f.tags.split(",") : [],
     } as NewsItem;
     return ni;
   });
