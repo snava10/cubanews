@@ -16,14 +16,14 @@
         "@apify/tsconfig": "^0.1.0",
         "@playwright/test": "^1.42.1",
         "@types/node": "^20.0.0",
-        "tsx": "^4.4.0",
+        "tsx": "^4.7.3",
         "typescript": "~5.3.0"
     },
     "scripts": {
         "query": "tsx src/query_main.ts",
         "start": "npm run start:dev",
         "start:prod": "node dist/main.js",
-        "start:dev": "tsx src/main.ts",
+        "start:dev": "NODE_ENV=dev tsx src/main.ts",
         "build": "tsc",
         "test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
     },

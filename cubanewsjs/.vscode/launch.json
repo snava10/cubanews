@@ -40,6 +40,13 @@
       "localRoot": "${workspaceFolder}/cubanews-crawler"
     },
     {
+      "command": "cd ${workspaceFolder}/cubanews-crawler/adncuba-crawler; npm start",
+      "name": "Start ADN Crawler",
+      "request": "launch",
+      "type": "node-terminal",
+      "localRoot": "${workspaceFolder}/cubanews-crawler/adncuba-crawler"
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Start Crawler",
