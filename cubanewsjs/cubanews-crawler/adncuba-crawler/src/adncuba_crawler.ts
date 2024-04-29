@@ -79,10 +79,15 @@ export default class AdnCubaCrawler {
           const momentDate = parseDate(rawDate);
           log.info(`Last updated: ${momentDate.toISOString()}`);
 
-          const content = (await page.locator(".text-long").textContent())
-            .trim()
-            .replace(/\n/g, "");
-
+          var content = await page.locator(".text-long").textContent();
+          if (content) {
+            content = content
+              .trim()
+              .replace(/\n/g, "")
+              .split(" ")
+              .slice(0, 50)
+              .join(" ");
+          }
           // Save results as JSON to ./storage/datasets/default
           await saveData(
             {
