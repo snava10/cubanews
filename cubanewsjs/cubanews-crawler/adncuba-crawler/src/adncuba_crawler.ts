@@ -5,7 +5,7 @@
  * The articles are encapsulated in an <article> tab and contain a link inside that fits the pattern
  * https://adncuba.com/asd/asdx
  */
-import { PlaywrightCrawler } from "crawlee";
+import { Dataset, Dictionary, PlaywrightCrawler } from "crawlee";
 import moment from "moment";
 import { Actor, ApifyClient } from "apify";
 
@@ -51,13 +51,23 @@ export async function getData(): Promise<NewsItem[]> {
   return newsItems;
 }
 
+async function saveData(
+  data: Dictionary,
+  useActor: boolean = true
+): Promise<void> {
+  console.log("saving data ", process.env.NODE_ENV, useActor);
+  if (useActor) {
+    const dataset = await Actor.openDataset("adncuba-dataset");
+    await dataset.pushData(data);
+  } else {
+    await Dataset.pushData(data);
+  }
+}
+
 export default class AdnCubaCrawler {
   crawler = new PlaywrightCrawler({
     // Use the requestHandler to process each of the crawled pages.
     async requestHandler({ request, page, enqueueLinks, log }) {
-      const dataset = await Actor.openDataset("adncuba-dataset", {
-        forceCloud: true,
-      });
       const title = await page.title();
       log.info(`Title of ${request.loadedUrl} is '${title}'`);
       if (request.loadedUrl && isValid(request.loadedUrl)) {
@@ -68,13 +78,22 @@ export default class AdnCubaCrawler {
         if (rawDate) {
           const momentDate = parseDate(rawDate);
           log.info(`Last updated: ${momentDate.toISOString()}`);
+
+          const content = (await page.locator(".text-long").textContent())
+            .trim()
+            .replace(/\n/g, "");
+
           // Save results as JSON to ./storage/datasets/default
-          await dataset.pushData({
-            title,
-            url: request.loadedUrl,
-            updated: momentDate.unix(),
-            isoDate: momentDate.toISOString(),
-          });
+          await saveData(
+            {
+              title,
+              url: request.loadedUrl,
+              updated: momentDate.unix(),
+              isoDate: momentDate.toISOString(),
+              content: content,
+            },
+            process.env.NODE_ENV !== "dev"
+          );
         }
       }
       // Extract links from the current page
@@ -95,12 +114,15 @@ export default class AdnCubaCrawler {
   });
 
   public async run(): Promise<void> {
-    await Actor.init();
-    const dataset = await Actor.openDataset("adncuba-dataset", {
-      forceCloud: true,
-    });
-    await dataset.drop();
-    await this.crawler.run([...startPages]);
-    await Actor.exit();
+    console.log(process.env.NODE_ENV);
+    if (process.env.NODE_ENV === "dev") {
+      await this.crawler.run([...startPages]);
+    } else {
+      await Actor.init();
+      const dataset = await Actor.openDataset("adncuba-dataset");
+      await dataset.drop();
+      await this.crawler.run([...startPages]);
+      await Actor.exit();
+    }
   }
 }
