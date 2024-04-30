@@ -21,7 +21,11 @@ export default function Home() {
 
   return (
     <>
-      <Container>
+      <Container
+        style={{
+          marginBottom: 100,
+        }}
+      >
         <Box
           style={{
             marginTop: 8,
