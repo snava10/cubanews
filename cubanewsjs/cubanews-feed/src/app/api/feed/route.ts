@@ -125,7 +125,7 @@ function newsItemToFeedTable(ni: NewsItem, currentDate: Date): FeedTable {
   const epochTimestamp = currentDate.getTime();
 
   return {
-    content: "",
+    content: ni.content,
     feedisodate: isoDateString,
     feedts: epochTimestamp,
     isodate: ni.isoDate,

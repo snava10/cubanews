@@ -32,8 +32,8 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
         <Stack direction="row" spacing={2}>
           <Box>
             <Image
-              height={30}
-              width={30}
+              height={50}
+              width={50}
               alt="Publication Logo"
               src={"/source_logos/adncuba1.webp"}
             />
