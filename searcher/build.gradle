@@ -1,4 +1,0 @@
-dependencies {
-    implementation 'org.apache.lucene:lucene-core:9.4.2'
-    implementation 'org.apache.lucene:lucene-queryparser:9.4.2'
-}
