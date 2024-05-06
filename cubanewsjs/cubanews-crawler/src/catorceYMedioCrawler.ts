@@ -32,9 +32,12 @@ export default class CatorceYMedioCrawler extends CubanewsCrawler {
         .locator(".timestamp-atom")
         .first()
         .textContent();
-      console.log(rawDate);
       if (rawDate) {
         const momentDate = parseDate(rawDate);
+        var content = await page.locator(".bbnx-body").textContent();
+        if (content) {
+          content = content.trim().split(" ").slice(0, 50).join(" ");
+        }
         if (newsSource) {
           await saveData(
             {
@@ -42,7 +45,7 @@ export default class CatorceYMedioCrawler extends CubanewsCrawler {
               url: request.loadedUrl,
               updated: momentDate.unix(),
               isoDate: momentDate.toISOString(),
-              // content: content,
+              content: content,
             },
             newsSource.datasetName,
             process.env.NODE_ENV !== "dev"
