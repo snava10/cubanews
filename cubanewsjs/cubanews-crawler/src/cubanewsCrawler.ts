@@ -61,7 +61,6 @@ export async function saveData(
   datasetName: string,
   useActor: boolean = true
 ): Promise<void> {
-  console.log("saving data ", process.env.NODE_ENV, useActor);
   if (useActor) {
     const dataset = await Actor.openDataset(datasetName);
     await dataset.pushData(data);
