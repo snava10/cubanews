@@ -6,7 +6,6 @@ import moment from "moment";
 const newsSource = getNewsSourceByName(NewsSourceName.CATORCEYMEDIO);
 
 function parseDate(rawDate: string): moment.Moment {
-  moment.locale("es");
   return moment(rawDate, "DD [de] MMMM YYYY - HH:mm");
 }
 
