@@ -1,6 +1,6 @@
 export enum NewsSourceName {
   ADNCUBA = "adncuba",
-  _14YMEDIO = "_14ymedio",
+  CATORCE_Y_MEDIO = "catorce_y_medio",
   DIARIO_DE_CUBA = "diario_de_cuba",
   CIBERCUBA = "cibercuba",
 }
@@ -21,9 +21,9 @@ export const newsSources = [
     datasetName: "adncuba-dataset",
   },
   {
-    name: NewsSourceName._14YMEDIO,
+    name: NewsSourceName.CATORCE_Y_MEDIO,
     startUrls: new Set(["https://www.14ymedio.com/cuba"]),
-    datasetName: "_14ymedio-dataset",
+    datasetName: "catorce-y-medio-dataset",
   },
   {
     name: NewsSourceName.DIARIO_DE_CUBA,

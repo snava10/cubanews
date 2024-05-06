@@ -2,7 +2,7 @@ import { PlaywrightCrawlingContext, Dictionary } from "crawlee";
 import { CubanewsCrawler, saveData } from "./cubanewsCrawler.js";
 import { NewsSourceName, getNewsSourceByName } from "./crawlerUtils.js";
 
-const newsSource = getNewsSourceByName(NewsSourceName._14YMEDIO);
+const newsSource = getNewsSourceByName(NewsSourceName.CATORCE_Y_MEDIO);
 
 export default class CatorceYMedioCrawler extends CubanewsCrawler {
   constructor() {
