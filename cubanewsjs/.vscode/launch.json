@@ -33,7 +33,7 @@
       }
     },
     {
-      "command": "cd cubanews-crawler; npm start",
+      "command": "cd cubanews-crawler/cubanews-crawler; npm start",
       "name": "Run npm start",
       "request": "launch",
       "type": "node-terminal",
