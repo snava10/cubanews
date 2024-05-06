@@ -23,7 +23,7 @@ export const newsSources = [
   {
     name: NewsSourceName.CATORCE_Y_MEDIO,
     startUrls: new Set(["https://www.14ymedio.com/cuba"]),
-    datasetName: "catorce-y-medio-dataset",
+    datasetName: "catorceymedio-dataset",
   },
   {
     name: NewsSourceName.DIARIO_DE_CUBA,
