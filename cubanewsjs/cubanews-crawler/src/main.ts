@@ -23,7 +23,7 @@ try {
       case NewsSourceName.DIARIO_DE_CUBA:
         crawler = new DiarioDeCubaCrawler();
         break;
-      case NewsSourceName.CATORCE_Y_MEDIO:
+      case NewsSourceName.CATORCEYMEDIO:
         crawler = new CatorceYMedioCrawler();
         break;
       default:
