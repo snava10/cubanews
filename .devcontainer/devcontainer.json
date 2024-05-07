@@ -1,0 +1,21 @@
+{
+	"name": "Development Docker container",
+	"build": { 
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
+	"containerEnv": {
+		"example": "example"
+	},
+	"customizations": {
+		"vscode": {
+			"settings": {},
+			"extensions": [
+				"streetsidesoftware.code-spell-checker",
+				"jebbs.plantuml",
+				"esbenp.prettier-vscode",
+				"ms-python.python"
+			]
+		}
+	}
+}
