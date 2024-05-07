@@ -60,7 +60,9 @@ export default class CatorceYMedioCrawler extends CubanewsCrawler {
     ) {
       await enqueueLinks({
         globs: ["http?(s)://www.14ymedio.com/cuba/*"],
-        exclude: [],
+        exclude: [
+          "https://www.14ymedio.com/cuba/terminos-condiciones_1_1048711.html",
+        ],
         selector: "a",
       });
     }
