@@ -33,3 +33,10 @@ export type FeedResponseData = {
   banter: string;
   content?: NewsFeed;
 };
+
+export enum NewsSourceName {
+  ADNCUBA = "adncuba",
+  CATORCEYMEDIO = "catorceymedio",
+  DIARIODECUBA = "diariodecuba",
+  CIBERCUBA = "cibercuba",
+}

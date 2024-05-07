@@ -1,9 +1,14 @@
-import { FeedResponseData, NewsItem } from "../../interfaces";
+import { FeedResponseData, NewsItem, NewsSourceName } from "../../interfaces";
 import { createKysely } from "@vercel/postgres-kysely";
 import { Database, FeedTable } from "../dataschema";
 import { NextRequest, NextResponse } from "next/server";
-import { ApifyClient } from "apify-client";
+import { ApifyClient, Dataset } from "apify-client";
 import { sql } from "kysely";
+
+type RefreshFeedResult = {
+  datasetName: string;
+  insertedRows: bigint | number;
+};
 
 const db = createKysely<Database>();
 
@@ -90,25 +95,34 @@ async function getFeed(
   );
 }
 
-async function refreshFeed(): Promise<NewsItem[]> {
+async function refreshFeed(): Promise<Array<RefreshFeedResult>> {
   const datasetCollectionClient = client.datasets();
   const listDatasets = await datasetCollectionClient.list();
-  const dataset = listDatasets.items.find((dataset) =>
-    dataset.name?.startsWith("adncuba")
+  const newsSourcesSet = new Set(
+    Object.values(NewsSourceName).map((s) => s.toLocaleLowerCase() + "-dataset")
   );
-  // If dataset found, return its ID
-  if (!dataset) {
-    return [];
+  // Include only the news sources with propper crawlers.
+  const datasets = listDatasets.items.filter(
+    (dataset) => dataset && dataset.name && newsSourcesSet.has(dataset.name)
+  );
+  const feedRefreshResult = await Promise.all(
+    datasets.map((dataset) => refreshFeedDataset(dataset))
+  );
+
+  return feedRefreshResult;
+}
+
+async function refreshFeedDataset(
+  dataset: Dataset
+): Promise<RefreshFeedResult> {
+  if (!dataset || !dataset.name) {
+    return { datasetName: "unknown", insertedRows: 0 };
   }
-
   const { items } = await client.dataset(dataset.id).listItems();
-
   const newsItems = items
     .map((item) => item as unknown)
     .map((item) => item as NewsItem);
-
   const currentDate = new Date();
-
   const values = newsItems.map(
     (x) => newsItemToFeedTable(x, currentDate) as any
   );
@@ -116,8 +130,11 @@ async function refreshFeed(): Promise<NewsItem[]> {
     .insertInto("feed")
     .values(values)
     .executeTakeFirst();
-  console.log(insertResult.numInsertedOrUpdatedRows);
-  return newsItems;
+
+  return {
+    datasetName: dataset.name as string,
+    insertedRows: insertResult.numInsertedOrUpdatedRows?.valueOf() as bigint,
+  };
 }
 
 function newsItemToFeedTable(ni: NewsItem, currentDate: Date): FeedTable {
