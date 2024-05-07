@@ -59,6 +59,7 @@ export default class AdnCubaCrawler extends CubanewsCrawler {
               updated: momentDate.unix(),
               isoDate: momentDate.toISOString(),
               content: content,
+              source: newsSource.name,
             },
             newsSource.datasetName,
             process.env.NODE_ENV !== "dev"
