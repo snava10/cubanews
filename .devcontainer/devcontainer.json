@@ -5,7 +5,7 @@
 		"context": ".."
 	},
 	"containerEnv": {
-		"example": "example"
+		"APIFY_TOKEN": "${localEnv:APIFY_TOKEN}"
 	},
 	"customizations": {
 		"vscode": {
