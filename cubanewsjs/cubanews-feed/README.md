@@ -2,6 +2,9 @@
 
 1. Install node dependencies: `npm install`
 2. Run the development server: `npm run dev`
+3. Set the `APIFY_TOKEN` env var with one of the following methods:
+    - set it manually in the console or github secrets
+    - set it in the `.env` file. Running `vercel innit` prepares this
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
