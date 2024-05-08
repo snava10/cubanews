@@ -1,4 +1,8 @@
-## Getting Started
+# cubanews-feed
+
+The project containing the UI of cubanews. A small web app that gets scrapped news and displays them in a list.
+
+## Run cubanews-feed locally
 
 1. Install node dependencies: `npm install`
 2. Run the development server: `npm run dev`
