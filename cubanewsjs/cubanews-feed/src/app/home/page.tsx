@@ -34,7 +34,7 @@ export default function Home() {
           <Typography level="h4">Noticias Destacadas</Typography>
         </Box>
 
-        <Stack spacing={3}>
+        <Stack spacing={2}>
           {data.content?.feed.map((x) => (
             <NewsItemComponent key={x.title} item={x} />
           ))}
