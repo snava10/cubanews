@@ -1,7 +1,6 @@
 "use client";
 
-import { Grid, Typography, Divider, Chip, Container } from "@mui/material";
-import { Box } from "@mui/system";
+import { Grid, Typography, Divider, Chip, Container, Box } from "@mui/joy";
 import CopyrightIcon from "@mui/icons-material/Copyright";
 import Image from "next/image";
 
@@ -32,11 +31,11 @@ export default function About() {
         </Grid>
 
         {/* Spanish */}
-        <Typography variant="h3" gutterBottom>
+        <Typography level="h3" gutterBottom>
           Nuestra mission
         </Typography>
 
-        <Typography variant="body1" paragraph>
+        <Typography level="body1" paragraph>
           El objetivo principal de esta web es amplificar el mensaje de la
           prensa independiente cubana, brindar un único punto de acceso a las
           últimas noticias acerca de Cuba y combatir la propaganda y
@@ -47,7 +46,7 @@ export default function About() {
           disponibles.
         </Typography>
 
-        <Typography variant="body1" paragraph>
+        <Typography level="body1" paragraph>
           Este trabajo ha sido realizado completamente por voluntarios en su
           tiempo libre. Los costos de mantener el sitio son cubiertos
           completamente por fondos personales. Nuestra motivación es el amor a
@@ -55,7 +54,7 @@ export default function About() {
           quisiera ver a mi país libre de la dictadura comunista que lo oprime.
         </Typography>
 
-        <Typography variant="body1" paragraph>
+        <Typography level="body1" paragraph>
           Este es un proyecto de código abierto, si tienes conocimientos de
           programación y quieres contribuir visita{" "}
           <a href="https://github.com/snava10/cubanews">
@@ -65,16 +64,16 @@ export default function About() {
           <a href="mailto:cubanews.icu@gmail.com">cubanews.icu@gmail.com</a>
         </Typography>
 
-        <Typography variant="subtitle2" paragraph>
+        <Typography level="subtitle2" paragraph>
           Firmado, El equipo de Cuba News
         </Typography>
 
         {/* English */}
-        <Typography variant="h3" gutterBottom>
+        <Typography level="h3" gutterBottom>
           Our mission
         </Typography>
 
-        <Typography variant="body1" paragraph>
+        <Typography level="body1" paragraph>
           The main purpose of this website is to amplify the message of the
           independent Cuban media, provide a single entry point to find the
           latest news about Cuba and combat the propaganda and misinformation
@@ -84,7 +83,7 @@ export default function About() {
           independent Cuban newspapers.
         </Typography>
 
-        <Typography variant="body1" paragraph>
+        <Typography level="body1" paragraph>
           This work has been done by volunteers in their free time. The running
           of the website is fully financed with personal funds. Our drive is our
           belief in freedom, democracy and humans rights. As a Cuban myself, I
@@ -92,7 +91,7 @@ export default function About() {
           currently oppresses it.
         </Typography>
 
-        <Typography variant="body1" paragraph>
+        <Typography level="body1" paragraph>
           This is an open-source project, so if you have programming skills and
           want to contribute, please head over to{" "}
           <a href="https://github.com/snava10/cubanews">
@@ -102,7 +101,7 @@ export default function About() {
           <a href="mailto:cubanews.icu@gmail.com">cubanews.icu@gmail.com</a>
         </Typography>
 
-        <Typography variant="subtitle2">Signed, The Cuba News team</Typography>
+        <Typography level="subtitle2">Signed, The Cuba News team</Typography>
       </Container>
       <Divider sx={{ m: 4 }}>
         <Chip icon={<CopyrightIcon />} label="Cuba News" />

@@ -2,8 +2,7 @@
 import useSWR from "swr";
 import { FeedResponseData } from "../interfaces";
 import NewsItemComponent from "../components/NewsItem";
-import { Box, Stack, Typography } from "@mui/material";
-import Container from "@mui/material/Container";
+import { Box, Stack, Typography, Container } from "@mui/joy";
 
 export default function Home() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -32,7 +31,7 @@ export default function Home() {
             marginBottom: 8,
           }}
         >
-          <Typography variant="h4">Noticias Destacadas</Typography>
+          <Typography level="h4">Noticias Destacadas</Typography>
         </Box>
 
         <Stack spacing={1}>
