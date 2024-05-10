@@ -1,5 +1,4 @@
 import {
-  Paper,
   Grid,
   Link,
   Typography,
@@ -8,7 +7,10 @@ import {
   Card,
   Stack,
   Chip,
-} from "@mui/material";
+  Divider,
+  CardOverflow,
+  CardContent
+} from "@mui/joy";
 import { NewsItem } from "../interfaces";
 import Image from "next/image";
 import moment from "moment";
@@ -17,17 +19,18 @@ type NewsItemProps = {
   item: NewsItem;
 };
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(2),
-  textAlign: "left",
-  color: theme.palette.text.secondary,
-}));
+// const Item = styled(Paper)(({ theme }) => ({
+//   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+//   ...theme.typography.body2,
+//   padding: theme.spacing(2),
+//   textAlign: "left",
+//   color: theme.palette.text.secondary,
+// }));
 
 export default function NewsItemComponent({ item }: NewsItemProps) {
+  item.tags = ["tag 1", "tag 2", "tag 4", "tag 3"]
   return (
-    <>
+    <Stack spacing={4}>
       <Card variant="outlined" sx={{ padding: 2 }}>
         <Stack direction="row" spacing={2}>
           <Box>
@@ -93,6 +96,34 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
           </Grid>
         </Grid> */}
       </Card>
-    </>
+      <Card variant="outlined" sx={{ padding: 2 }}>
+        <CardContent>
+          <Link href={item.url}>
+            <Typography level="h2" fontSize="xl">{item.title}</Typography>
+          </Link>
+          <Typography level="body-sm">{item.content}</Typography>
+        </CardContent>
+        <CardOverflow variant="soft" sx={{ bgcolor: 'background.level1'}}>
+          <Divider inset="context" />
+          <CardContent orientation="horizontal">
+            <Typography level="body-sm" fontWeight="md" textColor="text.secondary">
+              {moment(item.isoDate).fromNow()}
+            </Typography>
+            <Divider orientation="vertical" />
+            <Typography level="body-sm" fontWeight="md" textColor="text.secondary">
+              {item.source}
+            </Typography>
+            <Divider orientation="vertical" />
+              {item.tags.map((tagName: string) => (
+                <Chip variant="outlined">
+                  <Typography level="body-xs" fontWeight="lg" textColor="text.secondary">
+                    {tagName}
+                  </Typography>
+                </Chip>
+              ))}
+          </CardContent>
+        </CardOverflow>
+      </Card>
+    </Stack>
   );
 }
