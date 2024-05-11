@@ -19,30 +19,27 @@ export default function Home() {
   console.log(data);
 
   return (
-    <>
-      <Container
+    <Container
+      style={{
+        marginBottom: 100,
+      }}
+    >
+      <Box
         style={{
-          marginBottom: 100,
+          marginTop: 8,
+          marginBottom: 8,
         }}
       >
-        <Box
-          style={{
-            marginTop: 8,
-            marginBottom: 8,
-          }}
-        >
-          <Typography level="h4">Noticias Destacadas</Typography>
-        </Box>
+        <Typography level="h2" sx={{ mb: 2, mt: 2, ml: 1 }}>
+          Noticias Destacadas
+        </Typography>
+      </Box>
 
-        <Stack spacing={2}>
-          {data.content?.feed.map((x) => (
-            <NewsItemComponent key={x.title} item={x} />
-          ))}
-        </Stack>
-      </Container>
-      {/* <Container>
-        <Typography>Publicaciones</Typography>
-      </Container> */}
-    </>
+      <Stack spacing={2}>
+        {data.content?.feed.map((x) => (
+          <NewsItemComponent key={x.title} item={x} />
+        ))}
+      </Stack>
+    </Container>
   );
 }
