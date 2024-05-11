@@ -21,7 +21,7 @@ export default function Home() {
 
   return (
     <Stack>
-      <Container sx={{ mt: 2}}>
+      <Container sx={{ mt: 2 }}>
         <Box>
           <Typography level="h2" sx={{ mb: 2, ml: 1 }}>
             Noticias Destacadas
@@ -33,17 +33,16 @@ export default function Home() {
             <NewsItemComponent key={x.title} item={x} />
           ))}
         </Stack>
+        <Divider sx={{ m: 4 }}>
+          <Chip
+            variant="outlined"
+            startDecorator={<CopyrightIcon />}
+            sx={{ p: 1 }}
+          >
+            Cuba News
+          </Chip>
+        </Divider>
       </Container>
-
-      <Divider sx={{ m: 4 }}>
-        <Chip
-          variant="outlined"
-          startDecorator={<CopyrightIcon />}
-          sx={{ p: 1 }}
-        >
-          Cuba News
-        </Chip>
-      </Divider>
     </Stack>
   );
 }
