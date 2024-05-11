@@ -2,7 +2,8 @@
 import useSWR from "swr";
 import { FeedResponseData } from "../interfaces";
 import NewsItemComponent from "../components/NewsItem";
-import { Box, Stack, Typography, Container } from "@mui/joy";
+import { Box, Stack, Typography, Container, Divider, Chip } from "@mui/joy";
+import CopyrightIcon from "@mui/icons-material/Copyright";
 
 export default function Home() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -19,27 +20,30 @@ export default function Home() {
   console.log(data);
 
   return (
-    <Container
-      style={{
-        marginBottom: 100,
-      }}
-    >
-      <Box
-        style={{
-          marginTop: 8,
-          marginBottom: 8,
-        }}
-      >
-        <Typography level="h2" sx={{ mb: 2, mt: 2, ml: 1 }}>
-          Noticias Destacadas
-        </Typography>
-      </Box>
+    <Stack>
+      <Container sx={{ mt: 2}}>
+        <Box>
+          <Typography level="h2" sx={{ mb: 2, ml: 1 }}>
+            Noticias Destacadas
+          </Typography>
+        </Box>
 
-      <Stack spacing={2}>
-        {data.content?.feed.map((x) => (
-          <NewsItemComponent key={x.title} item={x} />
-        ))}
-      </Stack>
-    </Container>
+        <Stack spacing={2}>
+          {data.content?.feed.map((x) => (
+            <NewsItemComponent key={x.title} item={x} />
+          ))}
+        </Stack>
+      </Container>
+
+      <Divider sx={{ m: 4 }}>
+        <Chip
+          variant="outlined"
+          startDecorator={<CopyrightIcon />}
+          sx={{ p: 1 }}
+        >
+          Cuba News
+        </Chip>
+      </Divider>
+    </Stack>
   );
 }
