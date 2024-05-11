@@ -51,7 +51,7 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
                 }}
               >
                 <Image
-                  src={`cuban-flag.svg`}
+                  src={"/source_logos/adncuba1.webp"}
                   width={20}
                   height={100}
                   alt="Cuban FLag"
