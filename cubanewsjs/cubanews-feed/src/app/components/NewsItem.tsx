@@ -34,7 +34,7 @@ function getPublicationLogo(item: NewsItem) {
       break;
   }
   return (
-    <Image height={50} width={50} alt="Publication Logo" src={imageLogoSrc} />
+    <Image height={30} width={30} alt="Publication Logo" src={imageLogoSrc} />
   );
 }
 
