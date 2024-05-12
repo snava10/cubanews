@@ -14,6 +14,7 @@ export type ResponseError = {
 };
 
 export type NewsItem = {
+  id?: number;
   title: string;
   source: NewsSourceName;
   url: string;
