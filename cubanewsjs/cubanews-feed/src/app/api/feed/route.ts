@@ -4,6 +4,7 @@ import { Database, FeedTable } from "../dataschema";
 import { NextRequest, NextResponse } from "next/server";
 import { ApifyClient, Dataset } from "apify-client";
 import { sql } from "kysely";
+import { allSortedByUpdated, xOfEachSource } from "./feedStrategies";
 
 type RefreshFeedResult = {
   datasetName: string;
@@ -32,9 +33,9 @@ export async function GET(
     );
   }
 
-  const page = parseInt(request.nextUrl.searchParams.get("page") ?? "0");
+  const page = parseInt(request.nextUrl.searchParams.get("page") ?? "1");
   const pageSize = parseInt(
-    request.nextUrl.searchParams.get("pageSize") ?? "10"
+    request.nextUrl.searchParams.get("pageSize") ?? "2"
   );
 
   return getFeed(page, pageSize);
@@ -58,29 +59,15 @@ async function getFeed(
     );
   }
 
-  const latestFeedtsValue = latestFeedts.feedts as number;
-  const feeds = await db
-    .selectFrom("feed")
-    .selectAll()
-    .where("feed.feedts", "=", latestFeedtsValue)
-    .orderBy("updated desc")
-    .offset(page * pageSize)
-    .limit(pageSize)
-    .execute();
-
-  const items = feeds.map((f) => {
-    const ni = {
-      title: f.title,
-      source: f.source,
-      url: f.url,
-      updated: f.updated,
-      isoDate: f.isodate.toString(),
-      feedts: f.feedts,
-      content: f.content,
-      tags: f.tags ? f.tags.split(",") : [],
-    } as NewsItem;
-    return ni;
-  });
+  // This strategy gets the top x news of every source.
+  // X is the page size, if implemented page 2 would mean skipping the first x for each news source
+  // and getting the following x. This is temporary until a better, ranked version of the feed is conceived.
+  const items = await xOfEachSource(
+    db,
+    latestFeedts.feedts as number,
+    page,
+    pageSize
+  );
 
   const timestamp = items.length > 0 ? items[0].feedts : 0;
   return NextResponse.json(
