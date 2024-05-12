@@ -8,16 +8,35 @@ import {
   Divider,
   CardOverflow,
   CardContent,
-  Avatar,
-  AspectRatio,
 } from "@mui/joy";
-import { NewsItem } from "../interfaces";
+import { NewsItem, NewsSourceName } from "../interfaces";
 import moment from "moment";
 import Image from "next/image";
 
 type NewsItemProps = {
   item: NewsItem;
 };
+
+function getPublicationLogo(item: NewsItem) {
+  let imageLogoSrc = "";
+  switch (item.source) {
+    case NewsSourceName.ADNCUBA:
+      imageLogoSrc = "/source_logos/adncuba1.webp";
+      break;
+    case NewsSourceName.CATORCEYMEDIO:
+      imageLogoSrc = "/source_logos/14ymedio1.jpg";
+      break;
+    case NewsSourceName.CIBERCUBA:
+      imageLogoSrc = "/source_logos/cibercuba1.png";
+      break;
+    case NewsSourceName.DIARIODECUBA:
+      imageLogoSrc = "/source_logos/ddc1.webp";
+      break;
+  }
+  return (
+    <Image height={50} width={50} alt="Publication Logo" src={imageLogoSrc} />
+  );
+}
 
 export default function NewsItemComponent({ item }: NewsItemProps) {
   return (
@@ -50,24 +69,7 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
                   alignItems: "center",
                 }}
               >
-                <Image
-                  src={"/source_logos/adncuba1.webp"}
-                  width={20}
-                  height={100}
-                  alt="Cuban FLag"
-                />
-
-                {/* <AspectRatio objectFit="contain">
-                <img
-                  src="/source_logos/adncuba1.webp"
-                />
-              </AspectRatio> */}
-
-                {/* <Avatar 
-                size="sm"
-                alt="Publication Logo" src="/source_logos/adncuba1.webp" 
-                sx ={{"--Avatar-size": "23px"}}
-              /> */}
+                {getPublicationLogo(item)}
               </Box>
               <Typography
                 level="body-sm"

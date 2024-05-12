@@ -16,7 +16,17 @@ function isValid(url: string): boolean {
 }
 
 function parseDate(rawDate: string): moment.Moment {
-  return moment(rawDate.trim().split(": ")[1], "ddd, MM/DD/YYYY - HH:mm");
+  moment.locale("es");
+  const mDate = moment(
+    rawDate.trim().split(": ")[1],
+    "ddd, MM/DD/YYYY - HH:mm"
+  );
+  // TODO:: Sometimes the date is in the future. This is a patch to prevent that from happening.
+  // It may be a parsing error.
+  if (mDate.isSameOrAfter(moment.now())) {
+    return moment(new Date());
+  }
+  return mDate;
 }
 
 const newsSource = getNewsSourceByName(NewsSourceName.ADNCUBA);

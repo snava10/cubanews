@@ -15,7 +15,7 @@ export type ResponseError = {
 
 export type NewsItem = {
   title: string;
-  source: string;
+  source: NewsSourceName;
   url: string;
   updated: number;
   isoDate: string;

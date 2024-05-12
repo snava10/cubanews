@@ -105,15 +105,19 @@ async function refreshFeed(): Promise<Array<RefreshFeedResult>> {
   const datasets = listDatasets.items.filter(
     (dataset) => dataset && dataset.name && newsSourcesSet.has(dataset.name)
   );
+  const currentDate = new Date();
   const feedRefreshResult = await Promise.all(
-    datasets.map((dataset) => refreshFeedDataset(dataset))
+    datasets.map((dataset) => {
+      console.log("Refreshing dataset: ", dataset.name);
+      return refreshFeedDataset(dataset, currentDate);
+    })
   );
-
   return feedRefreshResult;
 }
 
 async function refreshFeedDataset(
-  dataset: Dataset
+  dataset: Dataset,
+  feedRefreshDate: Date
 ): Promise<RefreshFeedResult> {
   if (!dataset || !dataset.name) {
     return { datasetName: "unknown", insertedRows: 0 };
@@ -122,9 +126,8 @@ async function refreshFeedDataset(
   const newsItems = items
     .map((item) => item as unknown)
     .map((item) => item as NewsItem);
-  const currentDate = new Date();
   const values = newsItems.map(
-    (x) => newsItemToFeedTable(x, currentDate) as any
+    (x) => newsItemToFeedTable(x, feedRefreshDate) as any
   );
   const insertResult = await db
     .insertInto("feed")
@@ -140,7 +143,6 @@ async function refreshFeedDataset(
 function newsItemToFeedTable(ni: NewsItem, currentDate: Date): FeedTable {
   const isoDateString = currentDate.toISOString();
   const epochTimestamp = currentDate.getTime();
-
   return {
     content: ni.content,
     feedisodate: isoDateString,
