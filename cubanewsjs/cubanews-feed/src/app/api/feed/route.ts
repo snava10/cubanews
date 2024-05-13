@@ -21,6 +21,23 @@ export async function GET(
   request: NextRequest
 ): Promise<NextResponse<FeedResponseData | null>> {
   if (request.nextUrl.searchParams.get("refresh")) {
+    if (request.headers.get("ADMIN_TOKEN") !== process.env.ADMIN_TOKEN) {
+      return NextResponse.json(
+        {
+          banter: "You are not authorized to refresh the feed",
+        },
+        { status: 401, statusText: "Unauthorized" }
+      );
+    }
+    if (request.nextUrl.searchParams.get("dryrun")) {
+      return NextResponse.json(
+        {
+          banter: "Dry Run. Refreshing cubanews feed",
+        },
+        { status: 200 }
+      );
+    }
+
     refreshFeed()
       .then((data) => console.log(data))
       .catch((error) => console.error(error));
