@@ -27,7 +27,7 @@ export const newsSources = [
   },
   {
     name: NewsSourceName.DIARIODECUBA,
-    startUrls: new Set([]),
+    startUrls: new Set(["https://diariodecuba.com/"]),
     datasetName: "ddc-dataset",
   },
   {
