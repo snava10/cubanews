@@ -6,7 +6,13 @@ import moment from "moment";
 const newsSource = getNewsSourceByName(NewsSourceName.CATORCEYMEDIO);
 
 function parseDate(rawDate: string): moment.Moment {
-  return moment(rawDate, "DD [de] MMMM YYYY - HH:mm");
+  const mDate = moment(rawDate, "DD [de] MMMM YYYY - HH:mm");
+  // TODO:: Sometimes the date is in the future. This is a patch to prevent that from happening.
+  // It may be a parsing error.
+  if (mDate.isSameOrAfter(moment.now())) {
+    return moment(new Date());
+  }
+  return mDate;
 }
 
 function isValid(url: string): boolean {
