@@ -32,6 +32,11 @@ function getPublicationLogo(item: NewsItem) {
     case NewsSourceName.DIARIODECUBA:
       imageLogoSrc = "/source_logos/ddc1.webp";
       break;
+    case NewsSourceName.ELTOQUE:
+      imageLogoSrc = "/source_logos/eltoque.png";
+      break;
+    default:
+      break;
   }
   return (
     <Image width={20} height={100} alt="Publication Logo" src={imageLogoSrc} />
