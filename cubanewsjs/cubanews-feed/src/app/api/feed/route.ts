@@ -4,7 +4,7 @@ import { Database, FeedTable } from "../dataschema";
 import { NextRequest, NextResponse } from "next/server";
 import { ApifyClient, Dataset } from "apify-client";
 import { sql } from "kysely";
-import { allSortedByUpdated, xOfEachSource } from "./feedStrategies";
+import { xOfEachSource } from "./feedStrategies";
 
 type RefreshFeedResult = {
   datasetName: string;

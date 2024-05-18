@@ -40,4 +40,5 @@ export enum NewsSourceName {
   CATORCEYMEDIO = "catorceymedio",
   DIARIODECUBA = "diariodecuba",
   CIBERCUBA = "cibercuba",
+  ELTOQUE = "eltoque",
 }
