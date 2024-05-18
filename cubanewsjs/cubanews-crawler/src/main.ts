@@ -6,6 +6,7 @@ import AdnCubaCrawler from "./adncubaCrawler.js";
 import CibercubaCrawler from "./cibercubaCrawler.js";
 import DiarioDeCubaCrawler from "./diarioDeCubaCrawler.js";
 import CatorceYMedioCrawler from "./catorceYMedioCrawler.js";
+import ElToqueCrawler from "./eltoqueCrawler.js";
 
 try {
   await Actor.init();
@@ -25,6 +26,9 @@ try {
         break;
       case NewsSourceName.CATORCEYMEDIO:
         crawler = new CatorceYMedioCrawler();
+        break;
+      case NewsSourceName.ELTOQUE:
+        crawler = new ElToqueCrawler();
         break;
       default:
         throw new Error("Invalid news source");
