@@ -65,7 +65,7 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
     <Stack spacing={4}>
       <Card variant="outlined" sx={{ padding: 2 }}>
         <CardContent>
-          <Link href={item.url}>
+          <Link href={item.url} target="_blank">
             <Typography level="h2" fontSize="xl">
               {item.title}
             </Typography>
