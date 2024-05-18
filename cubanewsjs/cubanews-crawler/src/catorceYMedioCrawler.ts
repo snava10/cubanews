@@ -1,76 +1,42 @@
-import { PlaywrightCrawlingContext, Dictionary } from "crawlee";
-import { CubanewsCrawler, saveData } from "./cubanewsCrawler.js";
+import { CubanewsCrawler } from "./cubanewsCrawler.js";
 import { NewsSourceName, getNewsSourceByName } from "./crawlerUtils.js";
 import moment from "moment";
-
-const newsSource = getNewsSourceByName(NewsSourceName.CATORCEYMEDIO);
-
-function parseDate(rawDate: string): moment.Moment {
-  const mDate = moment(rawDate, "DD [de] MMMM YYYY - HH:mm");
-  // TODO:: Sometimes the date is in the future. This is a patch to prevent that from happening.
-  // It may be a parsing error.
-  if (mDate.isSameOrAfter(moment.now())) {
-    return moment(new Date());
-  }
-  return mDate;
-}
-
-function isValid(url: string): boolean {
-  const sections = url.split("/");
-  return sections.length >= 5;
-}
+import { Page } from "playwright";
 
 export default class CatorceYMedioCrawler extends CubanewsCrawler {
   constructor() {
-    super(newsSource);
+    super(getNewsSourceByName(NewsSourceName.CATORCEYMEDIO));
+    this.enqueueLinkOptions = {
+      globs: ["http?(s)://www.14ymedio.com/cuba/*"],
+      exclude: [
+        "https://www.14ymedio.com/cuba/terminos-condiciones_1_1048711.html",
+      ],
+      selector: "a",
+    };
   }
 
-  override async requestHandler(
-    context: PlaywrightCrawlingContext<Dictionary>
-  ): Promise<void> {
-    const { page, request, enqueueLinks, log } = context;
-    const title = await page.title();
+  protected override async extractDate(
+    page: Page
+  ): Promise<moment.Moment | null> {
+    const rawDate = await page.locator(".timestamp-atom").first().textContent();
+    if (!rawDate) {
+      return null;
+    }
+    const mDate = moment(rawDate, "DD [de] MMMM YYYY - HH:mm");
+    // TODO:: Sometimes the date is in the future. This is a patch to prevent that from happening.
+    // It may be a parsing error.
+    if (mDate.isSameOrAfter(moment.now())) {
+      return moment(new Date());
+    }
+    return mDate;
+  }
 
-    if (request.loadedUrl && isValid(request.loadedUrl)) {
-      log.info(`Title of ${request.loadedUrl} is '${title}'`);
-      const rawDate = await page
-        .locator(".timestamp-atom")
-        .first()
-        .textContent();
-      if (rawDate) {
-        const momentDate = parseDate(rawDate);
-        var content = await page.locator(".bbnx-body").textContent();
-        if (content) {
-          content = content.trim().split(" ").slice(0, 50).join(" ");
-        }
-        if (newsSource) {
-          await saveData(
-            {
-              title,
-              url: request.loadedUrl,
-              updated: momentDate.unix(),
-              isoDate: momentDate.toISOString(),
-              content: content,
-              source: newsSource.name,
-            },
-            newsSource.datasetName,
-            process.env.NODE_ENV !== "dev"
-          );
-        }
-      }
-    }
-    if (
-      request.loadedUrl &&
-      (newsSource.startUrls.has(request.loadedUrl) ||
-        newsSource.startUrls.has(request.loadedUrl + "/"))
-    ) {
-      await enqueueLinks({
-        globs: ["http?(s)://www.14ymedio.com/cuba/*"],
-        exclude: [
-          "https://www.14ymedio.com/cuba/terminos-condiciones_1_1048711.html",
-        ],
-        selector: "a",
-      });
-    }
+  protected override async extractContent(page: Page): Promise<string | null> {
+    return await page.locator(".bbnx-body").textContent();
+  }
+
+  protected override isUrlValid(url: string): boolean {
+    const sections = url.split("/");
+    return sections.length >= 5;
   }
 }
