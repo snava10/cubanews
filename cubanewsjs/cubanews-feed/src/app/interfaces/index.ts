@@ -42,3 +42,12 @@ export enum NewsSourceName {
   CIBERCUBA = "cibercuba",
   ELTOQUE = "eltoque",
 }
+
+export enum NewsSourceDisplayName {
+  ADNCUBA = "AdnCuba",
+  CATORCEYMEDIO = "14yMedio",
+  DIARIODECUBA = "Diario de Cuba",
+  CIBERCUBA = "Cibercuba",
+  ELTOQUE = "elToque",
+  EMPTY = "",
+}

@@ -9,7 +9,7 @@ import {
   CardOverflow,
   CardContent,
 } from "@mui/joy";
-import { NewsItem, NewsSourceName } from "../interfaces";
+import { NewsItem, NewsSourceDisplayName, NewsSourceName } from "../interfaces";
 import moment from "moment";
 import Image from "next/image";
 
@@ -41,6 +41,23 @@ function getPublicationLogo(item: NewsItem) {
   return (
     <Image width={20} height={100} alt="Publication Logo" src={imageLogoSrc} />
   );
+}
+
+function getNewsSourceDisplayName(item: NewsItem): NewsSourceDisplayName {
+  switch (item.source) {
+    case NewsSourceName.ADNCUBA:
+      return NewsSourceDisplayName.ADNCUBA;
+    case NewsSourceName.CATORCEYMEDIO:
+      return NewsSourceDisplayName.CATORCEYMEDIO;
+    case NewsSourceName.CIBERCUBA:
+      return NewsSourceDisplayName.CIBERCUBA;
+    case NewsSourceName.DIARIODECUBA:
+      return NewsSourceDisplayName.DIARIODECUBA;
+    case NewsSourceName.ELTOQUE:
+      return NewsSourceDisplayName.ELTOQUE;
+    default:
+      return NewsSourceDisplayName.EMPTY;
+  }
 }
 
 export default function NewsItemComponent({ item }: NewsItemProps) {
@@ -81,7 +98,7 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
                 fontWeight="md"
                 textColor="text.secondary"
               >
-                {item.source}
+                {getNewsSourceDisplayName(item)}
               </Typography>
               <Divider orientation="vertical" sx={{ ml: 1, mr: 1 }} />
               {item.tags.map((tagName: string) => (
