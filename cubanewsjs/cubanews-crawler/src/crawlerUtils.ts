@@ -18,22 +18,22 @@ export const newsSources = [
       "https://adncuba.com/",
       "https://adncuba.com/noticias-de-cuba/",
     ]),
-    datasetName: "adncuba-dataset",
+    datasetName: NewsSourceName.ADNCUBA + "-dataset",
   },
   {
     name: NewsSourceName.CATORCEYMEDIO,
     startUrls: new Set(["https://www.14ymedio.com/cuba"]),
-    datasetName: "catorceymedio-dataset",
+    datasetName: NewsSourceName.CATORCEYMEDIO + "-dataset",
   },
   {
     name: NewsSourceName.DIARIODECUBA,
     startUrls: new Set(["https://diariodecuba.com/"]),
-    datasetName: "ddc-dataset",
+    datasetName: NewsSourceName.DIARIODECUBA + "-dataset",
   },
   {
     name: NewsSourceName.CIBERCUBA,
     startUrls: new Set([]),
-    datasetName: "cibercuba-dataset",
+    datasetName: NewsSourceName.CIBERCUBA + "-dataset",
   },
 ];
 
