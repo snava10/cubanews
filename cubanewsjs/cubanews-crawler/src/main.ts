@@ -29,7 +29,7 @@ try {
       default:
         throw new Error("Invalid news source");
     }
-    await crawler.run();
+    await crawler.runX();
   }
 } catch (err) {
   console.log(err);
