@@ -27,12 +27,12 @@ export const newsSources = [
   },
   {
     name: NewsSourceName.DIARIODECUBA,
-    startUrls: new Set(["https://diariodecuba.com/"]),
+    startUrls: new Set(["https://www.cibercuba.com/actualidad"]),
     datasetName: NewsSourceName.DIARIODECUBA + "-dataset",
   },
   {
     name: NewsSourceName.CIBERCUBA,
-    startUrls: new Set([]),
+    startUrls: new Set(["https://www.cibercuba.com/actualidad"]),
     datasetName: NewsSourceName.CIBERCUBA + "-dataset",
   },
 ];
