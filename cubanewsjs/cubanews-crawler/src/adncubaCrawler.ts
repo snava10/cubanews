@@ -24,6 +24,7 @@ function parseDate(rawDate: string): moment.Moment {
   // TODO:: Sometimes the date is in the future. This is a patch to prevent that from happening.
   // It may be a parsing error.
   if (mDate.isSameOrAfter(moment.now())) {
+    console.warn(`Date is in the future: ${rawDate}`);
     return moment(new Date());
   }
   return mDate;
