@@ -45,6 +45,14 @@ export abstract class CubanewsCrawler
     return content.trim().replace(/\n/g, "").split(" ").slice(0, 50).join(" ");
   }
 
+  protected async parseTitle(page: Page): Promise<string | null> {
+    const title = await page.title();
+    if (!title) {
+      return null;
+    }
+    return title.split("|")[0].trim();
+  }
+
   /**
    * This is the most important function of the crawler.
    * It is called for each page that is loaded and parsed by the crawler.
@@ -59,7 +67,7 @@ export abstract class CubanewsCrawler
    */
   async requestHandlerX(context: PlaywrightCrawlingContext): Promise<void> {
     const { page, request, enqueueLinks, log } = context;
-    const title = await page.title();
+    const title = await this.parseTitle(page);
     log.info(`Title of ${request.loadedUrl} is '${title}'`);
 
     // This condition guarantees that the content is extracted from pages that are real articles.
