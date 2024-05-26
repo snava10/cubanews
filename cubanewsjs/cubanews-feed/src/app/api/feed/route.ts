@@ -1,12 +1,15 @@
 import { FeedResponseData, NewsItem, NewsSourceName } from "../../interfaces";
 import { createKysely } from "@vercel/postgres-kysely";
-import { Database, FeedTable } from "../dataschema";
+import { Database } from "../dataschema";
 import { NextRequest, NextResponse } from "next/server";
 import { ApifyClient, Dataset } from "apify-client";
 import { sql } from "kysely";
 import { xOfEachSource } from "./feedStrategies";
+import { newsItemToFeedTable } from "@/local/climain";
+import { refreshFeedFromLocalSources } from "@/local/localFeedLib";
+import { exec } from "child_process";
 
-type RefreshFeedResult = {
+export type RefreshFeedResult = {
   datasetName: string;
   insertedRows: bigint | number;
 };
@@ -33,6 +36,16 @@ export async function GET(
       return NextResponse.json(
         {
           banter: "Dry Run. Refreshing cubanews feed",
+        },
+        { status: 200 }
+      );
+    }
+
+    if (request.nextUrl.searchParams.get("local")) {
+      exec("/home/sergio/github/cubanews/cubanewsjs/cubanews-crawler/run.sh");
+      return NextResponse.json(
+        {
+          banter: "Refreshing cubanews feed from Local Sources.",
         },
         { status: 200 }
       );
@@ -119,6 +132,10 @@ async function refreshFeed(): Promise<Array<RefreshFeedResult>> {
   return feedRefreshResult;
 }
 
+async function refreshFeeLocal(): Promise<Array<RefreshFeedResult>> {
+  return refreshFeedFromLocalSources(db);
+}
+
 async function refreshFeedDataset(
   dataset: Dataset,
   feedRefreshDate: Date
@@ -142,19 +159,4 @@ async function refreshFeedDataset(
     datasetName: dataset.name as string,
     insertedRows: insertResult.numInsertedOrUpdatedRows?.valueOf() as bigint,
   };
-}
-
-function newsItemToFeedTable(ni: NewsItem, currentDate: Date): FeedTable {
-  const isoDateString = currentDate.toISOString();
-  const epochTimestamp = currentDate.getTime();
-  return {
-    content: ni.content,
-    feedisodate: isoDateString,
-    feedts: epochTimestamp,
-    isodate: ni.isoDate,
-    source: ni.source,
-    title: ni.title,
-    updated: ni.updated,
-    url: ni.url,
-  } as FeedTable;
 }
