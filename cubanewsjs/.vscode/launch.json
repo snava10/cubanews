@@ -40,6 +40,13 @@
       "localRoot": "${workspaceFolder}/cubanews-crawler"
     },
     {
+      "command": "cd catorceYmedio-crawler; npm start",
+      "name": "14yMedio Crawler",
+      "request": "launch",
+      "type": "node-terminal",
+      "localRoot": "${workspaceFolder}"
+    },
+    {
       "command": "cd cubanews-crawler; npm run start:prod",
       "name": "Run npm start:prod",
       "request": "launch",
