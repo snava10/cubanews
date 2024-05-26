@@ -75,41 +75,51 @@ async function getFeed(
   page: number,
   pageSize: number
 ): Promise<NextResponse<FeedResponseData | null>> {
-  const latestFeedts = await db
-    .selectFrom("feed")
-    .select([sql`max(feed.feedts)`.as("feedts")])
-    .executeTakeFirst();
+  try {
+    const latestFeedts = await db
+      .selectFrom("feed")
+      .select([sql`max(feed.feedts)`.as("feedts")])
+      .executeTakeFirst();
 
-  if (!latestFeedts?.feedts) {
+    if (!latestFeedts?.feedts) {
+      return NextResponse.json(
+        {
+          banter: "No feeds available",
+        },
+        { status: 500 }
+      );
+    }
+
+    // This strategy gets the top x news of every source.
+    // X is the page size, if implemented page 2 would mean skipping the first x for each news source
+    // and getting the following x. This is temporary until a better, ranked version of the feed is conceived.
+    const items = await xOfEachSource(
+      db,
+      latestFeedts.feedts as number,
+      page,
+      pageSize
+    );
+
+    const timestamp = items.length > 0 ? items[0].feedts : 0;
     return NextResponse.json(
       {
-        banter: "No feeds available",
+        banter: "Cubanews feed!",
+        content: {
+          timestamp,
+          feed: items,
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error(error);
+    return NextResponse.json(
+      {
+        banter: `Error getting cubanews feed. ${error}`,
       },
       { status: 500 }
     );
   }
-
-  // This strategy gets the top x news of every source.
-  // X is the page size, if implemented page 2 would mean skipping the first x for each news source
-  // and getting the following x. This is temporary until a better, ranked version of the feed is conceived.
-  const items = await xOfEachSource(
-    db,
-    latestFeedts.feedts as number,
-    page,
-    pageSize
-  );
-
-  const timestamp = items.length > 0 ? items[0].feedts : 0;
-  return NextResponse.json(
-    {
-      banter: "Cubanews feed!",
-      content: {
-        timestamp,
-        feed: items,
-      },
-    },
-    { status: 200 }
-  );
 }
 
 async function refreshFeed(): Promise<Array<RefreshFeedResult>> {
