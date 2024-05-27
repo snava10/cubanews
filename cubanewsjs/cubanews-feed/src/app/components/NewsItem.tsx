@@ -12,6 +12,9 @@ import {
 import { NewsItem, NewsSourceDisplayName, NewsSourceName } from "../interfaces";
 import moment from "moment";
 import Image from "next/image";
+import "moment/locale/es";
+
+moment.locale("es");
 
 type NewsItemProps = {
   item: NewsItem;

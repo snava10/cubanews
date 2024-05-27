@@ -34,7 +34,7 @@ export async function xOfEachSource(
   FROM (
    SELECT *, ROW_NUMBER() OVER (PARTITION BY
    source ORDER BY updated desc) AS row_number
-   FROM feed where feedts = ${feedts}
+   FROM feed where isodate is not null AND updated is not null AND feedts = ${feedts}
   ) AS t
   WHERE t.row_number > ${pageSize * (page - 1)} AND t.row_number <= ${
     pageSize * page
@@ -55,6 +55,8 @@ export async function allSortedByUpdated(
     .selectFrom("feed")
     .selectAll()
     .where("feed.feedts", "=", feedts)
+    .where("isodate", "!=", null)
+    .where("updated", "!=", null)
     .orderBy("updated desc")
     .offset((page - 1) * pageSize)
     .limit(pageSize)

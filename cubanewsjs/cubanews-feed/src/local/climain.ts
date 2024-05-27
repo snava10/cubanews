@@ -1,121 +1,14 @@
-import { Database, FeedTable } from "@/app/api/dataschema";
-import { RefreshFeedResult } from "@/app/api/feed/route";
-import { NewsItem, NewsSourceName } from "@/app/interfaces";
+import { Database } from "@/app/api/dataschema";
 import { createKysely } from "@vercel/postgres-kysely";
-import * as fs from "fs";
-import * as path from "path";
 import * as dotenv from "dotenv";
-import { info } from "console";
+import { refreshFeedFromLocalSources } from "./localFeedLib";
 
 dotenv.config();
 const db = createKysely<Database>();
 
-export function newsItemToFeedTable(
-  ni: NewsItem,
-  currentDate: Date
-): FeedTable {
-  const isoDateString = currentDate.toISOString();
-  const epochTimestamp = currentDate.getTime();
-  return {
-    content: ni.content,
-    feedisodate: isoDateString,
-    feedts: epochTimestamp,
-    isodate: ni.isoDate,
-    source: ni.source,
-    title: ni.title,
-    updated: ni.updated,
-    url: ni.url,
-  } as FeedTable;
-}
-
-export async function loadLocalDataset(
-  datasetPath: string
-): Promise<Array<NewsItem>> {
-  return new Promise((resolve, reject) => {
-    fs.readdir(datasetPath, (err, files) => {
-      if (err) {
-        return reject(err);
-      }
-
-      const jsonFiles = files.filter((file) => file.endsWith(".json"));
-      const readPromises = jsonFiles.map((file) => {
-        return new Promise<NewsItem>((res, rej) => {
-          const filePath = path.join(datasetPath, file);
-          fs.readFile(filePath, "utf-8", (readErr, data) => {
-            if (readErr) {
-              return rej(readErr);
-            }
-            try {
-              const jsonData = JSON.parse(data);
-              res(jsonData);
-            } catch (parseErr) {
-              rej(parseErr);
-            }
-          });
-        });
-      });
-
-      Promise.all(readPromises)
-        .then((contents) => resolve(contents))
-        .catch((readErr) => reject(readErr));
-    });
-  });
-}
-
-async function refreshFeedDataset(
-  datasetName: string,
-  feedRefreshDate: Date,
-  newsItems: Array<NewsItem>
-): Promise<RefreshFeedResult> {
-  const values = newsItems.map(
-    (x) => newsItemToFeedTable(x, feedRefreshDate) as any
-  );
-  const insertResult = await db
-    .insertInto("feed")
-    .values(values)
-    .executeTakeFirst();
-
-  return {
-    datasetName: datasetName,
-    insertedRows: insertResult.numInsertedOrUpdatedRows?.valueOf() as bigint,
-  };
-}
-
-export async function refreshFeedFromLocalSources(): Promise<any> {
-  const localDatasourcePaths = [
-    [
-      NewsSourceName.DIARIODECUBA,
-      "../ddc-crawler/storage/datasets/diariodecuba-dataset",
-    ],
-    [
-      NewsSourceName.CATORCEYMEDIO,
-      "../catorceYmedio-crawler/storage/datasets/catorceymedio-dataset",
-    ],
-    [
-      NewsSourceName.ADNCUBA,
-      "../adncuba-crawler/storage/datasets/adncuba-dataset",
-    ],
-    [
-      NewsSourceName.CIBERCUBA,
-      "../cibercuba-crawler/storage/datasets/cibercuba-dataset",
-    ],
-    // [NewsSourceName.ELTOQUE, "../eltoque/storage/dataset/eltoque-dataset"],
-  ];
-  const feedDate = new Date();
-  localDatasourcePaths.forEach(async (x) => {
-    info(`Refreshing feed for ${x[0]}`);
-    const refreshResult = await refreshFeedDataset(
-      x[0],
-      feedDate,
-      await loadLocalDataset(x[1])
-    );
-    info(refreshResult);
-  });
-}
-
 (async () => {
   try {
-    await refreshFeedFromLocalSources();
+    await refreshFeedFromLocalSources(db);
   } catch (error) {
     console.error("Error refreshing sources ", error);
   }

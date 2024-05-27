@@ -75,7 +75,7 @@ export abstract class CubanewsCrawler
     if (request.loadedUrl && this.isUrlValid(request.loadedUrl)) {
       const momentDate = await this.extractDate(page);
 
-      if (momentDate) {
+      if (momentDate && momentDate.toISOString()) {
         var content = await this.extractContent(page);
         if (!content || content?.length < 100) {
           // This is to guarantee this is a real article.
@@ -96,6 +96,8 @@ export abstract class CubanewsCrawler
             process.env.NODE_ENV !== "dev"
           );
         }
+      } else {
+        log.error(`Could not extract date from ${request.loadedUrl}`);
       }
     }
 
