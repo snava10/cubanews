@@ -5,9 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { ApifyClient, Dataset } from "apify-client";
 import { sql } from "kysely";
 import { xOfEachSource } from "./feedStrategies";
-import { newsItemToFeedTable } from "@/local/climain";
-import { refreshFeedFromLocalSources } from "@/local/localFeedLib";
 import { exec } from "child_process";
+import { newsItemToFeedTable } from "@/local/localFeedLib";
 
 export type RefreshFeedResult = {
   datasetName: string;
@@ -75,51 +74,41 @@ async function getFeed(
   page: number,
   pageSize: number
 ): Promise<NextResponse<FeedResponseData | null>> {
-  try {
-    const latestFeedts = await db
-      .selectFrom("feed")
-      .select([sql`max(feed.feedts)`.as("feedts")])
-      .executeTakeFirst();
+  const latestFeedts = await db
+    .selectFrom("feed")
+    .select([sql`max(feed.feedts)`.as("feedts")])
+    .executeTakeFirst();
 
-    if (!latestFeedts?.feedts) {
-      return NextResponse.json(
-        {
-          banter: "No feeds available",
-        },
-        { status: 500 }
-      );
-    }
-
-    // This strategy gets the top x news of every source.
-    // X is the page size, if implemented page 2 would mean skipping the first x for each news source
-    // and getting the following x. This is temporary until a better, ranked version of the feed is conceived.
-    const items = await xOfEachSource(
-      db,
-      latestFeedts.feedts as number,
-      page,
-      pageSize
-    );
-
-    const timestamp = items.length > 0 ? items[0].feedts : 0;
+  if (!latestFeedts?.feedts) {
     return NextResponse.json(
       {
-        banter: "Cubanews feed!",
-        content: {
-          timestamp,
-          feed: items,
-        },
-      },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error(error);
-    return NextResponse.json(
-      {
-        banter: `Error getting cubanews feed. ${error}`,
+        banter: "No feeds available",
       },
       { status: 500 }
     );
   }
+
+  // This strategy gets the top x news of every source.
+  // X is the page size, if implemented page 2 would mean skipping the first x for each news source
+  // and getting the following x. This is temporary until a better, ranked version of the feed is conceived.
+  const items = await xOfEachSource(
+    db,
+    latestFeedts.feedts as number,
+    page,
+    pageSize
+  );
+
+  const timestamp = items.length > 0 ? items[0].feedts : 0;
+  return NextResponse.json(
+    {
+      banter: "Cubanews feed!",
+      content: {
+        timestamp,
+        feed: items,
+      },
+    },
+    { status: 200 }
+  );
 }
 
 async function refreshFeed(): Promise<Array<RefreshFeedResult>> {
@@ -142,10 +131,6 @@ async function refreshFeed(): Promise<Array<RefreshFeedResult>> {
   return feedRefreshResult;
 }
 
-async function refreshFeeLocal(): Promise<Array<RefreshFeedResult>> {
-  return refreshFeedFromLocalSources(db);
-}
-
 async function refreshFeedDataset(
   dataset: Dataset,
   feedRefreshDate: Date
@@ -157,9 +142,9 @@ async function refreshFeedDataset(
   const newsItems = items
     .map((item) => item as unknown)
     .map((item) => item as NewsItem);
-  const values = newsItems.map(
-    (x) => newsItemToFeedTable(x, feedRefreshDate) as any
-  );
+  const values = newsItems
+    .filter((newsItem) => isNewsItemValid(newsItem))
+    .map((x) => newsItemToFeedTable(x, feedRefreshDate) as any);
   const insertResult = await db
     .insertInto("feed")
     .values(values)
@@ -169,4 +154,15 @@ async function refreshFeedDataset(
     datasetName: dataset.name as string,
     insertedRows: insertResult.numInsertedOrUpdatedRows?.valueOf() as bigint,
   };
+}
+
+function isNewsItemValid(newsItem: NewsItem): boolean {
+  return (
+    newsItem.isoDate !== null &&
+    newsItem.updated !== null &&
+    newsItem.title !== null &&
+    newsItem.title.length > 0 &&
+    newsItem.url !== null &&
+    newsItem.url.length > 0
+  );
 }
