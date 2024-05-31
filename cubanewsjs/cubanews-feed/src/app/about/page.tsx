@@ -54,12 +54,7 @@ export default function About() {
         </Typography>
 
         <Typography level="body-lg" sx={{ mb: 1 }}>
-          Este es un proyecto de código abierto, si tienes conocimientos de
-          programación y quieres contribuir visita{" "}
-          <a href="https://github.com/snava10/cubanews">
-            https://github.com/snava10/cubanews
-          </a>{" "}
-          o envianos un email a{" "}
+          Valoramos tu opinion, envianos un email a{" "}
           <a href="mailto:cubanews.icu@gmail.com">cubanews.icu@gmail.com</a>
         </Typography>
 
@@ -89,12 +84,7 @@ export default function About() {
         </Typography>
 
         <Typography level="body-lg" sx={{ mb: 1 }}>
-          This is an open-source project, so if you have programming skills and
-          want to contribute, please head over to{" "}
-          <a href="https://github.com/snava10/cubanews">
-            https://github.com/snava10/cubanews
-          </a>{" "}
-          or email us at{" "}
+          We value your feedback, please email us at{" "}
           <a href="mailto:cubanews.icu@gmail.com">cubanews.icu@gmail.com</a>
         </Typography>
 
