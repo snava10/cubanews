@@ -5,13 +5,16 @@ import { info } from "console";
 import * as fs from "fs";
 import * as path from "path";
 import { Kysely } from "kysely";
+import { getFeedScore } from "@/app/api/feed/feedScoreStrategies";
 
-export function newsItemToFeedTable(
+export async function newsItemToFeedTable(
   ni: NewsItem,
   currentDate: Date
-): FeedTable {
+): Promise<FeedTable> {
   const isoDateString = currentDate.toISOString();
   const epochTimestamp = currentDate.getTime();
+
+  const score = await getFeedScore(ni);
   return {
     content: ni.content,
     feedisodate: isoDateString,
@@ -21,6 +24,7 @@ export function newsItemToFeedTable(
     title: ni.title,
     updated: ni.updated,
     url: ni.url,
+    score: score,
   } as FeedTable;
 }
 
@@ -64,8 +68,8 @@ async function refreshFeedDataset(
   newsItems: Array<NewsItem>,
   db: Kysely<Database>
 ): Promise<RefreshFeedResult> {
-  const values = newsItems.map(
-    (x) => newsItemToFeedTable(x, feedRefreshDate) as any
+  const values = await Promise.all(
+    newsItems.map((x) => newsItemToFeedTable(x, feedRefreshDate) as any)
   );
   const insertResult = await db
     .insertInto("feed")

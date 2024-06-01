@@ -12,14 +12,14 @@ function dbItemToNewsItem(dbitem: any): NewsItem {
     feedts: dbitem.feedts,
     content: dbitem.content,
     tags: dbitem.tags ? dbitem.tags.split(",") : [],
+    score: dbitem.score,
   } as NewsItem;
 }
 
 /**
  *
  * @param db
- * @param x
- * @param feedts
+ * @param feedts Timestamp of the feed. This guaranties that only the latest items are considered.
  * @param page Starts on 1
  * @returns
  */
@@ -39,7 +39,7 @@ export async function xOfEachSource(
   WHERE t.row_number > ${pageSize * (page - 1)} AND t.row_number <= ${
     pageSize * page
   }
-  order by updated desc
+  order by score desc, updated desc
   `;
   const result = (await query.execute(db)).rows;
   return result.map(dbItemToNewsItem);
@@ -57,6 +57,7 @@ export async function allSortedByUpdated(
     .where("feed.feedts", "=", feedts)
     .where("isodate", "!=", null)
     .where("updated", "!=", null)
+    .orderBy("score desc")
     .orderBy("updated desc")
     .offset((page - 1) * pageSize)
     .limit(pageSize)

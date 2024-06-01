@@ -1,4 +1,4 @@
-import { ColumnType, Generated } from "kysely";
+import { Generated } from "kysely";
 
 export interface FeedTable {
   id: Generated<number>;
@@ -11,6 +11,7 @@ export interface FeedTable {
   updated: number; // This is the news item updated field.
   isodate: string;
   tags: string;
+  score: number;
 }
 
 export interface Database {
