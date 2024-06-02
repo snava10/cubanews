@@ -2,7 +2,15 @@
 import useSWR from "swr";
 import { FeedResponseData } from "../interfaces";
 import NewsItemComponent from "../components/NewsItem";
-import { Box, Stack, Typography, Container, Divider, Chip } from "@mui/joy";
+import {
+  Box,
+  Stack,
+  Typography,
+  Container,
+  Divider,
+  Chip,
+  CircularProgress,
+} from "@mui/joy";
 import CopyrightIcon from "@mui/icons-material/Copyright";
 
 export default function Home() {
@@ -14,7 +22,19 @@ export default function Home() {
   );
 
   if (error) return <div>Failed to load</div>;
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <Container
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress color="primary" size="lg" variant="soft" />
+      </Container>
+    );
   if (!data) return null;
 
   console.log(data);
