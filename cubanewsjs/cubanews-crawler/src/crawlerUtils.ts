@@ -4,6 +4,7 @@ export enum NewsSourceName {
   DIARIODECUBA = "diariodecuba",
   CIBERCUBA = "cibercuba",
   ELTOQUE = "eltoque",
+  CUBANET = "cubanet",
 }
 
 export interface NewsSource {
@@ -40,6 +41,14 @@ export const newsSources = [
     name: NewsSourceName.ELTOQUE,
     startUrls: new Set(["https://eltoque.com/"]),
     datasetName: NewsSourceName.ELTOQUE + "-dataset",
+  },
+  {
+    name: NewsSourceName.CUBANET,
+    startUrls: new Set([
+      "https://www.cubanet.org/",
+      "https://www.cubanet.org/categoria/destacados/",
+    ]),
+    datasetName: NewsSourceName.CUBANET + "-dataset",
   },
 ];
 
