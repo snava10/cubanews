@@ -46,7 +46,7 @@ export const newsSources = [
     name: NewsSourceName.CUBANET,
     startUrls: new Set([
       "https://www.cubanet.org/",
-      "https://www.cubanet.org/categoria/destacados/",
+      "https://www.cubanet.org/destacados/",
     ]),
     datasetName: NewsSourceName.CUBANET + "-dataset",
   },

@@ -8,15 +8,23 @@ export default class CubanetCrawler extends CubanewsCrawler {
   constructor() {
     super(getNewsSourceByName(NewsSourceName.CUBANET));
     this.enqueueLinkOptions = {
-      globs: ["http?(s)://cubanet.com/*/*"],
+      globs: ["http?(s)://www.cubanet.org/*/*"],
       selector: "a",
     };
   }
 
   protected override isUrlValid(url: string): boolean {
     const sections = url.split("/");
-    return sections.length >= 5;
+    return (
+      sections.length >= 6 &&
+      !url.startsWith("https://www.cubanet.org/categoria/") &&
+      !url.startsWith("https://www.cubanet.org/author/") &&
+      !url.startsWith("https://www.cubanet.org/tags/") &&
+      url !== "https://www.cubanet.org/tag/reportajes-investigativos/" &&
+      url !== "https://www.cubanet.org/htdocs/oldies.html"
+    );
   }
+
   protected override async extractDate(page: Page): Promise<Moment | null> {
     const rawDate = await page
       .locator("div.jeg_meta_date > a")
