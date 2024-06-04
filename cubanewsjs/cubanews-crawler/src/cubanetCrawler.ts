@@ -26,10 +26,14 @@ export default class CubanetCrawler extends CubanewsCrawler {
   }
 
   protected override async extractDate(page: Page): Promise<Moment | null> {
+    if (page.url().includes("/deportes/")) {
+      return this.extractSportsPageDate(page);
+    }
     const rawDate = await page
       .locator("div.jeg_meta_date > a")
       .first()
       .textContent();
+
     if (!rawDate) {
       return null;
     }
@@ -45,7 +49,28 @@ export default class CubanetCrawler extends CubanewsCrawler {
   }
 
   protected override async extractContent(page: Page): Promise<string | null> {
+    if (page.url().includes("/deportes/")) {
+      return await page.locator("div.elementor-widget-container").textContent();
+    }
     const content = await page.locator("div.content-inner").textContent();
     return content;
+  }
+
+  private async extractSportsPageDate(page: Page): Promise<Moment | null> {
+    const date = await page
+      .locator("span.elementor-post-info__item--type-date")
+      .first()
+      .textContent();
+    const time = await page
+      .locator("span.elementor-post-info__item--type-time")
+      .first()
+      .textContent();
+    if (!date || !time) {
+      return null;
+    }
+
+    moment.locale("es");
+    const parsedDate = moment(`${date} ${time}`, "MMMM D, YYYY h:mm A");
+    return parsedDate;
   }
 }

@@ -8,6 +8,8 @@ import {
 import { NewsSource } from "./crawlerUtils.js";
 import { Actor } from "apify";
 import { Page } from "playwright";
+import { Moment } from "moment";
+import moment from "moment";
 
 export interface ICubanewsCrawler {
   runX(): Promise<void>;
@@ -75,7 +77,7 @@ export abstract class CubanewsCrawler
     if (request.loadedUrl && this.isUrlValid(request.loadedUrl)) {
       const momentDate = await this.extractDate(page);
 
-      if (momentDate && momentDate.toISOString()) {
+      if (momentDate && this.isValidDate(momentDate)) {
         var content = await this.extractContent(page);
         if (!content || content?.length < 100) {
           // This is to guarantee this is a real article.
@@ -97,7 +99,11 @@ export abstract class CubanewsCrawler
           );
         }
       } else {
-        log.error(`Could not extract date from ${request.loadedUrl}`);
+        if (!momentDate) {
+          log.error(`Could not extract date from ${request.loadedUrl}`);
+        } else {
+          log.warning(`Date is too old ${request.loadedUrl}`);
+        }
       }
     }
 
@@ -135,5 +141,13 @@ export abstract class CubanewsCrawler
     } else {
       await Dataset.pushData(data);
     }
+  }
+
+  private isValidDate(momentDate: Moment | null): boolean {
+    if (momentDate && momentDate.toISOString()) {
+      const now = moment();
+      return now.diff(momentDate, "hours") > 72;
+    }
+    return false;
   }
 }
