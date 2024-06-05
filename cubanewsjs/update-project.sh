@@ -21,3 +21,6 @@ cd ../eltoque-crawler; npm i; npm link ../cubanews-crawler;
 
 echo "Updating cubanet-crawler"
 cd ../cubanet-crawler; npm i; npm link ../cubanews-crawler;
+
+echo "Updating cubanews-feed"
+cd ../cubanews-feed; npm i;
