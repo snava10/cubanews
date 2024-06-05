@@ -102,6 +102,10 @@ export async function refreshFeedFromLocalSources(
       NewsSourceName.CIBERCUBA,
       "../cibercuba-crawler/storage/datasets/cibercuba-dataset",
     ],
+    [
+      NewsSourceName.CUBANET,
+      "../cubanet-crawler/storage/dataset/cubanet-dataset",
+    ],
     // [NewsSourceName.ELTOQUE, "../eltoque/storage/dataset/eltoque-dataset"],
   ];
   const feedDate = new Date();

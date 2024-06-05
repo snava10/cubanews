@@ -38,6 +38,9 @@ function getPublicationLogo(item: NewsItem) {
     case NewsSourceName.ELTOQUE:
       imageLogoSrc = "/source_logos/eltoque.png";
       break;
+    case NewsSourceName.CUBANET:
+      imageLogoSrc = "/source_logos/cubanet1/png";
+      break;
     default:
       break;
   }
@@ -58,6 +61,8 @@ function getNewsSourceDisplayName(item: NewsItem): NewsSourceDisplayName {
       return NewsSourceDisplayName.DIARIODECUBA;
     case NewsSourceName.ELTOQUE:
       return NewsSourceDisplayName.ELTOQUE;
+    case NewsSourceName.CUBANET:
+      return NewsSourceDisplayName.CUBANET;
     default:
       return NewsSourceDisplayName.EMPTY;
   }
