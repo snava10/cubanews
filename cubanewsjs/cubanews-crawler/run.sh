@@ -1,4 +1,7 @@
 
+echo "Updating project";
+$HOME/github/cubanews/cubanewsjs/update-project.sh
+
 echo "$(date) Refreshing feed Locally" > $HOME/cubanews-crawler.log 2>&1;
 cd $HOME/github/cubanews/cubanewsjs/ddc-crawler && npm run start > $HOME/cubanews-crawler.log 2>&1;
 cd $HOME/github/cubanews/cubanewsjs/adncuba-crawler && npm run start > $HOME/cubanews-crawler.log 2>&1;
