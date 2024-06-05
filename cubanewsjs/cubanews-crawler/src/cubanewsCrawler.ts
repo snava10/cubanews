@@ -146,7 +146,7 @@ export abstract class CubanewsCrawler
   private isValidDate(momentDate: Moment | null): boolean {
     if (momentDate && momentDate.toISOString()) {
       const now = moment();
-      return now.diff(momentDate, "hours") > 72;
+      return now.diff(momentDate, "hours") < 72;
     }
     return false;
   }
