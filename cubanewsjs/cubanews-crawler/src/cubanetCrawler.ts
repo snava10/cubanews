@@ -50,7 +50,10 @@ export default class CubanetCrawler extends CubanewsCrawler {
 
   protected override async extractContent(page: Page): Promise<string | null> {
     if (page.url().includes("/deportes/")) {
-      return await page.locator("div.elementor-widget-container").textContent();
+      return await page
+        .locator("div.elementor-widget-container")
+        .first()
+        .textContent();
     }
     const content = await page.locator("div.content-inner").textContent();
     return content;
