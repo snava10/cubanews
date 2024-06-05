@@ -39,7 +39,7 @@ function getPublicationLogo(item: NewsItem) {
       imageLogoSrc = "/source_logos/eltoque.png";
       break;
     case NewsSourceName.CUBANET:
-      imageLogoSrc = "/source_logos/cubanet1/png";
+      imageLogoSrc = "/source_logos/cubanet2.jpeg";
       break;
     default:
       break;

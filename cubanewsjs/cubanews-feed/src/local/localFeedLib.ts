@@ -104,7 +104,7 @@ export async function refreshFeedFromLocalSources(
     ],
     [
       NewsSourceName.CUBANET,
-      "../cubanet-crawler/storage/dataset/cubanet-dataset",
+      "../cubanet-crawler/storage/datasets/cubanet-dataset",
     ],
     // [NewsSourceName.ELTOQUE, "../eltoque/storage/dataset/eltoque-dataset"],
   ];
