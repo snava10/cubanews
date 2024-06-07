@@ -14,6 +14,14 @@ export interface FeedTable {
   score: number;
 }
 
+export interface InteractionsTable {
+  id: Generated<number>;
+  feedid: number; // FK to feed table id.
+  interaction: string;
+  timestamp: number;
+}
+
 export interface Database {
   feed: FeedTable;
+  interactions: InteractionsTable;
 }

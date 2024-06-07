@@ -25,6 +25,10 @@ export type FeedResponseData = {
   content?: NewsFeed;
 };
 
+export type InteractionResponseData = {
+  banter: string;
+};
+
 export enum NewsSourceName {
   ADNCUBA = "adncuba",
   CATORCEYMEDIO = "catorceymedio",
