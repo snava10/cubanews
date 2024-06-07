@@ -1,4 +1,5 @@
 import {
+  CrawlerRunOptions,
   Dataset,
   Dictionary,
   EnqueueLinksOptions,
@@ -119,10 +120,10 @@ export abstract class CubanewsCrawler
     }
   }
 
-  public async runX(): Promise<void> {
+  public async runX(options?: CrawlerRunOptions): Promise<void> {
     console.log(process.env.NODE_ENV);
     if (process.env.NODE_ENV === "dev") {
-      await this.run([...this.startUrls]);
+      await this.run([...this.startUrls], options);
     } else {
       const dataset = await Actor.openDataset(this.datasetName);
       await dataset.drop();
