@@ -1,7 +1,7 @@
-import { InteractionResponseData } from "@/app/interfaces";
+import { Interaction, InteractionResponseData } from "@/app/interfaces";
 import { createKysely } from "@vercel/postgres-kysely";
 import { NextRequest, NextResponse } from "next/server";
-import { Database } from "../../dataschema";
+import { Database } from "../dataschema";
 
 const db = createKysely<Database>();
 
@@ -9,6 +9,9 @@ export async function GET(
   request: NextRequest
 ): Promise<NextResponse<InteractionResponseData | null>> {
   const feedid = request.nextUrl.searchParams.get("feedid");
+  const interaction = request.nextUrl.searchParams.get(
+    "interaction"
+  ) as Interaction;
   if (!feedid) {
     return NextResponse.json(
       {
@@ -17,11 +20,19 @@ export async function GET(
       { status: 400, statusText: "Bad Parameters" }
     );
   }
+  if (!interaction) {
+    return NextResponse.json(
+      {
+        banter: "interaction cannot be null",
+      },
+      { status: 400, statusText: "Bad Parameters" }
+    );
+  }
   db.insertInto("interactions")
     .values([
       {
         feedid: parseInt(feedid), // Replace with the actual feedid
-        interaction: "view", // Replace with the actual interaction type
+        interaction: interaction, // Replace with the actual interaction type
         timestamp: Date.now(), // Current timestamp
       },
     ])
