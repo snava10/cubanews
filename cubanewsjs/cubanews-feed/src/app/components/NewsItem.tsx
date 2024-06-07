@@ -9,10 +9,16 @@ import {
   CardOverflow,
   CardContent,
 } from "@mui/joy";
-import { NewsItem, NewsSourceDisplayName, NewsSourceName } from "../interfaces";
+import {
+  NewsItem,
+  NewsSourceDisplayName,
+  NewsSourceName,
+  InteractionResponseData,
+} from "../interfaces";
 import moment from "moment";
 import Image from "next/image";
 import "moment/locale/es";
+import useSWR from "swr";
 
 moment.locale("es");
 
@@ -49,6 +55,12 @@ function getPublicationLogo(item: NewsItem) {
   );
 }
 
+function onNewsClick(item: NewsItem) {
+  fetch(`/api/interactions/newsClick?feedid=${item.id}`).then((res) =>
+    console.log(res.json())
+  );
+}
+
 function getNewsSourceDisplayName(item: NewsItem): NewsSourceDisplayName {
   switch (item.source) {
     case NewsSourceName.ADNCUBA:
@@ -73,7 +85,11 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
     <Stack spacing={4}>
       <Card variant="outlined" sx={{ padding: 2 }}>
         <CardContent>
-          <Link href={item.url} target="_blank">
+          <Link
+            href={item.url}
+            target="_blank"
+            onClick={() => onNewsClick(item)}
+          >
             <Typography level="h2" fontSize="xl">
               {item.title}
             </Typography>

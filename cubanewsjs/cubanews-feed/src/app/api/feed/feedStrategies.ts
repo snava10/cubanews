@@ -4,6 +4,7 @@ import { Database, FeedTable } from "../dataschema";
 
 function dbItemToNewsItem(dbitem: any): NewsItem {
   return {
+    id: dbitem.id,
     title: dbitem.title,
     source: dbitem.source,
     url: dbitem.url,
