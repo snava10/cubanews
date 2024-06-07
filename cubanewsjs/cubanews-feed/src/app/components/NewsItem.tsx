@@ -8,17 +8,19 @@ import {
   Divider,
   CardOverflow,
   CardContent,
+  Button,
 } from "@mui/joy";
 import {
   NewsItem,
   NewsSourceDisplayName,
   NewsSourceName,
-  InteractionResponseData,
+  Interaction,
 } from "../interfaces";
 import moment from "moment";
 import Image from "next/image";
 import "moment/locale/es";
-import useSWR from "swr";
+import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
+import ThumbUp from "@mui/icons-material/ThumbUp";
 
 moment.locale("es");
 
@@ -55,9 +57,9 @@ function getPublicationLogo(item: NewsItem) {
   );
 }
 
-function onNewsClick(item: NewsItem) {
-  fetch(`/api/interactions/newsClick?feedid=${item.id}`).then((res) =>
-    console.log(res.json())
+function onNewsInteraction(item: NewsItem, interaction: Interaction) {
+  fetch(`/api/interactions?feedid=${item.id}&interaction=${interaction}`).then(
+    (res) => console.log(res.json())
   );
 }
 
@@ -80,6 +82,28 @@ function getNewsSourceDisplayName(item: NewsItem): NewsSourceDisplayName {
   }
 }
 
+function getTagsSection(item: NewsItem): JSX.Element {
+  if (item.tags.length > 0) {
+    return (
+      <>
+        <Divider orientation="vertical" sx={{ ml: 1, mr: 1 }} />
+        {item.tags.map((tagName: string) => (
+          <Chip variant="outlined" key={tagName}>
+            <Typography
+              level="body-xs"
+              fontWeight="lg"
+              textColor="text.secondary"
+            >
+              {tagName}
+            </Typography>
+          </Chip>
+        ))}
+      </>
+    );
+  }
+  return <></>;
+}
+
 export default function NewsItemComponent({ item }: NewsItemProps) {
   return (
     <Stack spacing={4}>
@@ -88,7 +112,7 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
           <Link
             href={item.url}
             target="_blank"
-            onClick={() => onNewsClick(item)}
+            onClick={() => onNewsInteraction(item, Interaction.VIEW)}
           >
             <Typography level="h2" fontSize="xl">
               {item.title}
@@ -124,18 +148,18 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
               >
                 {getNewsSourceDisplayName(item)}
               </Typography>
+              {getTagsSection(item)}
               <Divider orientation="vertical" sx={{ ml: 1, mr: 1 }} />
-              {item.tags.map((tagName: string) => (
-                <Chip variant="outlined" key={tagName}>
-                  <Typography
-                    level="body-xs"
-                    fontWeight="lg"
-                    textColor="text.secondary"
-                  >
-                    {tagName}
-                  </Typography>
-                </Chip>
-              ))}
+              <Box>
+                <Button
+                  startDecorator={<ThumbUp />}
+                  size="sm"
+                  variant="outlined"
+                  onClick={() => onNewsInteraction(item, Interaction.LIKE)}
+                >
+                  Interesante
+                </Button>
+              </Box>
             </Stack>
           </CardContent>
         </CardOverflow>

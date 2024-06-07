@@ -1,4 +1,5 @@
 import { Generated } from "kysely";
+import { Interaction } from "../interfaces";
 
 export interface FeedTable {
   id: Generated<number>;
@@ -17,7 +18,7 @@ export interface FeedTable {
 export interface InteractionsTable {
   id: Generated<number>;
   feedid: number; // FK to feed table id.
-  interaction: string;
+  interaction: Interaction;
   timestamp: number;
 }
 

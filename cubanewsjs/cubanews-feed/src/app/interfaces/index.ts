@@ -47,3 +47,9 @@ export enum NewsSourceDisplayName {
   CUBANET = "Cubanet",
   EMPTY = "",
 }
+
+export enum Interaction {
+  VIEW = "view",
+  LIKE = "like",
+  SHARE = "share",
+}
