@@ -25,8 +25,15 @@ export type FeedResponseData = {
   content?: NewsFeed;
 };
 
+export type InteractionData = {
+  view: number;
+  like: number;
+  share: number;
+};
+
 export type InteractionResponseData = {
   banter: string;
+  content?: InteractionData;
 };
 
 export enum NewsSourceName {
