@@ -19,7 +19,6 @@ import {
 import moment from "moment";
 import Image from "next/image";
 import "moment/locale/es";
-import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import ThumbUp from "@mui/icons-material/ThumbUp";
 
 moment.locale("es");
@@ -58,9 +57,20 @@ function getPublicationLogo(item: NewsItem) {
 }
 
 function onNewsInteraction(item: NewsItem, interaction: Interaction) {
-  fetch(`/api/interactions?feedid=${item.id}&interaction=${interaction}`).then(
-    (res) => console.log(res.json())
-  );
+  fetch(`/api/interactions`, {
+    method: "POST",
+    body: JSON.stringify({
+      feedid: item.id,
+      interaction: interaction,
+    }),
+  }).then(async (res) => {
+    const data = (await res.json()).content;
+    console.log(data);
+    if (item.id && interaction === Interaction.LIKE) {
+      const itemId: string = item.id?.toString();
+      localStorage.setItem(itemId, JSON.stringify(data));
+    }
+  });
 }
 
 function getNewsSourceDisplayName(item: NewsItem): NewsSourceDisplayName {
