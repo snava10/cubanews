@@ -139,34 +139,34 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
     if (liked) {
       const likeNumber = item.interactions.like + item.interactions.view;
       return (
-        <>
-          <Box>
-            <Button
-              startDecorator={<ThumbUp />}
-              size="sm"
-              variant="outlined"
-              disabled
-            >
-              {likeNumber}
-            </Button>
-          </Box>
-        </>
+        <Box>
+          <Button
+            startDecorator={<ThumbUp sx={{ fontSize: 15 }} />}
+            disabled={true}
+            loading={false}
+            onClick={() => onNewsInteraction(item, Interaction.LIKE)}
+            size="sm"
+            variant="outlined"
+          >
+            {likeNumber}
+          </Button>
+        </Box>
       );
     }
 
     return (
-      <>
         <Box>
           <Button
-            startDecorator={<ThumbUp />}
+            startDecorator={<ThumbUp sx={{ fontSize: 15 }} />}
+            disabled={false}
+            loading={false}
+            onClick={() => onNewsInteraction(item, Interaction.LIKE)}
             size="sm"
             variant="outlined"
-            onClick={() => onNewsInteraction(item, Interaction.LIKE)}
           >
             Interesante
           </Button>
         </Box>
-      </>
     );
   }
 
