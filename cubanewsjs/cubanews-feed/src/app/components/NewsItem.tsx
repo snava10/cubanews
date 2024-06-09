@@ -1,7 +1,6 @@
 import {
   Link,
   Typography,
-  Box,
   Card,
   Stack,
   Chip,
