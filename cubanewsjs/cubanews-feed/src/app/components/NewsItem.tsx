@@ -20,6 +20,7 @@ import moment from "moment";
 import Image from "next/image";
 import "moment/locale/es";
 import ThumbUp from "@mui/icons-material/ThumbUp";
+import { useEffect, useState } from "react";
 
 moment.locale("es");
 
@@ -54,23 +55,6 @@ function getPublicationLogo(item: NewsItem) {
   return (
     <Image width={20} height={100} alt="Publication Logo" src={imageLogoSrc} />
   );
-}
-
-function onNewsInteraction(item: NewsItem, interaction: Interaction) {
-  fetch(`/api/interactions`, {
-    method: "POST",
-    body: JSON.stringify({
-      feedid: item.id,
-      interaction: interaction,
-    }),
-  }).then(async (res) => {
-    const data = (await res.json()).content;
-    console.log(data);
-    if (item.id && interaction === Interaction.LIKE) {
-      const itemId: string = item.id?.toString();
-      localStorage.setItem(itemId, JSON.stringify(data));
-    }
-  });
 }
 
 function getNewsSourceDisplayName(item: NewsItem): NewsSourceDisplayName {
@@ -115,6 +99,77 @@ function getTagsSection(item: NewsItem): JSX.Element {
 }
 
 export default function NewsItemComponent({ item }: NewsItemProps) {
+  const [liked, setLiked] = useState(
+    item.id ? localStorage.getItem(item.id?.toString()) : false
+  );
+  useEffect(() => {
+    refreshLiked();
+  });
+
+  function refreshLiked() {
+    if (item.id) {
+      const liked = localStorage.getItem(item.id?.toString());
+      if (liked) {
+        setLiked(true);
+      } else {
+        setLiked(false);
+      }
+    }
+  }
+
+  function onNewsInteraction(item: NewsItem, interaction: Interaction) {
+    fetch(`/api/interactions`, {
+      method: "POST",
+      body: JSON.stringify({
+        feedid: item.id,
+        interaction: interaction,
+      }),
+    }).then(() => {
+      if (interaction === Interaction.LIKE) {
+        item.interactions.like++;
+        localStorage.setItem(item.id.toString(), "true");
+        refreshLiked();
+      } else if (interaction === Interaction.VIEW) {
+        item.interactions.view++;
+      }
+    });
+  }
+
+  function getInteractionsSection(item: NewsItem): JSX.Element {
+    if (liked) {
+      const likeNumber = item.interactions.like + item.interactions.view;
+      return (
+        <>
+          <Box>
+            <Button
+              startDecorator={<ThumbUp />}
+              size="sm"
+              variant="outlined"
+              disabled
+            >
+              {likeNumber}
+            </Button>
+          </Box>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <Box>
+          <Button
+            startDecorator={<ThumbUp />}
+            size="sm"
+            variant="outlined"
+            onClick={() => onNewsInteraction(item, Interaction.LIKE)}
+          >
+            Interesante
+          </Button>
+        </Box>
+      </>
+    );
+  }
+
   return (
     <Stack spacing={4}>
       <Card variant="outlined" sx={{ padding: 2 }}>
@@ -160,16 +215,7 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
               </Typography>
               {getTagsSection(item)}
               <Divider orientation="vertical" sx={{ ml: 1, mr: 1 }} />
-              <Box>
-                <Button
-                  startDecorator={<ThumbUp />}
-                  size="sm"
-                  variant="outlined"
-                  onClick={() => onNewsInteraction(item, Interaction.LIKE)}
-                >
-                  Interesante
-                </Button>
-              </Box>
+              {getInteractionsSection(item)}
             </Stack>
           </CardContent>
         </CardOverflow>

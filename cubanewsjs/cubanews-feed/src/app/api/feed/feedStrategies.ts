@@ -14,6 +14,12 @@ function dbItemToNewsItem(dbitem: any): NewsItem {
     content: dbitem.content,
     tags: dbitem.tags ? dbitem.tags.split(",") : [],
     score: dbitem.score,
+    interactions: {
+      feedid: dbitem.feedid,
+      view: 0,
+      like: 0,
+      share: 0,
+    },
   } as NewsItem;
 }
 

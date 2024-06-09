@@ -1,4 +1,9 @@
-import { FeedResponseData, NewsItem, NewsSourceName } from "../../interfaces";
+import {
+  FeedResponseData,
+  Interaction,
+  NewsItem,
+  NewsSourceName,
+} from "../../interfaces";
 import { createKysely } from "@vercel/postgres-kysely";
 import { Database } from "../dataschema";
 import { NextRequest, NextResponse } from "next/server";
@@ -98,13 +103,45 @@ async function getFeed(
     pageSize
   );
 
+  const itemsMap = new Map<number, NewsItem>();
+  items.forEach((x) => {
+    itemsMap.set(x.id as number, x);
+  });
+
+  const interactions = await db
+    .selectFrom("interactions")
+    .select([
+      "interaction",
+      "feedid",
+      db.fn.count("id").$castTo<string>().as("count"),
+    ])
+    .where(
+      "feedid",
+      "in",
+      items.map((x) => x.id as number)
+    )
+    .groupBy("interaction")
+    .groupBy("feedid")
+    .execute();
+
+  interactions.forEach((x) => {
+    const action: Interaction = x.interaction;
+    const feedid = x.feedid as number;
+    const count = parseInt(x.count);
+    const item = itemsMap.get(feedid);
+    if (item && item.interactions) {
+      item.interactions[action] = count;
+    }
+  });
+
   const timestamp = items.length > 0 ? items[0].feedts : 0;
+
   return NextResponse.json(
     {
       banter: "Cubanews feed!",
       content: {
         timestamp,
-        feed: items,
+        feed: Array.from(itemsMap.values()),
       },
     },
     { status: 200 }
