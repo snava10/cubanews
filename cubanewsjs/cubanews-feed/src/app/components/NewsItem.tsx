@@ -139,34 +139,32 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
     if (liked) {
       const likeNumber = item.interactions.like + item.interactions.view;
       return (
-        <Box>
-          <Button
-            startDecorator={<ThumbUp sx={{ fontSize: 15 }} />}
-            disabled={true}
-            loading={false}
-            onClick={() => onNewsInteraction(item, Interaction.LIKE)}
-            size="sm"
-            variant="outlined"
-          >
-            {likeNumber}
-          </Button>
-        </Box>
+        <Button
+          startDecorator={<ThumbUp sx={{ fontSize: 15 }} />}
+          disabled={true}
+          onClick={() => onNewsInteraction(item, Interaction.LIKE)}
+          size="sm"
+          color="primary"
+          variant="plain"
+          sx={{ ml: "auto", alignSelf: "center" }}
+        >
+          {likeNumber}
+        </Button>
       );
     }
 
     return (
-        <Box>
-          <Button
-            startDecorator={<ThumbUp sx={{ fontSize: 15 }} />}
-            disabled={false}
-            loading={false}
-            onClick={() => onNewsInteraction(item, Interaction.LIKE)}
-            size="sm"
-            variant="outlined"
-          >
-            Interesante
-          </Button>
-        </Box>
+      <Button
+        startDecorator={<ThumbUp sx={{ fontSize: 15 }} />}
+        disabled={false}
+        onClick={() => onNewsInteraction(item, Interaction.LIKE)}
+        size="sm"
+        color="primary"
+        variant="outlined"
+        sx={{ ml: "auto", alignSelf: "center" }}
+      >
+        Interesante
+      </Button>
     );
   }
 
@@ -187,8 +185,17 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
         </CardContent>
         <CardOverflow variant="soft" sx={{ bgcolor: "background.level1" }}>
           <Divider inset="context" />
-          <CardContent orientation="horizontal">
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          <CardContent orientation="horizontal" sx={{ p: 1 }}>
+            <Stack
+              direction="row"
+              spacing={1}
+              flexWrap="wrap"
+              useFlexGap
+              alignItems="center"
+              divider={
+                <Divider orientation="vertical" sx={{ ml: 0.5, mr: 0.5 }} />
+              }
+            >
               <Typography
                 level="body-sm"
                 fontWeight="md"
@@ -196,27 +203,20 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
               >
                 {moment(item.isoDate).fromNow()}
               </Typography>
-              <Divider orientation="vertical" sx={{ ml: 1, mr: 1 }} />
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <Stack direction="row" spacing={1}>
                 {getPublicationLogo(item)}
-              </Box>
-              <Typography
-                level="body-sm"
-                fontWeight="md"
-                textColor="text.secondary"
-              >
-                {getNewsSourceDisplayName(item)}
-              </Typography>
-              {getTagsSection(item)}
-              <Divider orientation="vertical" sx={{ ml: 1, mr: 1 }} />
-              {getInteractionsSection(item)}
+                <Typography
+                  level="body-sm"
+                  fontWeight="md"
+                  textColor="text.secondary"
+                >
+                  {getNewsSourceDisplayName(item)}
+                </Typography>
+              </Stack>
+              {/* We don't have any tags yet so I'll remove it because it adds an extra divider */}
+              {/* {getTagsSection(item)} */}
             </Stack>
+            {getInteractionsSection(item)}
           </CardContent>
         </CardOverflow>
       </Card>
