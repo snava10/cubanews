@@ -6,7 +6,6 @@ import {
 import { createKysely } from "@vercel/postgres-kysely";
 import { NextRequest, NextResponse } from "next/server";
 import { Database } from "../dataschema";
-import { connect } from "http2";
 
 const db = createKysely<Database>();
 
@@ -48,6 +47,45 @@ export async function POST(
     .execute();
 
   console.log(interactions);
+  const content = {
+    like: 0,
+    view: 0,
+    share: 0,
+  } as InteractionData;
+  interactions.forEach((x) => {
+    const action: Interaction = x.interaction;
+    content[action] = x.count as number;
+  });
+
+  return NextResponse.json(
+    {
+      banter: "Refreshing cubanews feed",
+      content: content,
+    },
+    { status: 200 }
+  );
+}
+
+export async function GET(
+  request: NextRequest
+): Promise<NextResponse<InteractionResponseData | null>> {
+  const feedid = request.nextUrl.searchParams.get("feedid");
+  if (!feedid) {
+    return NextResponse.json(
+      {
+        banter: "feedid cannot be null",
+      },
+      { status: 400, statusText: "Bad Parameters" }
+    );
+  }
+
+  const interactions = await db
+    .selectFrom("interactions")
+    .select(["interaction", db.fn.count("id").as("count")])
+    .where("feedid", "=", parseInt(feedid))
+    .groupBy("interaction")
+    .execute();
+
   const content = {
     like: 0,
     view: 0,

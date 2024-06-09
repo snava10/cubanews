@@ -3,7 +3,7 @@ export type ResponseError = {
 };
 
 export type NewsItem = {
-  id?: number;
+  id: number;
   title: string;
   source: NewsSourceName;
   url: string;
@@ -13,6 +13,7 @@ export type NewsItem = {
   content: string | null | undefined;
   tags: Array<string>;
   score: number;
+  interactions: InteractionData;
 };
 
 export type NewsFeed = {
@@ -26,6 +27,7 @@ export type FeedResponseData = {
 };
 
 export type InteractionData = {
+  feedid: number;
   view: number;
   like: number;
   share: number;
