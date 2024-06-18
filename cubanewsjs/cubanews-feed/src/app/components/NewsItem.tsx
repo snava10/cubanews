@@ -138,32 +138,31 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
     if (liked) {
       const likeNumber = item.interactions.like + item.interactions.view;
       return (
-        <Button
-          startDecorator={<ThumbUp sx={{ fontSize: 15 }} />}
-          disabled={true}
-          onClick={() => onNewsInteraction(item, Interaction.LIKE)}
-          size="sm"
-          color="primary"
+        <Chip
           variant="plain"
+          disabled={true}
+          startDecorator={<ThumbUp sx={{ fontSize: 12 }} />}
+          size="sm"
+          onClick={() => onNewsInteraction(item, Interaction.LIKE)}
           sx={{ ml: "auto", alignSelf: "center" }}
+          color="primary"
         >
           {likeNumber}
-        </Button>
+        </Chip>
       );
     }
 
     return (
-      <Button
-        startDecorator={<ThumbUp sx={{ fontSize: 15 }} />}
-        disabled={false}
-        onClick={() => onNewsInteraction(item, Interaction.LIKE)}
-        size="sm"
-        color="primary"
+      <Chip
         variant="outlined"
+        startDecorator={<ThumbUp sx={{ fontSize: 12 }} />}
+        size="sm"
+        onClick={() => onNewsInteraction(item, Interaction.LIKE)}
         sx={{ ml: "auto", alignSelf: "center" }}
+        color="primary"
       >
         Interesante
-      </Button>
+      </Chip>
     );
   }
 
@@ -184,7 +183,7 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
         </CardContent>
         <CardOverflow variant="soft" sx={{ bgcolor: "background.level1" }}>
           <Divider inset="context" />
-          <CardContent orientation="horizontal" sx={{ p: 1 }}>
+          <CardContent orientation="horizontal" sx={{ pt: 1, pb: 1 }}>
             <Stack
               direction="row"
               spacing={1}
@@ -196,7 +195,7 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
               }
             >
               <Typography
-                level="body-sm"
+                level="body-xs"
                 fontWeight="md"
                 textColor="text.secondary"
               >
@@ -205,7 +204,7 @@ export default function NewsItemComponent({ item }: NewsItemProps) {
               <Stack direction="row" spacing={1}>
                 {getPublicationLogo(item)}
                 <Typography
-                  level="body-sm"
+                  level="body-xs"
                   fontWeight="md"
                   textColor="text.secondary"
                 >
