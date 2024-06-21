@@ -17,15 +17,25 @@ export default function About() {
               padding: 6,
             }}
           >
-            <Box sx={{ margin: 0, paddingLeft: 1, paddingRight: 1 }}>
+            <Stack direction="row">
               <Image
                 src={`cuban-flag.svg`}
                 height={70}
                 width={100}
                 alt="Cuban FLag"
               />
-            </Box>
-            <Typography level="h1">Cuba News</Typography>
+              <Stack
+                direction="row"
+                style={{ alignItems: "center", paddingLeft: 7 }}
+              >
+                <Typography level="h1" style={{ color: "#CC0D0D" }}>
+                  Cuba
+                </Typography>
+                <Typography level="h1" style={{ color: "#002590" }}>
+                  News
+                </Typography>
+              </Stack>
+            </Stack>
           </Box>
         </Box>
 
