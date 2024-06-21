@@ -12,11 +12,13 @@ import { sql } from "kysely";
 import { xOfEachSource } from "./feedStrategies";
 import { exec } from "child_process";
 import { newsItemToFeedTable } from "@/local/localFeedLib";
+import * as dotenv from "dotenv";
 
 export type RefreshFeedResult = {
   datasetName: string;
   insertedRows: bigint | number;
 };
+dotenv.config();
 
 const db = createKysely<Database>();
 
@@ -75,22 +77,43 @@ export async function GET(
   return getFeed(page, pageSize);
 }
 
-async function getFeed(
+export async function getFeed(
   page: number,
   pageSize: number
 ): Promise<NextResponse<FeedResponseData | null>> {
-  const latestFeedts = await db
-    .selectFrom("feed")
-    .select([sql`max(feed.feedts)`.as("feedts")])
-    .executeTakeFirst();
-
-  if (!latestFeedts?.feedts) {
+  const feedItems = await getFeedItems(page, pageSize);
+  if (feedItems.length === 0) {
     return NextResponse.json(
       {
         banter: "No feeds available",
       },
       { status: 500 }
     );
+  }
+  const timestamp = feedItems.length > 0 ? feedItems[0].feedts : 0;
+  return NextResponse.json(
+    {
+      banter: "Cubanews feed!",
+      content: {
+        timestamp,
+        feed: feedItems,
+      },
+    },
+    { status: 200 }
+  );
+}
+
+export async function getFeedItems(
+  page: number,
+  pageSize: number
+): Promise<NewsItem[]> {
+  const latestFeedts = await db
+    .selectFrom("feed")
+    .select([sql`max(feed.feedts)`.as("feedts")])
+    .executeTakeFirst();
+
+  if (!latestFeedts?.feedts) {
+    return [];
   }
 
   // This strategy gets the top x news of every source.
@@ -134,18 +157,7 @@ async function getFeed(
     }
   });
 
-  const timestamp = items.length > 0 ? items[0].feedts : 0;
-
-  return NextResponse.json(
-    {
-      banter: "Cubanews feed!",
-      content: {
-        timestamp,
-        feed: Array.from(itemsMap.values()),
-      },
-    },
-    { status: 200 }
-  );
+  return Array.from(itemsMap.values());
 }
 
 async function refreshFeed(): Promise<Array<RefreshFeedResult>> {
