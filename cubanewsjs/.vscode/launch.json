@@ -62,6 +62,12 @@
       "sourceMaps": true,
       "program": "${workspaceFolder}/cubanews-crawler/src/main.ts",
       "outFiles": ["${workspaceFolder}/**/*.js"]
+    },
+    {
+      "command": "cd cubanews-feed; npm run start:mail",
+      "name": "Run npm start:mail",
+      "request": "launch",
+      "type": "node-terminal"
     }
   ]
 }

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "start:local": "tsx src/local/climain.ts"
+    "start:local": "tsx src/local/climain.ts",
+    "start:mail": "tsx src/local/mailSender.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -24,6 +25,7 @@
     "kysely": "^0.27.3",
     "moment": "^2.30.1",
     "next": "latest",
+    "nodemailer": "^6.9.14",
     "react": "^18",
     "react-dom": "^18",
     "sharp": "^0.33.4",
@@ -31,6 +33,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.15",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
