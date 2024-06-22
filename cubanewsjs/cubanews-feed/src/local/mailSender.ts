@@ -5,7 +5,7 @@ import {
   NewsSourceName,
   getNewsSourceDisplayName,
 } from "@/app/interfaces";
-import { Database } from "@/app/api/dataschema";
+import { Database, SubscriptionsTable } from "@/app/api/dataschema";
 import { createKysely } from "@vercel/postgres-kysely";
 import { sql } from "kysely";
 import { xOfEachSource } from "@/app/api/feed/feedStrategies";
@@ -40,7 +40,11 @@ export const transporter = nodemailer.createTransport({
 });
 
 async function getRecipients(): Promise<string[]> {
-  return [];
+  const query = sql<SubscriptionsTable>`select s.* from subscriptions s join 
+    (select max(timestamp) as ts from subscriptions 
+    group by email) x on s.timestamp=x.ts where status='subscribed'`;
+  const result = (await query.execute(db)).rows;
+  return result.map((r) => r.email);
 }
 
 function getNewsSourceLogoUrl(item: NewsItem): string {
