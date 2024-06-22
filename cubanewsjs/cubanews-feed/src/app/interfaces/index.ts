@@ -62,3 +62,24 @@ export enum Interaction {
   LIKE = "like",
   SHARE = "share",
 }
+
+export function getNewsSourceDisplayName(
+  item: NewsItem
+): NewsSourceDisplayName {
+  switch (item.source) {
+    case NewsSourceName.ADNCUBA:
+      return NewsSourceDisplayName.ADNCUBA;
+    case NewsSourceName.CATORCEYMEDIO:
+      return NewsSourceDisplayName.CATORCEYMEDIO;
+    case NewsSourceName.CIBERCUBA:
+      return NewsSourceDisplayName.CIBERCUBA;
+    case NewsSourceName.DIARIODECUBA:
+      return NewsSourceDisplayName.DIARIODECUBA;
+    case NewsSourceName.ELTOQUE:
+      return NewsSourceDisplayName.ELTOQUE;
+    case NewsSourceName.CUBANET:
+      return NewsSourceDisplayName.CUBANET;
+    default:
+      return NewsSourceDisplayName.EMPTY;
+  }
+}
