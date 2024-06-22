@@ -63,6 +63,19 @@ export default function Home() {
         window.localStorage.setItem("showSubscription", "false");
       }
       setShowSubscription(false);
+    } else if (operation === "subscribe") {
+      fetch("/api/subscriptions", {
+        method: "POST",
+        body: JSON.stringify({
+          email: data.email,
+          operation: "subscribe",
+        }),
+      }).then((res) => {
+        if (res.status === 200) {
+          window.localStorage.setItem("showSubscription", "false");
+          setShowSubscription(false);
+        }
+      });
     }
     console.log(data);
   }
