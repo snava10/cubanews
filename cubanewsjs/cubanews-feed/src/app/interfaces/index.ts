@@ -83,3 +83,9 @@ export function getNewsSourceDisplayName(
       return NewsSourceDisplayName.EMPTY;
   }
 }
+
+export type ResolveNewsletterSubscriptionData = {
+  operation: "subscribe" | "close";
+  email: string;
+  dontShowAgain: boolean;
+};
