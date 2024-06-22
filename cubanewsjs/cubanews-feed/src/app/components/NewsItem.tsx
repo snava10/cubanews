@@ -7,11 +7,9 @@ import {
   Divider,
   CardOverflow,
   CardContent,
-  Button,
 } from "@mui/joy";
 import {
   NewsItem,
-  NewsSourceDisplayName,
   NewsSourceName,
   Interaction,
   getNewsSourceDisplayName,
