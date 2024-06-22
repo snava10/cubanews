@@ -14,6 +14,7 @@ import {
   NewsSourceDisplayName,
   NewsSourceName,
   Interaction,
+  getNewsSourceDisplayName,
 } from "../interfaces";
 import moment from "moment";
 import Image from "next/image";
@@ -54,25 +55,6 @@ function getPublicationLogo(item: NewsItem) {
   return (
     <Image width={20} height={100} alt="Publication Logo" src={imageLogoSrc} />
   );
-}
-
-function getNewsSourceDisplayName(item: NewsItem): NewsSourceDisplayName {
-  switch (item.source) {
-    case NewsSourceName.ADNCUBA:
-      return NewsSourceDisplayName.ADNCUBA;
-    case NewsSourceName.CATORCEYMEDIO:
-      return NewsSourceDisplayName.CATORCEYMEDIO;
-    case NewsSourceName.CIBERCUBA:
-      return NewsSourceDisplayName.CIBERCUBA;
-    case NewsSourceName.DIARIODECUBA:
-      return NewsSourceDisplayName.DIARIODECUBA;
-    case NewsSourceName.ELTOQUE:
-      return NewsSourceDisplayName.ELTOQUE;
-    case NewsSourceName.CUBANET:
-      return NewsSourceDisplayName.CUBANET;
-    default:
-      return NewsSourceDisplayName.EMPTY;
-  }
 }
 
 function getTagsSection(item: NewsItem): JSX.Element {
