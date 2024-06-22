@@ -19,14 +19,19 @@ import NewsLetterSubscriptionComponent from "../components/NewsLetterSubscriptio
 import React from "react";
 
 export default function Home() {
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const fetcher = (url: string) =>
+    fetch(url).then((res) => {
+      setShowSubscription(
+        localStorage.getItem("showSubscription") === null ||
+          localStorage.getItem("showSubscription") === "true"
+          ? true
+          : false
+      );
+      return res.json();
+    });
 
-  const [showSubscription, setShowSubscription] = React.useState<boolean>(
-    localStorage.getItem("showSubscription") === null ||
-      localStorage.getItem("showSubscription") === "true"
-      ? true
-      : false
-  );
+  const [showSubscription, setShowSubscription] =
+    React.useState<boolean>(false);
 
   const { data, error, isLoading } = useSWR<FeedResponseData>(
     "/api/feed",
@@ -55,7 +60,7 @@ export default function Home() {
     const operation = data.operation;
     if (operation === "close") {
       if (data.dontShowAgain) {
-        localStorage.setItem("showSubscription", "false");
+        window.localStorage.setItem("showSubscription", "false");
       }
       setShowSubscription(false);
     }

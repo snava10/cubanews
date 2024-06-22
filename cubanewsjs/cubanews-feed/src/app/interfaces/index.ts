@@ -63,6 +63,12 @@ export enum Interaction {
   SHARE = "share",
 }
 
+export enum SubscriptionStatus {
+  SUBSCRIBED = "subscribed",
+  UNSUBSCRIBED = "unsubscribed",
+  NOTFOUND = "notfound",
+}
+
 export function getNewsSourceDisplayName(
   item: NewsItem
 ): NewsSourceDisplayName {
