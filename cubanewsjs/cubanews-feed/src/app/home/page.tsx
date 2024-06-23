@@ -84,9 +84,9 @@ export default function Home() {
     <Stack>
       {showSubscription ? (
         <Container sx={{ mt: 2 }}>
-          <NewsLetterSubscriptionComponent
+          {/* <NewsLetterSubscriptionComponent
             onResolve={resolveNewsletterSubscription}
-          />
+          /> */}
         </Container>
       ) : null}
       <Container sx={{ mt: 2 }}>
