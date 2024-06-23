@@ -42,7 +42,7 @@ export default function Unsubscribe() {
         {confirmation ? (
           <Alert variant={"soft"} color="success">
             <Typography level="h3">
-              Su suscripción ha sido cancelada.
+              Su subscripción ha sido cancelada.
             </Typography>
           </Alert>
         ) : null}
@@ -62,7 +62,7 @@ export default function Unsubscribe() {
                   type="submit"
                   sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
                 >
-                  Darse de baja
+                  Dar de baja
                 </Button>
               }
             />
