@@ -68,6 +68,12 @@
       "name": "Run npm start:mail",
       "request": "launch",
       "type": "node-terminal"
+    },
+    {
+      "command": "cd cubanews-feed; npm run start:local:dev",
+      "name": "Run npm start:local:dev",
+      "request": "launch",
+      "type": "node-terminal"
     }
   ]
 }

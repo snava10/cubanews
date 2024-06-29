@@ -1,5 +1,5 @@
 import { Generated } from "kysely";
-import { Interaction, SubscriptionStatus } from "../interfaces";
+import { Interaction } from "../interfaces";
 
 export interface FeedTable {
   id: Generated<number>;

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "start:local": "tsx src/local/climain.ts",
+    "start:local:dev": "ENV_FILE='.env.development.local' tsx src/local/climain.ts",
     "start:mail": "tsx src/local/mailSender.ts"
   },
   "dependencies": {
