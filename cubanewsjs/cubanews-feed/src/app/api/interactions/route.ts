@@ -3,11 +3,10 @@ import {
   InteractionData,
   InteractionResponseData,
 } from "@/app/interfaces";
-import { createKysely } from "@vercel/postgres-kysely";
 import { NextRequest, NextResponse } from "next/server";
-import { Database } from "../dataschema";
+import cubanewsApp from "@/app/cubanewsApp";
 
-const db = createKysely<Database>();
+const db = cubanewsApp.getDatabase;
 
 export async function POST(
   request: NextRequest

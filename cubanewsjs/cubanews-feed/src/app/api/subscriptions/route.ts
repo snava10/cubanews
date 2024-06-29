@@ -1,7 +1,6 @@
-import { createKysely } from "@vercel/postgres-kysely";
 import { NextRequest, NextResponse } from "next/server";
-import { Database, SubscriptionsTable } from "../dataschema";
 import { SubscriptionStatus } from "@/app/interfaces";
+import cubanewsApp from "@/app/cubanewsApp";
 
 interface SubscribeResponse {
   banter: string;
@@ -11,7 +10,7 @@ interface SubscribeResponse {
   };
 }
 
-const db = createKysely<Database>();
+const db = cubanewsApp.getDatabase;
 
 export async function POST(
   request: NextRequest

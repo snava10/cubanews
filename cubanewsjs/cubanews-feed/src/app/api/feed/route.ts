@@ -4,22 +4,20 @@ import {
   NewsItem,
   NewsSourceName,
 } from "../../interfaces";
-import { createKysely } from "@vercel/postgres-kysely";
-import { Database } from "../dataschema";
 import { NextRequest, NextResponse } from "next/server";
 import { ApifyClient, Dataset } from "apify-client";
 import { sql } from "kysely";
 import { xOfEachSource } from "./feedStrategies";
 import { exec } from "child_process";
 import { newsItemToFeedTable } from "@/local/localFeedLib";
+import cubanewsApp from "@/app/cubanewsApp";
 
 export type RefreshFeedResult = {
   datasetName: string;
   insertedRows: bigint | number;
 };
 
-const db = createKysely<Database>();
-
+const db = cubanewsApp.getDatabase;
 const client = new ApifyClient({
   token: process.env.APIFY_TOKEN,
 });
