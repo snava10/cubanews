@@ -2,17 +2,32 @@
 
 The project containing the UI of cubanews. A small web app that gets scrapped news and displays them in a list.
 
-## Run cubanews-feed locally
+## Setup
 
 1. Install node dependencies: `npm install`
+2. Install docker including docker compose. Recommended install Docker Desktop as it will include both.
+3. Start the local instance of Postgres `cd database-setup; docker compose up`
+   This will start a container with postgress and an admin console.
+4. This step is required only once to create the database.
+   - Open the admin console at `localhost:8080`
+   - Create a new database called `cubanews`
+   - Execute the query in `create_tables.sql`
+
+## Run cubanews-feed locally
+
+1. Make sure to complete the Setup steps above
 2. Run the development server: `npm run dev`
-3. Set the `APIFY_TOKEN` env var with one of the following methods:
-    - set it manually in the console or github secrets
-    - set it in the `.env` file. Running `vercel innit` prepares this
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `src/app/home/page.tsx`. The page auto-updates as you edit the file.
+
+## Populate the database
+
+This section is a guide on how to index news in the local database.
+WARNING. When following these instructions make sure the environment is set up correctly to use the local database.
+
+1. `npm run start:local`
 
 ## Learn More about NextJS
 

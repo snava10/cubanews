@@ -90,22 +90,22 @@ export async function refreshFeedFromLocalSources(
       NewsSourceName.DIARIODECUBA,
       "../ddc-crawler/storage/datasets/diariodecuba-dataset",
     ],
-    // [
-    //   NewsSourceName.CATORCEYMEDIO,
-    //   "../catorceYmedio-crawler/storage/datasets/catorceymedio-dataset",
-    // ],
-    // [
-    //   NewsSourceName.ADNCUBA,
-    //   "../adncuba-crawler/storage/datasets/adncuba-dataset",
-    // ],
-    // [
-    //   NewsSourceName.CIBERCUBA,
-    //   "../cibercuba-crawler/storage/datasets/cibercuba-dataset",
-    // ],
-    // [
-    //   NewsSourceName.CUBANET,
-    //   "../cubanet-crawler/storage/datasets/cubanet-dataset",
-    // ],
+    [
+      NewsSourceName.CATORCEYMEDIO,
+      "../catorceYmedio-crawler/storage/datasets/catorceymedio-dataset",
+    ],
+    [
+      NewsSourceName.ADNCUBA,
+      "../adncuba-crawler/storage/datasets/adncuba-dataset",
+    ],
+    [
+      NewsSourceName.CIBERCUBA,
+      "../cibercuba-crawler/storage/datasets/cibercuba-dataset",
+    ],
+    [
+      NewsSourceName.CUBANET,
+      "../cubanet-crawler/storage/datasets/cubanet-dataset",
+    ],
     // [NewsSourceName.ELTOQUE, "../eltoque/storage/dataset/eltoque-dataset"],
   ];
   const feedDate = new Date();
