@@ -24,10 +24,9 @@ You can start editing the page by modifying `src/app/home/page.tsx`. The page au
 
 ## Populate the database
 
-This section is a guide on how to index news in the local database.
-WARNING. When following these instructions make sure the environment is set up correctly to use the local database.
+This will run the a full crawling and updating of the feed in the local database.
 
-1. `npm run start:local`
+`cd cubanews-crawler; ./run-dev.sh`
 
 ## Learn More about NextJS
 

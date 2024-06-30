@@ -3,10 +3,10 @@ import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 import { createKysely } from "@vercel/postgres-kysely";
 import * as dotenv from "dotenv";
-import { dot } from "node:test/reporters";
 
-dotenv.config();
-
+dotenv.config({
+  path: process.env.ENV_FILE ?? `.env`,
+});
 export class CubanewsApp {
   private database: Kysely<Database>;
 
