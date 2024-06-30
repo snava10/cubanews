@@ -1,22 +1,19 @@
 import * as nodemailer from "nodemailer";
-import * as dotenv from "dotenv";
 import {
   NewsItem,
   NewsSourceName,
   getNewsSourceDisplayName,
 } from "@/app/interfaces";
-import { Database, SubscriptionsTable } from "@/app/api/dataschema";
-import { createKysely } from "@vercel/postgres-kysely";
+import { SubscriptionsTable } from "@/app/api/dataschema";
 import { sql } from "kysely";
 import { xOfEachSource } from "@/app/api/feed/feedStrategies";
 import path from "path";
 import fs from "fs";
 import moment from "moment";
+import cubanewsApp from "@/app/cubanewsApp";
 
-dotenv.config();
 const from = "cubanews.icu@gmail.com";
-
-const db = createKysely<Database>();
+const db = cubanewsApp.getDatabase;
 
 export async function getFeedItems(): Promise<NewsItem[]> {
   const latestFeedts = await db
