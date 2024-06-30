@@ -3,12 +3,9 @@ import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 import { createKysely } from "@vercel/postgres-kysely";
 import * as dotenv from "dotenv";
+import { dot } from "node:test/reporters";
 
-if (process.env.ENV_FILE !== ".env") {
-  dotenv.config({
-    path: process.env.ENV_FILE ?? ".env",
-  });
-}
+dotenv.config();
 
 export class CubanewsApp {
   private database: Kysely<Database>;
@@ -16,16 +13,16 @@ export class CubanewsApp {
   constructor() {
     console.log(
       "Initialising Cubanews App for environment, ",
-      process.env.NODE_ENV
+      process.env.LOCAL_ENV
     );
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.LOCAL_ENV === "development") {
       console.log("Using local database");
       const dialect = new PostgresDialect({
         pool: new Pool({
-          database: "cubanews",
-          host: "localhost",
-          user: "postgres",
-          password: "example",
+          database: process.env.POSTGRES_DATABASE,
+          host: process.env.POSTGRES_HOST,
+          user: process.env.POSTGRES_USER,
+          password: process.env.POSTGRES_PASSWORD,
           port: 9000,
           max: 10,
         }),
@@ -34,6 +31,9 @@ export class CubanewsApp {
         dialect,
       });
     } else {
+      dotenv.config({
+        path: `.env`,
+      });
       this.database = createKysely<Database>();
     }
   }
