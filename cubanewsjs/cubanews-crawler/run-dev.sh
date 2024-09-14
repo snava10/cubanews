@@ -4,6 +4,7 @@ cd $HOME/github/cubanews/cubanewsjs/adncuba-crawler && npm run start;
 cd $HOME/github/cubanews/cubanewsjs/catorceYmedio-crawler && npm run start;
 cd $HOME/github/cubanews/cubanewsjs/cibercuba-crawler && npm run start;
 cd $HOME/github/cubanews/cubanewsjs/cubanet-crawler && npm run start;
+cd $HOME/github/cubanews/cubanewsjs/eltoque-crawler && npm run start;
 cd $HOME/github/cubanews/cubanewsjs/cubanews-feed && npm run start:local:dev;
 npm run start:mail:dev;
 

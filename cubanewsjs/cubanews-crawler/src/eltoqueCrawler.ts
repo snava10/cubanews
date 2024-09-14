@@ -28,17 +28,19 @@ export default class ElToqueCrawler extends CubanewsCrawler {
   }
 
   protected override async extractDate(page: Page): Promise<Moment | null> {
-    const rawDate = await page
-      .locator("p.sc-5ff5bade-4.ciNFMa")
+    const articleHeader = await page
+      .locator("div.article-header")
       .first()
       .textContent();
-    if (!rawDate) {
+    const regex = /\d{1,2} \/ [A-Za-z]+ \/ \d{4}/g;
+    const matches = articleHeader?.match(regex);
+    moment.locale("es");
+    if (!matches || matches?.length === 0) {
       return null;
     }
-    moment.locale("es");
-    const mDate = moment(rawDate.trim(), "D / MMMM / YYYY");
+    const mDate = moment(matches[0], "D / MMMM / YYYY");
     if (mDate.isSameOrAfter(moment.now())) {
-      console.warn(`Date is in the future: ${rawDate}`);
+      console.warn(`Date is in the future: ${matches[0]}`);
       return moment(new Date());
     }
     return mDate;
@@ -46,15 +48,10 @@ export default class ElToqueCrawler extends CubanewsCrawler {
 
   protected override async extractContent(page: Page): Promise<string | null> {
     var content = await page
-      .locator("article > div.sc-5ff5bade-8.cDGUar")
+      .locator("article > div:nth-of-type(3)")
       .textContent();
     if (content) {
-      content = content = content
-        .trim()
-        .replace(/\n/g, "")
-        .split(" ")
-        .slice(0, 50)
-        .join(" ");
+      content = content.split(" ").slice(0, 50).join(" ");
     }
     return content;
   }
