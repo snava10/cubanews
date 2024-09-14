@@ -47,6 +47,13 @@
       "localRoot": "${workspaceFolder}"
     },
     {
+      "command": "cd cubanet-crawler; npm start",
+      "name": "Cubanet Crawler",
+      "request": "launch",
+      "type": "node-terminal",
+      "localRoot": "${workspaceFolder}"
+    },
+    {
       "command": "cd cubanews-crawler; npm run start:prod",
       "name": "Run npm start:prod",
       "request": "launch",
