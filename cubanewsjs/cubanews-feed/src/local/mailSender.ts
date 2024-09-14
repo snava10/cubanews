@@ -62,7 +62,6 @@ function getNewsSourceLogoUrl(item: NewsItem): string {
     default:
       return "";
   }
-  return "";
 }
 
 async function getEmailBody(): Promise<string> {
