@@ -58,7 +58,7 @@ function getNewsSourceLogoUrl(item: NewsItem): string {
     case NewsSourceName.DIARIODECUBA:
       return "https://www.cubanews.icu/_next/image?url=%2Fsource_logos%2Fddc1.webp&w=48&q=75";
     case NewsSourceName.ELTOQUE:
-      break;
+      return "https://www.cubanews.icu/_next/image?url=%2Fsource_logos%2Feltoque.png&w=48&q=75";
     default:
       return "";
   }
