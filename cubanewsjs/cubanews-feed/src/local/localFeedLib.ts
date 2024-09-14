@@ -106,7 +106,10 @@ export async function refreshFeedFromLocalSources(
       NewsSourceName.CUBANET,
       "../cubanet-crawler/storage/datasets/cubanet-dataset",
     ],
-    [NewsSourceName.ELTOQUE, "../eltoque/storage/dataset/eltoque-dataset"],
+    [
+      NewsSourceName.ELTOQUE,
+      "../eltoque-crawler/storage/dataset/eltoque-dataset",
+    ],
   ];
   const feedDate = new Date();
   const res = localDatasourcePaths.map(async (x) => {
