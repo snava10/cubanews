@@ -108,7 +108,7 @@ export async function refreshFeedFromLocalSources(
     ],
     [
       NewsSourceName.ELTOQUE,
-      "../eltoque-crawler/storage/dataset/eltoque-dataset",
+      "../eltoque-crawler/storage/datasets/eltoque-dataset",
     ],
   ];
   const feedDate = new Date();
