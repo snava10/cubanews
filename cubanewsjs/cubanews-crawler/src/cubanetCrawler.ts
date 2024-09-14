@@ -8,15 +8,14 @@ export default class CubanetCrawler extends CubanewsCrawler {
   constructor() {
     super(getNewsSourceByName(NewsSourceName.CUBANET));
     this.enqueueLinkOptions = {
-      globs: ["http?(s)://www.cubanet.org/*/*"],
-      selector: "a",
+      globs: ["http?(s)://www.cubanet.org/*/"],
+      selector: "a.elementor-post__thumbnail__link",
     };
   }
 
   protected override isUrlValid(url: string): boolean {
-    const sections = url.split("/");
     return (
-      sections.length >= 6 &&
+      url !== "https://www.cubanet.org/" &&
       !url.startsWith("https://www.cubanet.org/categoria/") &&
       !url.startsWith("https://www.cubanet.org/author/") &&
       !url.startsWith("https://www.cubanet.org/tags/") &&
@@ -26,19 +25,22 @@ export default class CubanetCrawler extends CubanewsCrawler {
   }
 
   protected override async extractDate(page: Page): Promise<Moment | null> {
-    if (page.url().includes("/deportes/")) {
-      return this.extractSportsPageDate(page);
-    }
     const rawDate = await page
-      .locator("div.jeg_meta_date > a")
+      .locator(".elementor-post-info__item--type-date")
       .first()
       .textContent();
-
-    if (!rawDate) {
+    const rawTime = await page
+      .locator(".elementor-post-info__item--type-time")
+      .last()
+      .textContent();
+    if (!rawDate && !rawTime) {
       return null;
     }
     moment.locale("es");
-    const mDate = moment(rawDate, "dddd, D [de] MMMM, YYYY h:mm a");
+    const mDate = moment(
+      `${rawDate?.trim()} ${rawTime?.trim()}`,
+      "MMMM D, yyyy h:mm a"
+    );
     // TODO:: Sometimes the date is in the future. This is a patch to prevent that from happening.
     // It may be a parsing error.
     if (mDate.isSameOrAfter(moment.now())) {
@@ -49,31 +51,12 @@ export default class CubanetCrawler extends CubanewsCrawler {
   }
 
   protected override async extractContent(page: Page): Promise<string | null> {
-    if (page.url().includes("/deportes/")) {
-      return await page
-        .locator("div.elementor-widget-container")
-        .first()
-        .textContent();
-    }
-    const content = await page.locator("div.content-inner").textContent();
+    const content = await page
+      .locator(
+        "div.elementor-element.elementor-widget.elementor-widget-theme-post-content > div.elementor-widget-container"
+      )
+      .first()
+      .textContent();
     return content;
-  }
-
-  private async extractSportsPageDate(page: Page): Promise<Moment | null> {
-    const date = await page
-      .locator("span.elementor-post-info__item--type-date")
-      .first()
-      .textContent();
-    const time = await page
-      .locator("span.elementor-post-info__item--type-time")
-      .first()
-      .textContent();
-    if (!date || !time) {
-      return null;
-    }
-
-    moment.locale("es");
-    const parsedDate = moment(`${date} ${time}`, "MMMM D, YYYY h:mm A");
-    return parsedDate;
   }
 }
