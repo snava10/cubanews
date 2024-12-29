@@ -27,7 +27,8 @@ export default class CatorceYMedioCrawler extends CubanewsCrawler {
       if (!rawDate) {
         return null;
       }
-      const mDate = moment(rawDate, "DD [de] MMMM YYYY - HH:mm");
+      moment.locale("es");
+      const mDate = moment(rawDate.trim(), "DD [de] MMMM YYYY - HH:mm");
       // TODO:: Sometimes the date is in the future. This is a patch to prevent that from happening.
       // It may be a parsing error.
       if (mDate.isSameOrAfter(moment.now())) {
