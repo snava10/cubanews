@@ -4,6 +4,7 @@ import moment from "moment";
 import { Page } from "playwright";
 
 const newsSource = getNewsSourceByName(NewsSourceName.CIBERCUBA);
+const dateFormats = ["dddd, DD MMMM, YYYY - HH:mm", "DD/MM/YYYY - h:mma (ZZ)"];
 
 export default class CibercubaCrawler extends CubanewsCrawler {
   constructor() {
@@ -33,7 +34,13 @@ export default class CibercubaCrawler extends CubanewsCrawler {
     }
     rawDate = rawDate.replace("(GMT-5)", "-0500");
     moment.locale("es");
-    const mDate = moment(rawDate.trim(), "DD/MM/YYYY - h:mma (ZZ)");
+
+    let i = 1;
+    let mDate = moment(rawDate.trim(), dateFormats[0]);
+    while (i < dateFormats.length && !mDate.isValid()) {
+      mDate = moment(rawDate.trim(), dateFormats[i++]);
+    }
+
     // TODO:: Sometimes the date is in the future. This is a patch to prevent that from happening.
     // It may be a parsing error.
     if (mDate.isSameOrAfter(moment.now())) {

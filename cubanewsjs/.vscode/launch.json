@@ -54,6 +54,13 @@
       "localRoot": "${workspaceFolder}"
     },
     {
+      "command": "cd cibercuba-crawler; npm start",
+      "name": "Cibercuba Crawler",
+      "request": "launch",
+      "type": "node-terminal",
+      "localRoot": "${workspaceFolder}"
+    },
+    {
       "command": "cd cubanet-crawler; npm start",
       "name": "Cubanet Crawler",
       "request": "launch",
