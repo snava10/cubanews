@@ -149,6 +149,7 @@ export abstract class CubanewsCrawler
       const now = moment();
       return now.diff(momentDate, "hours") < 72;
     }
+    console.warn("Invalid Date.");
     return false;
   }
 }
