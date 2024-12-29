@@ -100,7 +100,7 @@ export abstract class CubanewsCrawler
           );
         }
       } else {
-        if (!momentDate) {
+        if (!momentDate || !momentDate.isValid()) {
           log.error(`Could not extract date from ${request.loadedUrl}`);
         } else {
           log.warning(`Date is too old ${request.loadedUrl}`);
