@@ -11,6 +11,7 @@ import { NewsSourceName, getNewsSourceByName } from "./crawlerUtils.js";
 import { Page } from "playwright";
 
 const newsSource = getNewsSourceByName(NewsSourceName.ADNCUBA);
+const dateFormats = ["MMMM D, YYYY h:mma", "ddd, MM/DD/YYYY - HH:mm"];
 
 export default class AdnCubaCrawler extends CubanewsCrawler {
   constructor() {
@@ -37,10 +38,15 @@ export default class AdnCubaCrawler extends CubanewsCrawler {
     if (!rawDate) {
       return null;
     }
-    moment.locale("es");
-    const mDate = moment(
-      rawDate.trim().split(": ")[1],
-      "ddd, MM/DD/YYYY - HH:mm"
+    let i = 1;
+    const rawDateSplit = rawDate.trim().split(": ")[1];
+    let mDate = moment(rawDateSplit, dateFormats[0]);
+    while (i < dateFormats.length && !mDate.isValid) {
+      mDate = moment(rawDateSplit, dateFormats[i]);
+      i++;
+    }
+    this.log.info(
+      `Date ${rawDateSplit} parsed using format ${dateFormats[i - 1]}`
     );
     // TODO:: Sometimes the date is in the future. This is a patch to prevent that from happening.
     // It may be a parsing error.

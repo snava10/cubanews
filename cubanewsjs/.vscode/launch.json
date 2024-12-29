@@ -47,6 +47,13 @@
       "localRoot": "${workspaceFolder}"
     },
     {
+      "command": "cd adncuba-crawler; npm start",
+      "name": "AdnCuba Crawler",
+      "request": "launch",
+      "type": "node-terminal",
+      "localRoot": "${workspaceFolder}"
+    },
+    {
       "command": "cd cubanet-crawler; npm start",
       "name": "Cubanet Crawler",
       "request": "launch",
